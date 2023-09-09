@@ -1,1 +1,1 @@
-# cpsc-525-parallel-programming
+# cpsc-524-parallel-programming
