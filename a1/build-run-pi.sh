@@ -12,6 +12,6 @@ pwd
 echo $SLURMD_NODENAME
 make clean
 make pi
-time ./pi
-time ./pi
-time ./pi
+time pi
+time pi
+time pi
