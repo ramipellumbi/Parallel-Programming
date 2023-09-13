@@ -16,7 +16,7 @@ CC = icc
 #CFLAGS = -g -O3 -xHost -fno-alias -std=c99 -qopt-report=5 -fsource-asm
 #CFLAGS = -std=c99
 
-CFLAGS = -g -O3 -xHost -fno-alias -std=c99
+CFLAGS = -g -O3 -xHost -fno-alias -std=c99 -I common
 
 # Build directories
 BUILD_DIR := build
@@ -26,12 +26,12 @@ COMMON_BUILD_DIR := $(BUILD_DIR)/common
 
 # Source code
 COMMON_SRC := common/timing.c
-PART1_SRC := part1/pi.c
+PART1_SRC := $(wildcard part1/*.c)
 PART2_SRC := part2/triad.c part2/dummy.c
 
 # Object files
 COMMON_OBJ := $(COMMON_BUILD_DIR)/timing.o
-PART1_OBJ := $(PART1_BUILD_DIR)/pi.o $(COMMON_OBJ)
+PART1_OBJ := $(PART1_SRC:.c=.o)
 PART2_OBJ := $(PART2_BUILD_DIR)/triad.o $(PART2_BUILD_DIR)/dummy.o $(COMMON_OBJ)
 
 all: pi triad
@@ -49,7 +49,7 @@ $(PART2_BUILD_DIR)/%.o: part2/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 # Build code for Exercise 1
-pi: $(PART1_OBJ)
+pi: $(PART1_BUILD_DIR)/pi.o $(PART1_BUILD_DIR)/integrate.o $(COMMON_BUILD_DIR)/timing.o
 	$(CC) -o $@ $(CFLAGS) $^
 
 # Build code for Exercise 2
