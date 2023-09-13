@@ -1,0 +1,86 @@
+\documentclass{article}
+
+\usepackage[colorlinks = true,
+            linkcolor = blue,
+            urlcolor  = blue,
+            citecolor = blue,
+            anchorcolor = blue]{hyperref}
+
+\newcommand{\MYhref}[3][blue]{\href{#2}{\color{#1}{#3}}}%
+
+\title{Using VsCode on Grace (with MacOS)}
+\author{Rami Pellumbi}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{SSH Setup}
+
+To set SSH up on VsCode, first install the \MYhref{https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-ssh}{Remote - SSH exension from Microsoft} 
+via the Extensions: Marketplace. Next, you will have to generate your key pair. The instructions can be found 
+on the \MYhref{https://docs.ycrc.yale.edu/clusters-at-yale/access/ssh/}{YCRC SSH docs}. For completeness, I state how I 
+set up my configuration on my MacOS machine. The documentation is copied from the YCRC SSH documentation. Open your terminal and type:
+\begin{verbatim}
+    ssh-keygen    
+\end{verbatim}
+Your terminal should respond:
+\begin{verbatim}
+Generating public/private rsa key pair.
+Enter file in which to save the key (/home/yourusername/.ssh/id_rsa):
+\end{verbatim}
+Press Enter to accept the default value.\footnote{If you have already created an SSH key, chances are the \texttt{id\_rsa} name is already in use and you will want to rename it. For example, 
+I had my GitHub key using my \texttt{id\_rsa} ssh-key so I named mine \texttt{id\_rsa\_grace}.}
+Your terminal should respond:
+\begin{verbatim}
+Enter passphrase (empty for no passphrase):
+\end{verbatim}
+Enter a secure password. The response will be:
+\begin{verbatim}
+Enter same passphrase again:
+\end{verbatim}
+Next, upload your public SSH key on the cluster. Run the following command in terminal to copy the contents of 
+your public SSH key\footnote{Replace \texttt{id\_rsa.pub} with the name of your ssh key if you did not use the default name.}
+\begin{verbatim}
+    cat ~/.ssh/id_rsa.pub
+\end{verbatim}
+Next, head to the \MYhref{https://sshkeys.ycrc.yale.edu/}{SSH key uploader} and paste the contents.
+
+\section{Connecting to Grace}
+
+To make connecting to Grace more simply, we will modify our ssh configuration file. 
+Open your terminal and head to your ssh-directory.
+\begin{verbatim}
+    cd ~/.ssh
+\end{verbatim}
+Open your config file (in the editor of your choice) located at \texttt{~/.ssh/config}.\footnote{Create the file if it does not exist.}
+A simple way to do this is to run 
+\begin{verbatim}
+    vim config
+\end{verbatim}
+from the current directory. Paste the following contents into the file\footnote{It is VERY important you point to the 
+right \texttt{IdentityFile} and replace the \texttt{User} with your \texttt{cpsc424\_YOURNETID}.}
+\begin{verbatim}
+# ENSURE THIS POINTS TO YOUR SSH KEY THAT YOU UPLOADED TO GRACE
+IdentityFile ~/.ssh/id_rsa_grace
+
+# Uncomment the ForwardX11 options line to enable X11 Forwarding by default 
+# (no -Y necessary)
+# On a Mac you still need xquartz installed
+
+Host *.ycrc.yale.edu grace
+    User cpsc424_rp862          # REPLACE THIS WITH YOUR YOUR NET ID
+    ForwardX11 yes
+    # To re-use your connections with multi-factor authentication
+    # Uncomment the two lines below
+    ControlMaster auto
+    ControlPath ~/.ssh/tmp/%h_%p_%r
+
+Host grace
+    HostName %h.ycrc.yale.edu
+\end{verbatim}
+Now, in VsCode, hit \texttt{Shift + Command + P} to open the command palette and enter \texttt{Remote-SSH: Connect to Host}. You will 
+be presented with the option `grace' in the list of options. Select it and a new window will open up prompting you for the password to your ssh key. 
+Your visual studio code now can edit files on Grace.
+\end{document}
