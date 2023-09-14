@@ -1,20 +1,22 @@
 # Assumes that you have already loaded the intel compiler:
 #        module load intel
 #
-# Assumes that you've copied timing.c and timing.h to this directory
+# Assumes that pi.c is in the part1/ directory
+# All C code in part1/ is built
+# Assumes that timing.c and timing.h are in the common/ directory
 
 CC = icc
 
-#Various compiler options
+# Various compiler options
 
-#CFLAGS = -g -O0 -fno-alias -std=c99
-#CFLAGS = -g -O1 -fno-alias -std=c99
-#CFLAGS = -g -O0 -no-vec -no-simd -fno-alias -std=c99 -fp-model precise
-#CFLAGS = -O0 -no-vec -no-simd -fno-alias -std=c99
-#CFLAGS = -O1 -no-vec -no-simd -fno-alias -std=c99
-#CFLAGS = -O3 -no-vec -no-simd -fno-alias -std=c99
-#CFLAGS = -g -O3 -xHost -fno-alias -std=c99 -qopt-report=5 -fsource-asm
-#CFLAGS = -std=c99
+# CFLAGS = -g -O0 -fno-alias -std=c99
+# CFLAGS = -g -O1 -fno-alias -std=c99
+# CFLAGS = -g -O0 -no-vec -no-simd -fno-alias -std=c99 -fp-model precise
+# CFLAGS = -O0 -no-vec -no-simd -fno-alias -std=c99
+# CFLAGS = -O1 -no-vec -no-simd -fno-alias -std=c99
+# CFLAGS = -O3 -no-vec -no-simd -fno-alias -std=c99
+# CFLAGS = -g -O3 -xHost -fno-alias -std=c99 -qopt-report=5 -fsource-asm
+# CFLAGS = -std=c99
 
 CFLAGS = -g -O3 -xHost -fno-alias -std=c99 -I common
 

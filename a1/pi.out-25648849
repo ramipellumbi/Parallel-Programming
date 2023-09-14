@@ -1,0 +1,28 @@
+/home/cpsc424_rp862/Desktop/cpsc-524-parallel-programming/a1
+r918u05n01
+rm -rf build pi triad
+icc -g -O3 -xHost -fno-alias -std=c99 -I common -c part1/pi.c -o build/part1/pi.o
+icc -g -O3 -xHost -fno-alias -std=c99 -I common -c part1/integrate.c -o build/part1/integrate.o
+icc -g -O3 -xHost -fno-alias -std=c99 -I common -c common/timing.c -o build/common/timing.o
+icc -o pi -g -O3 -xHost -fno-alias -std=c99 -I common build/part1/pi.o build/part1/integrate.o build/common/timing.o
+pi = 3.141593
+elapsed wall clock time = 0.002625
+elapsed cpu time = 0.002614
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.002s
+pi = 3.141593
+elapsed wall clock time = 0.002622
+elapsed cpu time = 0.002104
+
+real	0m0.006s
+user	0m0.002s
+sys	0m0.002s
+pi = 3.141593
+elapsed wall clock time = 0.002678
+elapsed cpu time = 0.002641
+
+real	0m0.007s
+user	0m0.003s
+sys	0m0.002s
