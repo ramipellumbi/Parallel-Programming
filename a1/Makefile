@@ -9,7 +9,7 @@ CC = icc
 
 # Various compiler options
 
-# CFLAGS = -g -O0 -fno-alias -std=c99
+# CFLAGS = -g -O0 -fno-alias -std=c99 -I common
 # CFLAGS = -g -O1 -fno-alias -std=c99
 # CFLAGS = -g -O0 -no-vec -no-simd -fno-alias -std=c99 -fp-model precise
 # CFLAGS = -O0 -no-vec -no-simd -fno-alias -std=c99
@@ -29,12 +29,12 @@ COMMON_BUILD_DIR := $(BUILD_DIR)/common
 # Source code
 COMMON_SRC := common/timing.c
 PART1_SRC := $(wildcard part1/*.c)
-PART2_SRC := part2/triad.c part2/dummy.c
+PART2_SRC := $(wildcard part2/*.c)
 
 # Object files
 COMMON_OBJ := $(COMMON_BUILD_DIR)/timing.o
 PART1_OBJ := $(PART1_SRC:.c=.o)
-PART2_OBJ := $(PART2_BUILD_DIR)/triad.o $(PART2_BUILD_DIR)/dummy.o $(COMMON_OBJ)
+PART2_OBJ := $(PART2_SRC:.c=.o)
 
 all: pi triad
 
@@ -55,7 +55,7 @@ pi: $(PART1_BUILD_DIR)/pi.o $(PART1_BUILD_DIR)/integrate.o $(COMMON_BUILD_DIR)/t
 	$(CC) -o $@ $(CFLAGS) $^
 
 # Build code for Exercise 2
-triad: $(PART2_OBJ)
+triad: $(PART2_BUILD_DIR)/triad.o $(PART2_BUILD_DIR)/dummy.o $(COMMON_BUILD_DIR)/timing.o
 	$(CC) -o $@ $(CFLAGS) $^
 
 clean:

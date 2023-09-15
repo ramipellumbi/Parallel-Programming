@@ -12,4 +12,10 @@ pwd
 echo $SLURMD_NODENAME
 make clean
 make triad
-time triad
+
+for k in {3..25}
+do
+  echo
+  echo "Running with k = $k"
+  time ./triad $k
+done
