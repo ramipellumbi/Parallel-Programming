@@ -3,7 +3,19 @@
 #include <timing.h>
 #include <time.h>
 
-void *allocate_double_array(size_t num_elements)
+void *allocate_double_array_c(size_t num_elements)
+{
+    void *array = calloc(num_elements, sizeof(double));
+    if (array == NULL)
+    {
+        fprintf(stderr, "Failed to allocate memory for double array.\n");
+        exit(1);
+    }
+
+    return array;
+}
+
+void *allocate_double_array_m(size_t num_elements)
 {
     void *array = malloc(num_elements * sizeof(double));
     if (array == NULL)
@@ -32,7 +44,7 @@ int main(int argc, char *argv[])
     }
 
     int k = atoi(argv[1]);
-    if (k < 0 || k > 25)
+    if (k < 0 || k > 26)
     {
         fprintf(stderr, "Using %d which is not in range 1...25", k);
         return 1;
@@ -47,10 +59,10 @@ int main(int argc, char *argv[])
 
     size_t num_elements = floor(pow(2.1, k));
 
-    double *a = (double *)allocate_double_array(num_elements);
-    double *b = (double *)allocate_double_array(num_elements);
-    double *c = (double *)allocate_double_array(num_elements);
-    double *d = (double *)allocate_double_array(num_elements);
+    double *a = (double *)allocate_double_array_m(num_elements);
+    double *b = (double *)allocate_double_array_m(num_elements);
+    double *c = (double *)allocate_double_array_m(num_elements);
+    double *d = (double *)allocate_double_array_m(num_elements);
 
     initialize_array_with_random_numbers(a, num_elements);
     initialize_array_with_random_numbers(b, num_elements);
@@ -82,6 +94,7 @@ int main(int argc, char *argv[])
     }
     repeat /= 2;
 
+    printf("\n%d repetitions", repeat);
     printf("\nelapsed wall clock time = %f\n", end_wc_time - start_wc_time);
     printf("elapsed cpu time = %f\n", end_cpu_time - start_cpu_time);
     free(a);

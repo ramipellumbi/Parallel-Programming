@@ -13,7 +13,7 @@ echo $SLURMD_NODENAME
 make clean
 make triad
 
-for k in {3..25}
+for k in {26..26}
 do
   echo
   echo "Running with k = $k"
