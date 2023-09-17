@@ -49,16 +49,19 @@ int main(int argc, char *argv[])
     // we can estimate the number of cycles spent on division by dividing the
     // total number of cycles by the total number of flops.
 
+    double total_number_of_flops = 5 * NUM_STEPS;
     double cpu_frequency_hertz = 3.7e9;
     double cycle_time = 1.0 / cpu_frequency_hertz;
     double total_number_of_cycles = elapsed_wc_time * cpu_frequency_hertz;
+
+    double mega_flops_per_second = total_number_of_flops / elapsed_wc_time / 1.0e6;
     double estimated_divide_latency = total_number_of_cycles / NUM_STEPS;
 
-    printf("\npi = %f\n", pi);
+    printf("\npi estimate = %f\n", pi);
+    printf("elapsed wall clock time = %f\n", elapsed_wc_time);
+    printf("elapsed cpu time = %f\n", elapsed_cpu_time);
     printf("Cycle time = %.17g\n", cycle_time);
     printf("Total number of cycles = %f\n", total_number_of_cycles);
     printf("Estimated divide latency = %f\n", estimated_divide_latency);
-    printf("elapsed wall clock time = %f\n", elapsed_wc_time);
-    printf("elapsed cpu time = %f\n", elapsed_cpu_time);
     return 0;
 }
