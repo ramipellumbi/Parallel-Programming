@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
     printf("\nelapsed wall clock time = %f\n", elapsed_wc_time);
     printf("elapsed cpu time = %f\n", elapsed_cpu_time);
     printf("estimated MFLOPS: %f", total_mega_flops);
-    write_data_to_file("part_2_data.txt", total_mega_flops, num_elements);
+    write_data_to_file("part_2_data.csv", total_mega_flops, num_elements);
 
     free(a);
     free(b);

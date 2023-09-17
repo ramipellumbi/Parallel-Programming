@@ -1,3 +1,4 @@
+#include <stdbool.h>
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -23,12 +24,26 @@ void initialize_array_with_random_numbers(double *array, size_t num_elements)
 
 void write_data_to_file(const char *filename, double mega_flops, size_t num_elements)
 {
+    FILE *check_file = fopen(filename, "r");
+    bool does_file_exist = false;
+    if (check_file != NULL)
+    {
+        fclose(check_file);
+        does_file_exist = true;
+    }
+
     FILE *fp = fopen(filename, "a");
     if (fp == NULL)
     {
         fprintf(stderr, "Could not open or create file: %s\n", filename);
         return;
     }
-    fprintf(fp, "MFLOPS: %f, Elements: %d\n", mega_flops, num_elements);
+
+    if (!does_file_exist)
+    {
+        fprintf(fp, "MFLOPS,N\n");
+    }
+
+    fprintf(fp, "%f,%zu\n", mega_flops, num_elements);
     fclose(fp);
 }

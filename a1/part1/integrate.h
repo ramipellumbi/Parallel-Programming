@@ -29,7 +29,7 @@ double integrate_trapezoidal_rule(double start, double end, double num_steps, do
  * @param num_steps The number of steps to use in the approximation
  * @param func The function to integrate
  * 
- *  * @return A double with the value of the integration result
+ * @return A double with the value of the integration result
  */
 double integrate_midpoint_rule(double start, double end, double num_steps, double (*func)(double));
 
