@@ -1,0 +1,40 @@
+/home/cpsc424_rp862/Desktop/cpsc-524-parallel-programming/a1
+r918u05n01
+rm -rf build pi triad
+icc -g -O3 -xHost -fno-alias -std=c99 -I common -c part1/pi.c -o build/part1/pi.o
+icc -g -O3 -xHost -fno-alias -std=c99 -I common -c part1/integrate.c -o build/part1/integrate.o
+icc -g -O3 -xHost -fno-alias -std=c99 -I common -c common/timing.c -o build/common/timing.o
+icc -o pi -g -O3 -xHost -fno-alias -std=c99 -I common build/part1/pi.o build/part1/integrate.o build/common/timing.o
+
+pi = 3.141593
+Cycle time = 2.7027027027027025e-10
+Total number of cycles = 9964752.197266
+Estimated divide latency = 9.964752
+elapsed wall clock time = 0.002693
+elapsed cpu time = 0.002517
+
+real	0m0.010s
+user	0m0.003s
+sys	0m0.003s
+
+pi = 3.141593
+Cycle time = 2.7027027027027025e-10
+Total number of cycles = 9878301.620483
+Estimated divide latency = 9.878302
+elapsed wall clock time = 0.002670
+elapsed cpu time = 0.002664
+
+real	0m0.007s
+user	0m0.003s
+sys	0m0.002s
+
+pi = 3.141593
+Cycle time = 2.7027027027027025e-10
+Total number of cycles = 9871244.430542
+Estimated divide latency = 9.871244
+elapsed wall clock time = 0.002668
+elapsed cpu time = 0.002430
+
+real	0m0.008s
+user	0m0.003s
+sys	0m0.003s

@@ -27,6 +27,8 @@ int main(int argc, char *argv[])
     double start_wc_time = 0.0, end_wc_time = 0.0;
     double start_cpu_time = 0.0, end_cpu_time = 0.0;
 
+    // compute number of array elements and initialize the four arrays with
+    // random doubles in [0, 100]
     size_t num_elements = floor(pow(2.1, k));
 
     double *a = (double *)allocate_double_array(num_elements);
@@ -52,6 +54,8 @@ int main(int argc, char *argv[])
                 a[i] = b[i] + c[i] * d[i];
             }
 
+            // this if condition is always false when a is initiated with
+            // all positive values
             if (a[num_elements >> 1] < 0)
             {
                 dummy(a, b, c, d);
@@ -74,7 +78,7 @@ int main(int argc, char *argv[])
     printf("\nelapsed wall clock time = %f\n", elapsed_wc_time);
     printf("elapsed cpu time = %f\n", elapsed_cpu_time);
     printf("estimated MFLOPS: %f", total_mega_flops);
-    write_data_to_file("data/part_2_data.csv", total_mega_flops, num_elements);
+    write_data_to_file("part2/data/part_2_data.csv", total_mega_flops, num_elements);
 
     free(a);
     free(b);
