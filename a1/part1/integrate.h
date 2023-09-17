@@ -2,18 +2,6 @@
 #define INTEGRATE_H
 
 /**
- * Numerically integrate a function using the trapezoidal rule: https://en.wikipedia.org/wiki/Trapezoidal_rule.
- *
- * @param start The start of the interval to integrate over
- * @param end The end of the interval to integrate over
- * @param num_steps The number of steps to use in the approximation
- * @param func The function to integrate
- * 
- * @return A double with the value of the integration result
-*/
-double integrate_trapezoidal_rule(double start, double end, double num_steps, double (*func)(double));
-
-/**
  * Have the interval:
  *      |--------X--------|--------X--------|  ...   |--------X--------|
  *      0      1/(2N)    1/N      3/(2N)   2/N   (N-1)/N   (2N-1)/2N  N/N

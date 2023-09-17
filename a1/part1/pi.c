@@ -14,9 +14,11 @@ static const double START_X = 0.0;
 static const double END_X = 1.0;
 static const double SCALING_FACTOR = 4.0;
 
+double function_to_integrate(double x);
+
 double function_to_integrate(double x)
 {
-    // 1 divide, 1 add, 1 multiply to compute
+    // 1 divide, 1 add, 1 multiply
     return 1.0 / (1.0 + x * x);
 }
 
