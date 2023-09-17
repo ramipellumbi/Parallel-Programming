@@ -1,0 +1,43 @@
+/home/cpsc424_rp862/Desktop/cpsc-524-parallel-programming/a1
+r918u05n01
+rm -rf build pi triad
+icc -g -O3 -no-vec -no-simd -fno-alias -std=c99 -I common -c part1/pi.c -o build/part1/pi.o
+icc -g -O3 -no-vec -no-simd -fno-alias -std=c99 -I common -c part1/integrate.c -o build/part1/integrate.o
+icc -g -O3 -no-vec -no-simd -fno-alias -std=c99 -I common -c common/timing.c -o build/common/timing.o
+icc -o pi -g -O3 -no-vec -no-simd -fno-alias -std=c99 -I common build/part1/pi.o build/part1/integrate.o build/common/timing.o
+
+pi estimate = 3.141593
+elapsed wall clock time = 0.002661
+elapsed cpu time = 0.002653
+Cycle time = 2.7027027027027025e-10
+Total number of cycles = 9845662.117004
+Estimated MFLOPS = 1879.000090
+Estimated divide latency = 9.845662
+
+real	0m0.008s
+user	0m0.003s
+sys	0m0.003s
+
+pi estimate = 3.141593
+elapsed wall clock time = 0.002712
+elapsed cpu time = 0.001914
+Cycle time = 2.7027027027027025e-10
+Total number of cycles = 10034441.947937
+Estimated MFLOPS = 1843.650110
+Estimated divide latency = 10.034442
+
+real	0m0.009s
+user	0m0.002s
+sys	0m0.003s
+
+pi estimate = 3.141593
+elapsed wall clock time = 0.002723
+elapsed cpu time = 0.002660
+Cycle time = 2.7027027027027025e-10
+Total number of cycles = 10075020.790100
+Estimated MFLOPS = 1836.224499
+Estimated divide latency = 10.075021
+
+real	0m0.007s
+user	0m0.003s
+sys	0m0.002s

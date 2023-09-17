@@ -62,6 +62,7 @@ int main(int argc, char *argv[])
     printf("elapsed cpu time = %f\n", elapsed_cpu_time);
     printf("Cycle time = %.17g\n", cycle_time);
     printf("Total number of cycles = %f\n", total_number_of_cycles);
+    printf("Estimated MFLOPS = %f\n", mega_flops_per_second);
     printf("Estimated divide latency = %f\n", estimated_divide_latency);
     return 0;
 }

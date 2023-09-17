@@ -6,35 +6,38 @@ icc -g -O3 -xHost -fno-alias -std=c99 -I common -c part1/integrate.c -o build/pa
 icc -g -O3 -xHost -fno-alias -std=c99 -I common -c common/timing.c -o build/common/timing.o
 icc -o pi -g -O3 -xHost -fno-alias -std=c99 -I common build/part1/pi.o build/part1/integrate.o build/common/timing.o
 
-pi = 3.141593
+pi estimate = 3.141593
+elapsed wall clock time = 0.002610
+elapsed cpu time = 0.002603
 Cycle time = 2.7027027027027025e-10
-Total number of cycles = 9964752.197266
-Estimated divide latency = 9.964752
-elapsed wall clock time = 0.002693
-elapsed cpu time = 0.002517
+Total number of cycles = 9656882.286072
+Estimated MFLOPS = 1915.732164
+Estimated divide latency = 9.656882
 
-real	0m0.010s
-user	0m0.003s
-sys	0m0.003s
-
-pi = 3.141593
-Cycle time = 2.7027027027027025e-10
-Total number of cycles = 9878301.620483
-Estimated divide latency = 9.878302
-elapsed wall clock time = 0.002670
-elapsed cpu time = 0.002664
-
-real	0m0.007s
+real	0m0.006s
 user	0m0.003s
 sys	0m0.002s
 
-pi = 3.141593
+pi estimate = 3.141593
+elapsed wall clock time = 0.002682
+elapsed cpu time = 0.002641
 Cycle time = 2.7027027027027025e-10
-Total number of cycles = 9871244.430542
-Estimated divide latency = 9.871244
-elapsed wall clock time = 0.002668
-elapsed cpu time = 0.002430
+Total number of cycles = 9924173.355103
+Estimated MFLOPS = 1864.135111
+Estimated divide latency = 9.924173
+
+real	0m0.010s
+user	0m0.004s
+sys	0m0.002s
+
+pi estimate = 3.141593
+elapsed wall clock time = 0.002664
+elapsed cpu time = 0.002609
+Cycle time = 2.7027027027027025e-10
+Total number of cycles = 9856247.901917
+Estimated MFLOPS = 1876.982010
+Estimated divide latency = 9.856248
 
 real	0m0.008s
 user	0m0.003s
-sys	0m0.003s
+sys	0m0.002s

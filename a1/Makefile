@@ -1,9 +1,9 @@
 CC = icc
 
 # Compiler options
-# CFLAGS = -g -O0 -fno-alias -std=c99 -I common
+CFLAGS = -g -O0 -fno-alias -std=c99 -I common
 # CFLAGS = -g -O3 -no-vec -no-simd -fno-alias -std=c99 -I common
-CFLAGS = -g -O3 -xHost -fno-alias -std=c99 -I common
+# CFLAGS = -g -O3 -xHost -fno-alias -std=c99 -I common
 
 # Build directories
 BUILD_DIR := build

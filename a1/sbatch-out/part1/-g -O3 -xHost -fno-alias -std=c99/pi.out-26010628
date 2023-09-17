@@ -5,35 +5,31 @@ icc -g -O3 -xHost -fno-alias -std=c99 -I common -c part1/pi.c -o build/part1/pi.
 icc -g -O3 -xHost -fno-alias -std=c99 -I common -c part1/integrate.c -o build/part1/integrate.o
 icc -g -O3 -xHost -fno-alias -std=c99 -I common -c common/timing.c -o build/common/timing.o
 icc -o pi -g -O3 -xHost -fno-alias -std=c99 -I common build/part1/pi.o build/part1/integrate.o build/common/timing.o
-
-pi = 3.141593
-Cycle time = 2.7027027027027025e-10
-Total number of cycles = 9901237.487793
-Estimated divide latency = 9.901237
-elapsed wall clock time = 0.002676
-elapsed cpu time = 0.002546
+/var/spool/slurmd/job26010628/slurm_script: line 15: ./pi: Text file busy
 
 real	0m0.007s
-user	0m0.003s
-sys	0m0.003s
+user	0m0.000s
+sys	0m0.000s
 
-pi = 3.141593
-Cycle time = 2.7027027027027025e-10
-Total number of cycles = 9879183.769226
-Estimated divide latency = 9.879184
-elapsed wall clock time = 0.002670
-elapsed cpu time = 0.002573
-
-real	0m0.008s
-user	0m0.003s
-sys	0m0.003s
-
-pi = 3.141593
-Cycle time = 2.7027027027027025e-10
-Total number of cycles = 9896826.744080
-Estimated divide latency = 9.896827
-elapsed wall clock time = 0.002675
+pi estimate = 3.141593
+elapsed wall clock time = 0.002700
 elapsed cpu time = 0.002666
+Cycle time = 2.7027027027027025e-10
+Total number of cycles = 9989452.362061
+Estimated MFLOPS = 1851.953373
+Estimated divide latency = 9.989452
+
+real	0m0.009s
+user	0m0.003s
+sys	0m0.003s
+
+pi estimate = 3.141593
+elapsed wall clock time = 0.002695
+elapsed cpu time = 0.002655
+Cycle time = 2.7027027027027025e-10
+Total number of cycles = 9971809.387207
+Estimated MFLOPS = 1855.230007
+Estimated divide latency = 9.971809
 
 real	0m0.007s
 user	0m0.003s
