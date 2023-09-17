@@ -16,6 +16,7 @@ static const double SCALING_FACTOR = 4.0;
 
 double function_to_integrate(double x);
 
+// 3 flops
 double function_to_integrate(double x)
 {
     // 1 divide, 1 add, 1 multiply
@@ -30,16 +31,35 @@ int main(int argc, char *argv[])
 
     // start the timing
     timing(&start_wc_time, &start_cpu_time);
+    // Performing 5 FLOPS per iteration, and NUM_STEPS iterations.
     double result = integrate_midpoint_rule(START_X,
                                             END_X,
                                             NUM_STEPS,
                                             function_to_integrate);
+    // end the timing
     timing(&end_wc_time, &end_cpu_time);
     double pi = result * SCALING_FACTOR;
-    // end the timing
+
+    double elapsed_wc_time = end_wc_time - start_wc_time;
+    double elapsed_cpu_time = end_cpu_time - start_cpu_time;
+
+    // Have CYCLE_TIME = 1 / PROCESSOR_FREQUENCY
+    // Have TOTAL_FLOPS = 5 * NUM_STEPS
+    // Have NUMBER_OF_CYCLES = WALL_CLOCK_TIME / CYCLE_TIME
+    // Assuming that division dominates the computation time of each iteration,
+    // we can estimate the number of cycles spent on division by dividing the
+    // total number of cycles by the number of flops per iteration.
+    double total_flops = 5 * NUM_STEPS;
+
+    double cpu_frequency_hertz = 3.7e9;
+    double cycle_time = 1.0 / cpu_frequency_hertz;
+    double total_number_of_cycles = elapsed_wc_time / cycle_time;
+    double estimated_divide_latency = total_number_of_cycles / 5.0;
 
     printf("\npi = %f\n", pi);
-    printf("elapsed wall clock time = %f\n", end_wc_time - start_wc_time);
-    printf("elapsed cpu time = %f\n", end_cpu_time - start_cpu_time);
+    printf("Total number of cycles = %f\n", total_number_of_cycles);
+    printf("Estimated divide latency = %f\n", estimated_divide_latency);
+    printf("elapsed wall clock time = %f\n", elapsed_wc_time);
+    printf("elapsed cpu time = %f\n", elapsed_cpu_time);
     return 0;
 }
