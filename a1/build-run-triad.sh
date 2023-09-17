@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=triad
 #SBATCH --ntasks=1 --nodes=1 --cpus-per-task=1
-#SBATCH --mem-per-cpu=7G
+#SBATCH --mem-per-cpu=14G
 #SBATCH --time=10:00
 #SBATCH --partition=day
 #SBATCH --reservation=cpsc424
@@ -13,7 +13,7 @@ echo $SLURMD_NODENAME
 make clean
 make triad
 
-for k in {26..26}
+for k in {3..25}
 do
   echo
   echo "Running with k = $k"
