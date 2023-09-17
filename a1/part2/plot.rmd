@@ -12,7 +12,7 @@ library(tidyverse)
 ```
 
 ```{r}
-data <- read_csv("a1/data/part_2_data.csv")
+data <- read_csv("a1/data/part_2_data.csv", show_col_types = FALSE)
 ```
 
 ```{r}
