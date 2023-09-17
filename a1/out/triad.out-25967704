@@ -1,0 +1,265 @@
+/home/cpsc424_rp862/Desktop/cpsc-524-parallel-programming/a1
+r918u05n01
+rm -rf build pi triad
+icc -g -O3 -xHost -fno-alias -std=c99 -I common -c part2/triad.c -o build/part2/triad.o
+part2/triad.c(57): warning #266: function "dummy" declared implicitly
+                  dummy(a, b, c, d);
+                  ^
+
+icc -g -O3 -xHost -fno-alias -std=c99 -I common -c part2/dummy.c -o build/part2/dummy.o
+icc -g -O3 -xHost -fno-alias -std=c99 -I common -c part2/utilities.c -o build/part2/utilities.o
+icc -g -O3 -xHost -fno-alias -std=c99 -I common -c common/timing.c -o build/common/timing.o
+icc -o triad -g -O3 -xHost -fno-alias -std=c99 -I common build/part2/triad.o build/part2/dummy.o build/part2/utilities.o build/common/timing.o
+
+Running with k = 3
+
+number of array elements: 9
+268435456 repetitions performed
+elapsed wall clock time = 1.001549
+elapsed cpu time = 0.999750
+estimated MFLOPS: 4824.365240
+real	0m2.017s
+user	0m2.000s
+sys	0m0.004s
+
+Running with k = 4
+
+number of array elements: 19
+268435456 repetitions performed
+elapsed wall clock time = 1.543526
+elapsed cpu time = 1.540955
+estimated MFLOPS: 6608.601192
+real	0m3.095s
+user	0m3.082s
+sys	0m0.003s
+
+Running with k = 5
+
+number of array elements: 40
+134217728 repetitions performed
+elapsed wall clock time = 1.234278
+elapsed cpu time = 1.232129
+estimated MFLOPS: 8699.351812
+real	0m2.476s
+user	0m2.464s
+sys	0m0.002s
+
+Running with k = 6
+
+number of array elements: 85
+67108864 repetitions performed
+elapsed wall clock time = 1.231556
+elapsed cpu time = 1.229460
+estimated MFLOPS: 9263.490615
+real	0m2.470s
+user	0m2.459s
+sys	0m0.003s
+
+Running with k = 7
+
+number of array elements: 180
+33554432 repetitions performed
+elapsed wall clock time = 1.240746
+elapsed cpu time = 1.238816
+estimated MFLOPS: 9735.751969
+real	0m2.487s
+user	0m2.478s
+sys	0m0.002s
+
+Running with k = 8
+
+number of array elements: 378
+16777216 repetitions performed
+elapsed wall clock time = 1.120019
+elapsed cpu time = 1.118007
+estimated MFLOPS: 11324.429103
+real	0m2.246s
+user	0m2.236s
+sys	0m0.002s
+
+Running with k = 9
+
+number of array elements: 794
+8388608 repetitions performed
+elapsed wall clock time = 1.144416
+elapsed cpu time = 1.142380
+estimated MFLOPS: 11640.092774
+real	0m2.294s
+user	0m2.284s
+sys	0m0.003s
+
+Running with k = 10
+
+number of array elements: 1667
+2097152 repetitions performed
+elapsed wall clock time = 1.109674
+elapsed cpu time = 1.107342
+estimated MFLOPS: 6300.863960
+real	0m2.219s
+user	0m2.210s
+sys	0m0.002s
+
+Running with k = 11
+
+number of array elements: 3502
+1048576 repetitions performed
+elapsed wall clock time = 1.157711
+elapsed cpu time = 1.155350
+estimated MFLOPS: 6343.747377
+real	0m2.305s
+user	0m2.295s
+sys	0m0.002s
+
+Running with k = 12
+
+number of array elements: 7355
+524288 repetitions performed
+elapsed wall clock time = 1.213467
+elapsed cpu time = 1.211217
+estimated MFLOPS: 6355.571029
+real	0m2.432s
+user	0m2.413s
+sys	0m0.003s
+
+Running with k = 13
+
+number of array elements: 15447
+262144 repetitions performed
+elapsed wall clock time = 1.270567
+elapsed cpu time = 1.268219
+estimated MFLOPS: 6374.064175
+real	0m2.545s
+user	0m2.534s
+sys	0m0.003s
+
+Running with k = 14
+
+number of array elements: 32439
+65536 repetitions performed
+elapsed wall clock time = 1.208689
+elapsed cpu time = 1.206302
+estimated MFLOPS: 3517.732600
+real	0m2.411s
+user	0m2.402s
+sys	0m0.002s
+
+Running with k = 15
+
+number of array elements: 68122
+16384 repetitions performed
+elapsed wall clock time = 1.471535
+elapsed cpu time = 1.467448
+estimated MFLOPS: 1516.934185
+real	0m2.957s
+user	0m2.940s
+sys	0m0.004s
+
+Running with k = 16
+
+number of array elements: 143056
+8192 repetitions performed
+elapsed wall clock time = 1.791194
+elapsed cpu time = 1.783048
+estimated MFLOPS: 1308.529145
+real	0m3.544s
+user	0m3.521s
+sys	0m0.004s
+
+Running with k = 17
+
+number of array elements: 300419
+2048 repetitions performed
+elapsed wall clock time = 1.613420
+elapsed cpu time = 1.601122
+estimated MFLOPS: 762.675693
+real	0m3.173s
+user	0m3.138s
+sys	0m0.008s
+
+Running with k = 18
+
+number of array elements: 630880
+1024 repetitions performed
+elapsed wall clock time = 1.923343
+elapsed cpu time = 1.914146
+estimated MFLOPS: 671.769039
+real	0m3.818s
+user	0m3.783s
+sys	0m0.011s
+
+Running with k = 19
+
+number of array elements: 1324849
+256 repetitions performed
+elapsed wall clock time = 1.044433
+elapsed cpu time = 1.040605
+estimated MFLOPS: 649.465085
+real	0m2.135s
+user	0m2.102s
+sys	0m0.012s
+
+Running with k = 20
+
+number of array elements: 2782184
+128 repetitions performed
+elapsed wall clock time = 1.115719
+elapsed cpu time = 1.111981
+estimated MFLOPS: 638.367909
+real	0m2.342s
+user	0m2.313s
+sys	0m0.017s
+
+Running with k = 21
+
+number of array elements: 5842587
+64 repetitions performed
+elapsed wall clock time = 1.163628
+elapsed cpu time = 1.159111
+estimated MFLOPS: 642.689133
+real	0m2.537s
+user	0m2.488s
+sys	0m0.038s
+
+Running with k = 22
+
+number of array elements: 12269432
+32 repetitions performed
+elapsed wall clock time = 1.202186
+elapsed cpu time = 1.198981
+estimated MFLOPS: 653.179772
+real	0m2.812s
+user	0m2.724s
+sys	0m0.077s
+
+Running with k = 23
+
+number of array elements: 25765808
+16 repetitions performed
+elapsed wall clock time = 1.247808
+elapsed cpu time = 1.244338
+estimated MFLOPS: 660.763410
+real	0m3.320s
+user	0m3.161s
+sys	0m0.148s
+
+Running with k = 24
+
+number of array elements: 54108198
+8 repetitions performed
+elapsed wall clock time = 1.354866
+elapsed cpu time = 1.349814
+estimated MFLOPS: 638.979169
+real	0m4.400s
+user	0m4.064s
+sys	0m0.307s
+
+Running with k = 25
+
+number of array elements: 113627216
+4 repetitions performed
+elapsed wall clock time = 1.346686
+elapsed cpu time = 1.342975
+estimated MFLOPS: 675.003411
+real	0m6.356s
+user	0m5.716s
+sys	0m0.622s
