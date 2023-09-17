@@ -1,5 +1,5 @@
 ---
-title: "Plotting Average MFLOPS vs. Log10 N"
+title: "Plotting Average MFLOPS vs. Log2 N"
 author: "Rami Pellumbi"
 date: "September 17, 2023"
 output:
@@ -17,7 +17,7 @@ data <- read_csv("a1/data/part_2_data.csv", show_col_types = FALSE)
 
 ```{r}
 summarized_data <- data %>%
-  mutate(N = log10(N)) %>%
+  mutate(N = log2(N)) %>%
   group_by(N) %>%
   summarize(avg_mflops = mean(MFLOPS), sd_mflops = sd(MFLOPS))
 ```
@@ -36,9 +36,9 @@ plot <- summarized_data %>%
     values = c("Average Observation" = "blue", "Standard Deviation" = "red")
   ) +
   labs(
-    x = "log10 N",
+    x = "Log2 N",
     y = "MFLOPS",
-    title = "Average MFLOPS vs. Log10 N",
+    title = "Average MFLOPS vs. Log2 N",
     color = "Legend"
   ) +
   theme_minimal() +
