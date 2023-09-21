@@ -51,13 +51,13 @@ integrating the function
 $$f(x) = \frac{4.0}{1.0 + x^2}$$
 from $0$ to $1$. The divide latency is estimated by assuming that floating point 
 division cannot be pipelined and assuming that the calculation is dominated by 
-the cost of the divide. Next, a program is written to benchmark the performance 
-in MFlops of the vector triad kernel. The MFlops are plotted vs. $\log N$, where 
-$N$ is the size of the arrays in the vector triad benchmark. The development 
+the cost of the divide. Next, a program is written to perform the vector triad benchmark, 
+an operation that evaluates the memory bandwidth and computational speed for vector operations. The MFlops are plotted vs. $\log N$, where 
+$N$ is the size of the arrays in the vector triad benchmark. All benchmarks are run on one core of a compute node. The development 
 environment was VsCode on MacOS via SSH. The configuration is documented separately 
 in \texttt{report/ssh\_vscode\_grace.pdf}.
 
-\section{Project Hierarchy}
+\section{Project Organization}
 The project has the following folder hierarchy:
 \begin{multicols}{2}
         \begin{forest}
@@ -111,7 +111,8 @@ The project has the following folder hierarchy:
         \item \textbf{build}: The \texttt{build} directory is designated for housing the output files generated during the compilation process of both \texttt{part1} and \texttt{part2}. It acts as a repository for these compiled objects, allowing for easier access and management. 
         \item \textbf{common}: The \texttt{common} directory serves as a repository for code that is shared between \texttt{part1} and \texttt{part2}. Specifically, this directory contains the file \texttt{timing.c}, which encapsulates the functionality related to timing measurements. The flag \texttt{-I common} must be in the \texttt{CFLAGS} of the \texttt{Makefile} to ensure this directory is part of the compilation.
         \item \textbf{part1}: The \texttt{part1} directory focuses on the task of numerically estimating the value of \(\pi\). It utilizes a midpoint integration scheme, the details of which are implemented in the \texttt{integrate.c} file. The overall orchestration for estimating \(\pi\) and calculating the latency of division operations is carried out by the \texttt{pi.c} file.
-        \item \textbf{part2}: The \texttt{part2} directory houses multiple files, each with distinct responsibilities. The \texttt{dummy.c} file serves the purpose of an opaque function used to ensure our benchmark code runs. The \texttt{triad.c} file is dedicated to performing the vector triad benchmark, an operation that evaluates the memory bandwidth and computational speed for vector operations. Lastly, the \texttt{utilities.c} file contains helper functions for array allocation, initialization with random numbers, and data output to a CSV file for subsequent graphical plotting.
+        \item \textbf{part2}: The \texttt{part2} directory houses multiple files, each with distinct responsibilities. The \texttt{dummy.c} file serves the purpose of an opaque function used to ensure our benchmark code runs. The \texttt{triad.c} file is dedicated to performing the vector triad benchmark. Lastly, the \texttt{utilities.c} file contains helper functions for array allocation, initialization with random numbers, and data output to a CSV file for subsequent graphical plotting.
+        \newpage
         \item \textbf{report}: The \texttt{report} directory contains the tex files used to write the report and VsCode instruction guide.
         \item \textbf{sbatch-out}: The \texttt{sbatch-out} directory serves as a centralized location for storing all output files generated from code executions on the compute node. The directory's internal folder structure is systematically organized based on the compiler options that led to each individual output file, facilitating easier debugging and performance analysis.
         \item \textbf{build-run-pi.sh}: This is a Bash script specifically crafted to automate the compilation and execution of the code residing in the \texttt{part1} directory. To deploy this script, navigate to the \texttt{a1} directory and execute the command \texttt{sbatch build-run-pi.sh}. This will submit the script to the compute node and subsequently initiate the execution of the Part 1 code.
@@ -151,13 +152,11 @@ The output files generated from running the code will be stored in the root of t
 to the \texttt{sbatch-out} directory under the relevant part and compiler options.
 
 \section{Division Performance}
-The first benchmark estimates the latency of the divide operation and assesses 
-processor performance across different \texttt{icc} compiler options. 
-\subsection*{Integration and Timing Setup}
-The midpoint integration scheme is done by the function \texttt{integrate\_midpoint\_rule} implemented 
-in \texttt{integrate.c} as follows:\footnote{All code shown is roughly similar to the 
-submitted code. It is slighlty modified for clear reporting and the official code file 
-should be considered as the final submitted solution as it typically is more detailed.}
+The objective of the first benchmark is to evaluate the latency incurred by the divide operation, while also gauging the impact of various \texttt{icc} compiler flags on the processor performance. 
+
+\subsection*{Methodology: Integration and Timing Setup}
+The numerical integration in this benchmark is performed using the midpoint rule, implemented in the function \texttt{integrate\_midpoint\_rule} found in the \texttt{integrate.c} file.\footnote{The code snippets provided are adapted for clarity; refer to the official code for the complete details.}
+
 \begin{lstlisting}
 double integrate_midpoint_rule(double start,
                                   double end,
@@ -178,6 +177,7 @@ double integrate_midpoint_rule(double start,
     for (int i = 1; i < num_steps; i++)
     {
         current_midpoint += width_of_interval; // 1 FLOP
+        // Depends on func -> 3 FLOPS for our purposes
         current_function_value = func(current_midpoint);
         sum += current_function_value * width_of_interval; // 2 FLOPS
     }
@@ -185,14 +185,15 @@ double integrate_midpoint_rule(double start,
     return sum;
 }
 \end{lstlisting}
-The function is invoked in \texttt{pi.c} with:
+This function is invoked from \texttt{pi.c} with the following arguments:
 \begin{itemize}
-    \item \texttt{start = 0.0}.
-    \item \texttt{end = 1.0}.
-    \item \texttt{num\_steps = $1000000000$}.
-    \item \texttt{func = \texttt{function\_to\_integrate}}.
+    \item \texttt{start = 0.0}
+    \item \texttt{end = 1.0}
+    \item \texttt{num\_steps = $10^9$}
+    \item \texttt{func = function\_to\_integrate}
 \end{itemize}
-where \texttt{function\_to\_integrate} is 
+where \texttt{function\_to\_integrate} is: 
+\newpage
 \begin{lstlisting}
 double function_to_integrate(double x)
 {
@@ -213,10 +214,10 @@ double pi = integrate_midpoint_rule(START_X,
                                         function_to_integrate);
 timing(&end_wc_time, &end_cpu_time);
 \end{lstlisting}
-\subsection*{Estimating MFlops and Runtime}
-Since we perform 6 floating point operations per iteration of the midpoint integration scheme, 
-we perform 6 billion floating point operations between the start of the wall clock time 
-and the end of the wall clock time. Thus, we can estimate the runtime in seconds and performance in MFlops by 
+\subsection*{Performance Metrics: Estimating MFlops and Runtime}
+The integration algorithm performs 6 floating-point operations per iteration, resulting in a total of 6 billion FLOPs for the $10^9$ iterations. 
+The runtime and performance in MFlops is estimated via:
+
 \begin{lstlisting}
 // runtime
 double elapsed_wc_time = end_wc_time - start_wc_time;
@@ -225,7 +226,7 @@ double elapsed_wc_time = end_wc_time - start_wc_time;
 double total_number_of_flops = 6.0 * 1e9;
 double mega_flops_per_second = total_number_of_flops / elapsed_wc_time / 1.0e6;
 \end{lstlisting}
-\subsection*{Runtime of Algorithm Across Compiler Options: Performance in MFlops Using One Core of One Compute Node}
+\subsection*{Performance Analysis Across Compiler Options}
 The results of the $\pi$ estimate, estimated MFlops, and elapsed wallclock time are shown for the following four compiler options:
 \begin{enumerate}
     \item \texttt{-g -O0 -fno-alias -std=c99}
@@ -274,12 +275,13 @@ Some notes on what these options mean and the differences in each run:
 \begin{itemize}
     \item The compiler optimizations do not impact the accuracy of the algorithm.
     \item All options include \texttt{-g -fno-alias -std=c99} which means we generate 
-    debuggin information, disable pointer aliasing, and use the C99 standard, respectively.
+    debugging information, disable pointer aliasing, and use the C99 standard, respectively.
     \item The flag \texttt{-O0} disables compilor optimizations while the flag \texttt{-O3} offers aggressive and extensive optimizations.\footnote{\MYhref{https://www.intel.com/content/www/us/en/docs/cpp-compiler/developer-guide-reference/2021-8/o-001.html}{Optimizations Compiler Documentation.}}
     \item The flags \texttt{-no-vec -no-simd} together disable all compiler vectorization.\footnote{\MYhref{https://www.intel.com/content/www/us/en/docs/cpp-compiler/developer-guide-reference/2021-8/simd-qsimd.html}{SIMD Compiler Documentation.}}
     \item The flag \texttt{-xHost} tells the compiler to generate instructions for the highest instruction set available on the compilation host processor. Given the host processor is an Intel(R) Xeon(R) Platinum 8268, using \texttt{-xHost} 
     means the compiler may use AVX-512 instructions, fused multiply add instructions, and bit manipulation.\footnote{\MYhref{https://www.intel.com/content/www/us/en/docs/cpp-compiler/developer-guide-reference/2021-8/xhost-qxhost.html}{xHost Compiler Documentation.} The CPU flags were assessed from running \texttt{lscpu} and inferring what the compiler may do.}
 \end{itemize}
+\subsection*{Insights and Observations}
 Given the flag information and performance results, it can be concluded that:
 \begin{itemize}
     \item Options 2, 3, and 4 are very similar. We can reasonably conclude that vectorization is not a component of this algorithm. 
@@ -426,36 +428,67 @@ user	0m2.739s
 sys   0m0.073s
 \end{lstlisting}
 In total, 8 jobs were submitted to slurm via \texttt{sbatch}. Each job output the results of megaflop performance vs. \texttt{N} 
-in \texttt{part2/data/part\_2\_data.csv} for every \texttt{k} value. The csv file was loading using the \texttt{plot.rmd} file to show the performance in MFlops versus \texttt{log N}.
+in \texttt{part2/data/part\_2\_data.csv} for every \texttt{k} value. The csv file was loaded using the \texttt{plot.rmd} file to show the performance in MFlops versus \texttt{log N}.
 
-\subsection*{Assessing Performance vs. Array Size}
-Having 8 data points for each value of \texttt{k}, the plot below shows the average 
-MFlops versus $\log_2 \texttt{N}$. The red lines are the standard deviation from the mean.
+\subsection*{Performance Evaluation: MFlops in Relation to Array Size}
+The benchmark elucidates the relationship between performance, measured in MFlops, and array size, denoted by $N$. Eight data points were collected for each value of \texttt{k}. The plot below presents the average MFlops against $\log_2 \texttt{N}$, with red lines indicating the standard deviation from the mean.
 
 \begin{multicols}{2}
     \includegraphics[width=.45\textwidth]{../part2/data/part_2_plot.png}
     \columnbreak
-    
-    \ 
-
-    \noindent The plot results are quite interesting. First, a bit of processor information. The Intel(R) Xeon(R) Platinum 8268 processor has: 
+    \newpage
+    \noindent The benchmark was conducted on a single core of an Intel(R) Xeon(R) Platinum 8268 processor, which has the following cache specifications:\footnote{\MYhref{https://www.cpu-world.com/CPUs/Xeon/Intel-Xeon\%208268.html}{Cpu World source for cache info.}}
     \begin{itemize}
-        \item 24 $\times$ 32K \texttt{L1d} cache (stores data). This is 8-way set associative with write-back.
-        \item 24 $\times$ 32K \texttt{L1i} cache (stores instructions for cores to execute). This is 8-way set associative.
-        \item 24 $\times$ 1024K \texttt{L2} cache. This is 16-way set associative with write-back.
-        \item 1 $\times$ 36608K \texttt{L3} cache. This is 11-way set associative with write-back. It is shared by every core 
-        on the processor.
-    \end{itemize}
-    Moreover, 
-    \begin{itemize}
-        \item The \texttt{L2} cache is inclusive.
-        \item The \texttt{L3} cache is shared by every core on the chip. 
-        \item The \texttt{L3} cache is not inclusive.
+        \item 24 $\times$ 32K \texttt{L1d} cache: 8-way set associative, write-back policy, dedicated to data storage. The cache line size is 64 bytes.
+        \item 24 $\times$ 32K \texttt{L1i} cache: 8-way set associative, stores instructions for execution. The cache line size is 128 bytes.
+        \item 24 $\times$ 1024K \texttt{L2} cache: 16-way set associative, write-back policy, inclusive, handles both instructions and data.
+        \item 1 $\times$ 36608K \texttt{L3} cache: 11-way set associative, write-back policy, shared across all cores, non-inclusive, handles both instructions and data.
     \end{itemize}
 \end{multicols}
 \newpage
-Knowing our cache information, the performance starts to make sense. The benchmark was run on 1 core of a single node and thus 
-we have access to 1 of each of the level 1 and 2 caches. 
+\noindent For this benchmark, a single core was allocated, thus providing exclusive access to one set each of L1d and L2 caches. However, the L3 cache was shared among 24 cores. 
+\paragraph*{Analyzing Array Sizes}
+\subparagraph*{In the \texttt{L1} World}
+\noindent For $k$ values ranging from 3 to 9, inclusive, our arrays' sizes (\(N\)) span from 9 to 794. This range effectively fits within the \texttt{L1d} cache, as quantitatively justified:
+\begin{align*}
+    (794 \times 4)\ \texttt{doubles} \times \frac{8\ \texttt{bytes}}{\texttt{double}} = 25408\ \texttt{bytes} < 32000\ \texttt{bytes}\ (\text{Size of one \texttt{L1d} cache instance}).
+\end{align*}
+For small \(N\), the pipeline length acts as a performance bottleneck. However, as \(N\) increases while still fitting within the \texttt{L1d} cache, the pipeline inefficiencies become negligible. 
+The observed performance trends are then largely dictated by the \texttt{L1d} and \texttt{L1i} bandwidth and the Xeon processor's capabilities in instruction dispatch for load and store operations.
+
+\subparagraph*{Spilling into \texttt{L2}}
+Upon reaching \( k = 10 \) (\( N = 1667 \)), the arrays exceed the capacity of the \texttt{L1d} cache, thereby invoking \texttt{L2} cache as an additional storage layer. Specifically, the data requirement for \( N = 1667 \) is calculated as follows:
+\begin{align*}
+    (1667 \times 4)\ \text{doubles} \times \frac{8\ \text{bytes}}{\text{double}} = 53344\ \text{bytes},
+\end{align*}
+which surpasses the per-instance limit of the \texttt{L1d} cache.
+
+According to the specifications provided by CPU World, the latency for accessing the \texttt{L2} cache on the Intel Xeon(R) Platinum 8268 processor is 14 cycles. This is \( 3.5 \times \) higher than the \texttt{L1} cache latency of 4 cycles.
+This increased latency poses a dual challenge for the \texttt{L1} cache: it must simultaneously supply data to the processor registers and manage the frequent reloading and eviction of cache lines to and from the \texttt{L2} cache. This process places a non-trivial strain on the bandwidth of the \texttt{L1} cache.\footnote{\textit{George Hager and Gerhard Wellein's}: \underline{Introduction to High Performance Computing for Scientists and Engineers}, Section 1.3.}
+This state of affairs persists up to \( k = 13 \) (\( N = 15447 \)), for which the data requirement is:
+\begin{align*}
+    (15447 \times 4)\ \text{doubles} \times \frac{8\ \text{bytes}}{\text{double}} \approx 0.5\ \text{Megabytes},
+\end{align*}
+which still fits within the combined capacity of the \texttt{L1} and \texttt{L2} caches. Thus, as long as the working data set resides within the bounds of these cache layers, a consistent performance profile can be expected, contingent on effective cache line management between \texttt{L1} and \texttt{L2}.
+
+\subparagraph*{Talk to Me \texttt{L3}} Upon advancing to \( k = 14 \) (\( N = 32439 \)), the total data storage requirement for the four arrays escalates to approximately \( 1.04 \) Megabytes. As calculated, this requirement now mandates the concurrent utilization of the \texttt{L1d}, \texttt{L2}, and \texttt{L3} caches to effectively perform the vector triad benchmark.
+
+Intuitively, one might expect a performance drop due to increased latencies associated with the \texttt{L3} cache. While I did not find a direct source, it is reasonable to assume that that the Intel Xeon(R) Platinum 8268 processor's \texttt{L3} cache has a latency significantly greater than those of \texttt{L1} and \texttt{L2}. Furthermore, the \texttt{L3} cache is shared among all 24 cores, resulting in possible contention for memory. 
+Given that data must now traverse through \texttt{L1}, \texttt{L2}, and eventually \texttt{L3}, we introduce additional cycles not just for the data retrieval but also for hierarchical cache coherence protocols to keep all levels of cache in sync. The act of traversing multiple layers adds significant complexity and impacts performance.
+
+By the time we reach \( k = 18 \) (\( N = 630880 \)), the four arrays together require roughly \( 20 \) Megabytes, still within the size limits of the \texttt{L3} cache. However, unlike the situation with the \texttt{L2} cache, performance continues to experience noticeable degradation as the \texttt{L3} cache fills. In particular, a significant performance drop occurs between \( k = 14 \) and \( k = 15 \). This divergence can be attributed to the shared nature of the \texttt{L3} cache among all processor cores. Consequently, there is no guarantee that all of our data resides solely within the \texttt{L3} cache. It is highly plausible that parts of the data spill into the main memory, which poses a significant latency overhead compared to \texttt{L3}. This unpredictability adds a layer of complexity, thereby further decreasing the MFlops performance metric.
+
+The act of sharing the \texttt{L3} cache across cores introduces additional variables into our performance model. It increases the likelihood of cache eviction due to other processes and raises the specter of non-deterministic latencies, exacerbating the performance degradation. Therefore, the seemingly anomalous behavior between \( k = 14 \) and \( k = 15 \) underscores the intricate relationship between cache management, core sharing, and data locality in affecting computational throughput, as measured by MFlops.
+
+\subparagraph*{Main Memory You're So Far Away} 
+As we further escalate the value of \( k \) from 19 to 25, the storage requirements for the four arrays reach a range of approximately \( 42 \) Megabytes to \( 3.6 \) Gigabytes.
+It is now infeasible to contain all data within the CPU's cache hierarchy, thereby necessitating data streaming from main memory for the vector triad benchmark. The consequence of this is a tangible degradation in performance. 
+
+What remains noteworthy is that once we transition to main memory, the performance becomes relatively stable across all considered \( k \) values. I hypothesize that the reason for this stability stems from the uniform latency and throughput characteristics of main memory access, e.g., main memory typically does not have the same hierarchical intricacies as CPU caches. 
+
+However, this performance is suboptimal compared to cache-resident data due to the significantly higher latency and lower bandwidth of main memory access. These factors result in a computational bottleneck, effectively placing a cap on the achievable throughput for our benchmark.
+
+This transition to main memory represents a pivotal moment in the performance evaluation, highlighting the severe limitations imposed by high-latency memory accesses and emphasizing the importance of efficient memory hierarchy utilization in high-performance computing tasks.
 
 \end{document}
 
