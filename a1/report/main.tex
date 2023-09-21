@@ -133,7 +133,7 @@ This section outlines the steps required to build and execute the code for both 
         \item Run the following command to submit the Part 1 build and execution script: \\
         \texttt{sbatch build-run-pi.sh}
     \end{enumerate}
-    This script employs a heavily modified \texttt{Makefile} to handle the compilation and linking of Part 1-specific code.
+    This script used the modified \texttt{Makefile} to handle the compilation and linking of Part 1-specific code.
     
     \item \textbf{Part 2: Vector Triad Benchmark}
     \begin{enumerate}
@@ -144,11 +144,11 @@ This section outlines the steps required to build and execute the code for both 
     Similar to Part 1, this script utilizes the same modified \texttt{Makefile} to manage the build process for Part 2.
 \end{itemize}
 
-\subsection{Post-Build Objects}
+\subsection{Post-Build Objects and Executables}
 Upon successful compilation and linking, a \texttt{build} directory will be generated within the \texttt{a1} root directory. This directory will contain the compiled output files for both parts. Additionally, the executable files for running each part will be situated in the root of the \texttt{a1} directory.
 
 \subsection{Output Files}
-The output files generated from running the code will be stored in the root of the \texttt{a1} directory. They are manually moved 
+The output files generated from running the code by submitting the relevant Bash script via \texttt{sbatch} will be stored in the root of the \texttt{a1} directory. They are manually moved 
 to the \texttt{sbatch-out} directory under the relevant part and compiler options.
 
 \section{Division Performance}
@@ -276,7 +276,7 @@ Some notes on what these options mean and the differences in each run:
     \item The compiler optimizations do not impact the accuracy of the algorithm.
     \item All options include \texttt{-g -fno-alias -std=c99} which means we generate 
     debugging information, disable pointer aliasing, and use the C99 standard, respectively.
-    \item The flag \texttt{-O0} disables compilor optimizations while the flag \texttt{-O3} offers aggressive and extensive optimizations.\footnote{\MYhref{https://www.intel.com/content/www/us/en/docs/cpp-compiler/developer-guide-reference/2021-8/o-001.html}{Optimizations Compiler Documentation.}}
+    \item The flag \texttt{-O0} disables compiler optimizations while the flag \texttt{-O3} offers aggressive and extensive optimizations.\footnote{\MYhref{https://www.intel.com/content/www/us/en/docs/cpp-compiler/developer-guide-reference/2021-8/o-001.html}{Optimizations Compiler Documentation.}}
     \item The flags \texttt{-no-vec -no-simd} together disable all compiler vectorization.\footnote{\MYhref{https://www.intel.com/content/www/us/en/docs/cpp-compiler/developer-guide-reference/2021-8/simd-qsimd.html}{SIMD Compiler Documentation.}}
     \item The flag \texttt{-xHost} tells the compiler to generate instructions for the highest instruction set available on the compilation host processor. Given the host processor is an Intel(R) Xeon(R) Platinum 8268, using \texttt{-xHost} 
     means the compiler may use AVX-512 instructions, fused multiply add instructions, and bit manipulation.\footnote{\MYhref{https://www.intel.com/content/www/us/en/docs/cpp-compiler/developer-guide-reference/2021-8/xhost-qxhost.html}{xHost Compiler Documentation.} The CPU flags were assessed from running \texttt{lscpu} and inferring what the compiler may do.}
@@ -446,7 +446,7 @@ The benchmark elucidates the relationship between performance, measured in MFlop
     \end{itemize}
 \end{multicols}
 \newpage
-\noindent For this benchmark, a single core was allocated, thus providing exclusive access to one set each of L1d and L2 caches. However, the L3 cache was shared among 24 cores. 
+\noindent For this benchmark, a single core was utilized, thus providing exclusive access to one set each of \texttt{L1d}, \texttt{L1i}, and \texttt{L2} caches. However, the \texttt{L3} cache was shared among 24 cores. 
 \paragraph*{Analyzing Array Sizes}
 \subparagraph*{In the \texttt{L1} World}
 \noindent For $k$ values ranging from 3 to 9, inclusive, our arrays' sizes (\(N\)) span from 9 to 794. This range effectively fits within the \texttt{L1d} cache, as quantitatively justified:
@@ -454,10 +454,10 @@ The benchmark elucidates the relationship between performance, measured in MFlop
     (794 \times 4)\ \texttt{doubles} \times \frac{8\ \texttt{bytes}}{\texttt{double}} = 25408\ \texttt{bytes} < 32000\ \texttt{bytes}\ (\text{Size of one \texttt{L1d} cache instance}).
 \end{align*}
 For small \(N\), the pipeline length acts as a performance bottleneck. However, as \(N\) increases while still fitting within the \texttt{L1d} cache, the pipeline inefficiencies become negligible. 
-The observed performance trends are then largely dictated by the \texttt{L1d} and \texttt{L1i} bandwidth and the Xeon processor's capabilities in instruction dispatch for load and store operations.
+The observed performance trends are then largely dictated by the \texttt{L1d} and \texttt{L1i} bandwidth and the Xeon processor's capabilities in instruction dispatch for load and store operations.$^6$
 
 \subparagraph*{Spilling into \texttt{L2}}
-Upon reaching \( k = 10 \) (\( N = 1667 \)), the arrays exceed the capacity of the \texttt{L1d} cache, thereby invoking \texttt{L2} cache as an additional storage layer. Specifically, the data requirement for \( N = 1667 \) is calculated as follows:
+Reaching \( k = 10 \) (\( N = 1667 \)), the arrays exceed the capacity of the \texttt{L1d} cache, thereby invoking \texttt{L2} cache as an additional storage layer. Specifically, the data requirement for \( N = 1667 \) is calculated as follows:
 \begin{align*}
     (1667 \times 4)\ \text{doubles} \times \frac{8\ \text{bytes}}{\text{double}} = 53344\ \text{bytes},
 \end{align*}
@@ -471,14 +471,12 @@ This state of affairs persists up to \( k = 13 \) (\( N = 15447 \)), for which t
 \end{align*}
 which still fits within the combined capacity of the \texttt{L1} and \texttt{L2} caches. Thus, as long as the working data set resides within the bounds of these cache layers, a consistent performance profile can be expected, contingent on effective cache line management between \texttt{L1} and \texttt{L2}.
 
-\subparagraph*{Talk to Me \texttt{L3}} Upon advancing to \( k = 14 \) (\( N = 32439 \)), the total data storage requirement for the four arrays escalates to approximately \( 1.04 \) Megabytes. As calculated, this requirement now mandates the concurrent utilization of the \texttt{L1d}, \texttt{L2}, and \texttt{L3} caches to effectively perform the vector triad benchmark.
+\subparagraph*{Talk to Me \texttt{L3}} Advancing to \( k = 14 \) (\( N = 32439 \)), the total data storage requirement for the four arrays escalates to approximately \( 1.04 \) Megabytes. As calculated, this requirement now mandates the concurrent utilization of the \texttt{L1d}, \texttt{L2}, and \texttt{L3} caches to effectively perform the vector triad benchmark.
 
 Intuitively, one might expect a performance drop due to increased latencies associated with the \texttt{L3} cache. While I did not find a direct source, it is reasonable to assume that that the Intel Xeon(R) Platinum 8268 processor's \texttt{L3} cache has a latency significantly greater than those of \texttt{L1} and \texttt{L2}. Furthermore, the \texttt{L3} cache is shared among all 24 cores, resulting in possible contention for memory. 
-Given that data must now traverse through \texttt{L1}, \texttt{L2}, and eventually \texttt{L3}, we introduce additional cycles not just for the data retrieval but also for hierarchical cache coherence protocols to keep all levels of cache in sync. The act of traversing multiple layers adds significant complexity and impacts performance.
+Given that data must now traverse through \texttt{L1}, \texttt{L2}, and eventually \texttt{L3}, we introduce additional cycles not just for the data retrieval but also for hierarchical cache coherence protocols to keep all levels of cache in sync (things to consider even though the \texttt{L3} cache is not inclusive). The act of traversing multiple layers adds significant complexity and impacts performance.
 
-By the time we reach \( k = 18 \) (\( N = 630880 \)), the four arrays together require roughly \( 20 \) Megabytes, still within the size limits of the \texttt{L3} cache. However, unlike the situation with the \texttt{L2} cache, performance continues to experience noticeable degradation as the \texttt{L3} cache fills. In particular, a significant performance drop occurs between \( k = 14 \) and \( k = 15 \). This divergence can be attributed to the shared nature of the \texttt{L3} cache among all processor cores. Consequently, there is no guarantee that all of our data resides solely within the \texttt{L3} cache. It is highly plausible that parts of the data spill into the main memory, which poses a significant latency overhead compared to \texttt{L3}. This unpredictability adds a layer of complexity, thereby further decreasing the MFlops performance metric.
-
-The act of sharing the \texttt{L3} cache across cores introduces additional variables into our performance model. It increases the likelihood of cache eviction due to other processes and raises the specter of non-deterministic latencies, exacerbating the performance degradation. Therefore, the seemingly anomalous behavior between \( k = 14 \) and \( k = 15 \) underscores the intricate relationship between cache management, core sharing, and data locality in affecting computational throughput, as measured by MFlops.
+By the time we reach \( k = 18 \) (\( N = 630880 \)), the four arrays together require roughly \( 20 \) Megabytes, still within the size limits of the \texttt{L3} cache. However, unlike the situation with the \texttt{L2} cache, performance continues to experience noticeable degradation as the \texttt{L3} cache fills. In particular, a significant performance drop occurs between \( k = 14 \) and \( k = 15 \). This degradation can be attributed to the shared nature of the \texttt{L3} cache among all processor cores. Consequently, there is no guarantee that all of our data resides solely within the \texttt{L3} cache. It is highly plausible that parts of the data spill into the main memory, which poses a significant latency overhead compared to \texttt{L3}. This unpredictability adds a layer of complexity, thereby further decreasing performance.
 
 \subparagraph*{Main Memory You're So Far Away} 
 As we further escalate the value of \( k \) from 19 to 25, the storage requirements for the four arrays reach a range of approximately \( 42 \) Megabytes to \( 3.6 \) Gigabytes.
