@@ -68,14 +68,12 @@ int main(int argc, char *argv[])
     }
     number_of_repetitions /= 2;
 
-    double elapsed_wc_time = end_wc_time - start_wc_time;
     double elapsed_cpu_time = end_cpu_time - start_cpu_time;
-
-    double total_mega_flops = (2.0 * (double)num_elements * number_of_repetitions) / elapsed_wc_time / 1.0e6;
+    double total_mega_flops = (2.0 * (double)num_elements * number_of_repetitions) / runtime / 1.0e6;
 
     printf("\nnumber of array elements: %d", num_elements);
     printf("\n%d repetitions performed", number_of_repetitions);
-    printf("\nelapsed wall clock time = %f\n", elapsed_wc_time);
+    printf("\nelapsed wall clock time = %f\n", runtime);
     printf("elapsed cpu time = %f\n", elapsed_cpu_time);
     printf("estimated MFLOPS: %f", total_mega_flops);
     write_data_to_file("part2/data/part_2_data.csv", total_mega_flops, num_elements);

@@ -9,18 +9,17 @@
 #include <stdio.h>
 #include "timing.h"
 
-static const double NUM_STEPS = 1000000;
+static const double NUM_STEPS = 1000000000;
 static const double START_X = 0.0;
 static const double END_X = 1.0;
-static const double SCALING_FACTOR = 4.0;
 
 double function_to_integrate(double x);
 
 // 3 flops
 double function_to_integrate(double x)
 {
-    // 1 divide, 1 add, 1 multiply
-    return 1.0 / (1.0 + x * x);
+    // 1 divide, 1 add, 1 multiply -> 3 FLOPS
+    return 4.0 / (1.0 + x * x);
 }
 
 int main(int argc, char *argv[])
@@ -32,13 +31,12 @@ int main(int argc, char *argv[])
     // start the timing
     timing(&start_wc_time, &start_cpu_time);
     // Performing 5 FLOPS per iteration, and NUM_STEPS iterations.
-    double result = integrate_midpoint_rule(START_X,
-                                            END_X,
-                                            NUM_STEPS,
-                                            function_to_integrate);
+    double pi = integrate_midpoint_rule(START_X,
+                                        END_X,
+                                        NUM_STEPS,
+                                        function_to_integrate);
     // end the timing
     timing(&end_wc_time, &end_cpu_time);
-    double pi = result * SCALING_FACTOR;
 
     double elapsed_wc_time = end_wc_time - start_wc_time;
     double elapsed_cpu_time = end_cpu_time - start_cpu_time;
@@ -49,8 +47,8 @@ int main(int argc, char *argv[])
     // we can estimate the number of cycles spent on division by dividing the
     // total number of cycles by the total number of flops.
 
-    double total_number_of_flops = 5 * NUM_STEPS;
-    double cpu_frequency_hertz = 3.7e9;
+    double total_number_of_flops = 6.0 * NUM_STEPS;
+    double cpu_frequency_hertz = 3.5e9;
     double cycle_time = 1.0 / cpu_frequency_hertz;
     double total_number_of_cycles = elapsed_wc_time * cpu_frequency_hertz;
 

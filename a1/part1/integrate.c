@@ -17,14 +17,14 @@ double integrate_midpoint_rule(double start,
 
     // compute each midpoint x_1, ... , x_{N-1}, function value at that midpoint,
     // and add the rectangle area to the sum
-    for (int i = 1; i < num_steps; i++) // 5 FLOPS per iteration
+    for (int i = 1; i < num_steps; i++)
     {
         // an addition
         current_midpoint += width_of_interval;
-        // Depends on func. For func(x) = 1 / (1 + x*x) this is
-        // an addition, a multiplication, and a divide
+        // Depends on func.
+        // For func(x) = 1 / (1 + x*x) this is an addition, a multiplication, and a divide
         current_function_value = func(current_midpoint);
-        // an addition
+        // an addition and a multiplication
         sum += current_function_value * width_of_interval;
     }
 
