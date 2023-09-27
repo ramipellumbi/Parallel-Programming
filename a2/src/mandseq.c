@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
     double elapsed_wc_time = end_wc_time - start_wc_time;
     double elapsed_cpu_time = end_cpu_time - start_cpu_time;
 
-    double number_of_cells_outside_mandelbrot_set = total_iterations - number_of_cells_inside_mandelbrot_set;
+    int number_of_cells_outside_mandelbrot_set = total_iterations - number_of_cells_inside_mandelbrot_set;
     double area_of_grid = 1.25 * 2.5;
     double ratio = (double)number_of_cells_inside_mandelbrot_set / (number_of_cells_inside_mandelbrot_set + number_of_cells_outside_mandelbrot_set);
     double area = 2.0 * area_of_grid * ratio;
