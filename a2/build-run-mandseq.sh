@@ -7,14 +7,12 @@
 #SBATCH --ntasks=1
 #SBATCH --time=4:00:00
 #SBATCH --mem-per-cpu=7G
-#SBATCH --job-name=MandelbrotFinalTest
-#SBATCH --output=%x-%j.out
+#SBATCH --job-name=Part1MandelbrotSeq
+#SBATCH --output=out/%x-%j.out
 
 # Load Required Modules
 
-module purge
 module load intel
-module list
 
 # Task 1
 

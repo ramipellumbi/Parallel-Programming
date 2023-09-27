@@ -1,48 +1,39 @@
-#include <complex.h>    
 #include <stdio.h>
 
+#include "complex.h"
 #include "drand.h"
 #include "timing.h"
 
 static const double CELL_SIDE_LENGTH = 0.001;
 
-// | a + bi |^2 = a^2 + b^
-static inline double complex_magnitude_squared(double a, double b) {
-    return a * a + b * b;
-}
-
-// (a + bi) * (c + di) = (ac - bd) + (bc + ad)i
-// assign (ac - bd) to re and (bc + ad) to im
-static inline void complex_multiply(double a, double b, double c, double d, double *re, double *im) {
-    *re = a * c - b * d;
-    *im = b * c + a * d;
-}
-
-// (a + bi) + (c + di) = (a + c) + (b + d)i
-// assign (a + c) to re and (b + d) to im
-static inline void complex_add(double a, double b, double c, double d, double *re, double *im) {
-    *re = a + c;
-    *im = b + d;
-}
-
-static inline int mandelbrot_iteration(double x, double y)
+/**
+ * @param
+ * @param
+ * @returns 1 if c is in the mandelbrot set; else 0
+ */
+static inline int mandelbrot_iteration(double c_re, double c_im)
 {
-    // z is updated via the Mandelbrot update rule z <- z^2 + c, where c = x + iy
-    double z_x = 0.0, z_y = 0.0;
-    // used to allow for the invariant that z := z_x + i z_y is always the result of a valid Mandelbrot update for c := x + iy
-    double temp_x, temp_y;
+    // z := z_re + i * z_im is updated via the Mandelbrot update rule:
+    // z <- z^2 + c, where c := x + iy
+    double z_re = 0.0, z_im = 0.0;
 
-    for (size_t i = 0; i < 25000; i += 5)
+    // used to permit the invariant that z is the result of a Mandelbrot update
+    double temp_re, temp_im;
+
+    size_t MAX_ITERATIONS = 25000;
+    size_t UNROLL_COUNT = 10;
+
+    for (size_t i = 0; i < MAX_ITERATIONS / UNROLL_COUNT; i += 5)
     {
-        for (size_t i = 0; i < 5; ++i)
+        for (size_t i = 0; i < UNROLL_COUNT; ++i)
         {
-            // compute z^2 and store the result of the complex multiply in temp_x, temp_y
-            complex_multiply(z_x, z_y, z_x, z_y, &temp_x, &temp_y);
-            // compute z^2 + c and store the result back in z_x, z_y
-            complex_add(temp_x, temp_y, x, y, &z_x, &z_y);
+            // compute z^2 and store the result of the complex multiply in temp_re, temp_im
+            complex_multiply(z_re, z_im, z_re, z_im, &temp_re, &temp_im);
+            // compute z^2 + c and store the result back in z_re,z_im
+            complex_add(temp_re, temp_im, c_re, c_im, &z_re, &z_im);
         }
 
-        if (complex_magnitude_squared(z_x, z_y) > 4.0)
+        if (complex_magnitude_squared(z_re, z_im) > 4.0)
         {
             return 0;
         }
@@ -54,7 +45,6 @@ static inline double get_random_double_in_bounds(double min, double max)
 {
     return min + drand() * (max - min);
 }
-
 
 int main(int argc, char *argv[])
 {
@@ -69,15 +59,15 @@ int main(int argc, char *argv[])
     // start the timing
     timing(&start_wc_time, &start_cpu_time);
 
-    for(double current_bottom_left_x = -2.0; current_bottom_left_x <= 0.5; current_bottom_left_x += CELL_SIDE_LENGTH)
+    for (double current_bottom_left_x = -2.0; current_bottom_left_x <= 0.5; current_bottom_left_x += CELL_SIDE_LENGTH)
     {
         double max_x = current_bottom_left_x + CELL_SIDE_LENGTH;
-        for(double current_bottom_left_y = 0.0; current_bottom_left_y <= 1.25; current_bottom_left_y += CELL_SIDE_LENGTH)
+        for (double current_bottom_left_y = 0.0; current_bottom_left_y <= 1.25; current_bottom_left_y += CELL_SIDE_LENGTH)
         {
             double max_y = current_bottom_left_y + CELL_SIDE_LENGTH;
             double random_x = get_random_double_in_bounds(current_bottom_left_x, max_x);
             double random_y = get_random_double_in_bounds(current_bottom_left_y, max_y);
-            
+
             int increment = mandelbrot_iteration(random_x, random_y);
 
             number_of_cells_inside_mandelbrot_set += increment;
