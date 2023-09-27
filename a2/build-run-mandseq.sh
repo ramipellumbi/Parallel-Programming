@@ -26,4 +26,4 @@ echo ""
 echo ""
 echo "Serial version"
 
-time ./mandseq
+time ./bin/mandseq

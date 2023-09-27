@@ -22,13 +22,16 @@ $(info OBJ_FILES = $(OBJ_FILES))
 
 all: $(addprefix $(BIN_DIR)/, $(EXECUTABLES))
 
-$(BIN_DIR)/%: $(OBJ_FILES)
-	@mkdir -p $(BIN_DIR)
-	$(CC) $(CFLAGS_SERIAL) $^ -o $@
-
+# General rule for object files
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	@mkdir -p $(@D)
 	$(CC) $(CFLAGS_SERIAL) -c $< -o $@
+
+# Specific rule for mandseq
+mandseq: $(BIN_DIR)/mandseq
+$(BIN_DIR)/mandseq: $(OBJ_DIR)/mandseq.o $(OBJ_DIR)/drand.o $(OBJ_DIR)/timing.o
+	@mkdir -p $(BIN_DIR)
+	$(CC) $(CFLAGS_SERIAL) $^ -o $@
 
 clean:
 	rm -rf $(OBJ_DIR) $(BIN_DIR)
