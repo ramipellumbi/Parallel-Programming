@@ -1,0 +1,36 @@
+/home/cpsc424_rp862/Desktop/cpsc-524-parallel-programming/a1
+r918u05n01
+rm -rf build pi triad
+icc -g -O3 -xHost -fno-alias -std=c99 -I common -c part1/pi.c -o build/part1/pi.o
+icc -g -O3 -xHost -fno-alias -std=c99 -I common -c part1/integrate.c -o build/part1/integrate.o
+icc -g -O3 -xHost -fno-alias -std=c99 -I common -c common/timing.c -o build/common/timing.o
+icc -o pi -g -O3 -xHost -fno-alias -std=c99 -I common build/part1/pi.o build/part1/integrate.o build/common/timing.o
+
+pi estimate = 3.141593
+elapsed wall clock time = 2.651322
+elapsed cpu time = 2.646868
+Cycle time = 2.8571428571428571e-10
+Total number of cycles = 9279626607.894897
+Estimated MFLOPS = 2263.022090
+Estimated divide latency = 9.279627
+
+real	0m2.659s
+user	0m2.647s
+sys	0m0.002s
+
+pi estimate = 3.141593
+elapsed wall clock time = 2.656744
+elapsed cpu time = 2.652120
+Cycle time = 2.8571428571428571e-10
+Total number of cycles = 9298604011.535645
+Estimated MFLOPS = 2258.403517
+Estimated divide latency = 9.298604
+
+real	0m2.670s
+user	0m2.652s
+sys	0m0.002s
+/var/spool/slurmd/job26273272/slurm_script: line 17: pi: command not found
+
+real	0m0.005s
+user	0m0.000s
+sys	0m0.000s
