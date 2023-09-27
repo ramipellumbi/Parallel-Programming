@@ -1,3 +1,5 @@
+#include "cell.h"
+#include "point.h"
 
 double get_random_double_in_bounds(double min, double max);
 

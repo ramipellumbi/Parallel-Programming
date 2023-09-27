@@ -9,7 +9,7 @@ typedef struct
 
 Point add_points(Point p1, Point p2);
 
-Point magnitude_of_point_squared(Point point);
+double magnitude_of_point_squared(Point point);
 
 Point multiply_points(Point p1, Point p2);
 

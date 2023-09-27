@@ -11,11 +11,14 @@
 // the complex plane is isomorphic to the plane.
 bool mandelbrot_iteration(Point c, size_t MAX_ITERATIONS)
 {
-    Point z = (Point){0.0, 0.0};
-    size_t i;
+    Point z;
+    z.x = 0.0;
+    z.y = 0.0;
+    size_t i = 0;
 
     while (i < MAX_ITERATIONS)
     {
+        print_point(z);
         double magnitude = magnitude_of_point_squared(z);
         if (magnitude > 4.0)
         {
