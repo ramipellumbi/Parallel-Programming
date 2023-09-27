@@ -12,12 +12,14 @@ static inline double complex_magnitude_squared(double a, double b) {
 }
 
 // (a + bi) * (c + di) = (ac - bd) + (bc + ad)i
+// assign (ac - bd) to re and (bc + ad) to im
 static inline void complex_multiply(double a, double b, double c, double d, double *re, double *im) {
     *re = a * c - b * d;
     *im = b * c + a * d;
 }
 
 // (a + bi) + (c + di) = (a + c) + (b + d)i
+// assign (a + c) to re and (b + d) to im
 static inline void complex_add(double a, double b, double c, double d, double *re, double *im) {
     *re = a + c;
     *im = b + d;
@@ -25,14 +27,18 @@ static inline void complex_add(double a, double b, double c, double d, double *r
 
 static inline int mandelbrot_iteration(double x, double y)
 {
+    // z is updated via the Mandelbrot update rule z <- z^2 + c, where c = x + iy
     double z_x = 0.0, z_y = 0.0;
+    // used to allow for the invariant that z := z_x + i z_y is always the result of a valid Mandelbrot update for c := x + iy
     double temp_x, temp_y;
 
     for (size_t i = 0; i < 25000; i += 5)
     {
         for (size_t i = 0; i < 5; ++i)
         {
+            // compute z^2 and store the result of the complex multiply in temp_x, temp_y
             complex_multiply(z_x, z_y, z_x, z_y, &temp_x, &temp_y);
+            // compute z^2 + c and store the result back in z_x, z_y
             complex_add(temp_x, temp_y, x, y, &z_x, &z_y);
         }
 
