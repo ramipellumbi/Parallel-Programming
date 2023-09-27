@@ -2,44 +2,10 @@
 
 #include "complex.h"
 #include "drand.h"
+#include "mandelbrot.h"
 #include "timing.h"
 
 static const double CELL_SIDE_LENGTH = 0.001;
-
-/**
- * @param
- * @param
- * @returns 1 if c is in the mandelbrot set; else 0
- */
-static inline int mandelbrot_iteration(double c_re, double c_im)
-{
-    // z := z_re + i * z_im is updated via the Mandelbrot update rule:
-    // z <- z^2 + c, where c := x + iy
-    double z_re = 0.0, z_im = 0.0;
-
-    // used to permit the invariant that z is the result of a Mandelbrot update
-    double temp_re, temp_im;
-
-    size_t MAX_ITERATIONS = 25000;
-    size_t UNROLL_COUNT = 10;
-
-    for (size_t i = 0; i < MAX_ITERATIONS / UNROLL_COUNT; i += 5)
-    {
-        for (size_t i = 0; i < UNROLL_COUNT; ++i)
-        {
-            // compute z^2 and store the result of the complex multiply in temp_re, temp_im
-            complex_multiply(z_re, z_im, z_re, z_im, &temp_re, &temp_im);
-            // compute z^2 + c and store the result back in z_re,z_im
-            complex_add(temp_re, temp_im, c_re, c_im, &z_re, &z_im);
-        }
-
-        if (complex_magnitude_squared(z_re, z_im) > 4.0)
-        {
-            return 0;
-        }
-    }
-    return 1;
-}
 
 static inline double get_random_double_in_bounds(double min, double max)
 {
@@ -52,7 +18,7 @@ int main(int argc, char *argv[])
     double start_wc_time = 0.0, end_wc_time = 0.0;
     double start_cpu_time = 0.0, end_cpu_time = 0.0;
 
-    dsrand(10);
+    dsrand(144545);
 
     int number_of_cells_inside_mandelbrot_set = 0, total_iterations = 0;
 
