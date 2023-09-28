@@ -1,0 +1,314 @@
+SRC_FILES = src/drand.c src/mandomp-ts.c src/mandomp.c src/mandseq.c src/timing.c src/utilities.c src/writer.c
+OBJ_FILES =  obj/drand.o  obj/mandomp-ts.o  obj/mandomp.o  obj/mandseq.o  obj/timing.o  obj/utilities.o  obj/writer.o
+rm -rf obj bin
+make mandomp-ts
+SRC_FILES = src/drand.c src/mandomp-ts.c src/mandomp.c src/mandseq.c src/timing.c src/utilities.c src/writer.c
+OBJ_FILES =  obj/drand.o  obj/mandomp-ts.o  obj/mandomp.o  obj/mandseq.o  obj/timing.o  obj/utilities.o  obj/writer.o
+icc -g -O3 -xHost -fno-alias -std=c99 -qopenmp -I include  -c src/mandomp-ts.c -o obj/mandomp-ts.o
+icc -g -O3 -xHost -fno-alias -std=c99 -I include  -c src/drand.c -o obj/drand.o
+icc -g -O3 -xHost -fno-alias -std=c99 -I include  -c src/writer.c -o obj/writer.o
+icc -g -O3 -xHost -fno-alias -std=c99 -I include  -c src/timing.c -o obj/timing.o
+icc -g -O3 -xHost -fno-alias -std=c99 -I include  -c src/utilities.c -o obj/utilities.o
+icc -g -O3 -xHost -fno-alias -std=c99 -qopenmp -I include  obj/mandomp-ts.o obj/drand.o obj/writer.o obj/timing.o obj/utilities.o -o bin/mandomp-ts
+
+
+OMP THREAD SAFE version
+
+
+Number of threads =  1
+OMP_SCHEDULE = 
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+area estimate = 1.508030
+Num inside: 754015
+Num outside: 2370985
+elapsed wall clock time = 4.815033
+elapsed cpu time = 4.807892
+
+real	0m4.825s
+user	0m4.809s
+sys	0m0.002s
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+area estimate = 1.508030
+Num inside: 754015
+Num outside: 2370985
+elapsed wall clock time = 4.814696
+elapsed cpu time = 4.806402
+
+real	0m4.822s
+user	0m4.807s
+sys	0m0.004s
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+area estimate = 1.508030
+Num inside: 754015
+Num outside: 2370985
+elapsed wall clock time = 4.815436
+elapsed cpu time = 4.807331
+
+real	0m4.822s
+user	0m4.808s
+sys	0m0.003s
+
+
+Number of threads =  2
+OMP_SCHEDULE = 
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+area estimate = 1.507980
+Num inside: 753990
+Num outside: 2371010
+elapsed wall clock time = 4.092044
+elapsed cpu time = 5.000769
+
+real	0m4.098s
+user	0m5.004s
+sys	0m0.006s
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+area estimate = 1.507980
+Num inside: 753990
+Num outside: 2371010
+elapsed wall clock time = 4.092404
+elapsed cpu time = 4.991038
+
+real	0m4.099s
+user	0m4.996s
+sys	0m0.004s
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+area estimate = 1.507980
+Num inside: 753990
+Num outside: 2371010
+elapsed wall clock time = 4.092151
+elapsed cpu time = 5.000766
+
+real	0m4.097s
+user	0m5.003s
+sys	0m0.006s
+
+
+Number of threads =  4
+OMP_SCHEDULE = 
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+area estimate = 1.508098
+Num inside: 754049
+Num outside: 2370951
+elapsed wall clock time = 2.185841
+elapsed cpu time = 5.579054
+
+real	0m2.191s
+user	0m5.584s
+sys	0m0.020s
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+area estimate = 1.508098
+Num inside: 754049
+Num outside: 2370951
+elapsed wall clock time = 2.186065
+elapsed cpu time = 5.576818
+
+real	0m2.192s
+user	0m5.584s
+sys	0m0.023s
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+area estimate = 1.508098
+Num inside: 754049
+Num outside: 2370951
+elapsed wall clock time = 2.185981
+elapsed cpu time = 5.608407
+
+real	0m2.194s
+user	0m5.615s
+sys	0m0.014s
+
+
+Number of threads =  12
+OMP_SCHEDULE = 
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+area estimate = 1.508052
+Num inside: 754026
+Num outside: 2370974
+elapsed wall clock time = 0.945855
+elapsed cpu time = 7.230766
+
+real	0m0.952s
+user	0m7.248s
+sys	0m0.070s
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+area estimate = 1.508052
+Num inside: 754026
+Num outside: 2370974
+elapsed wall clock time = 0.945120
+elapsed cpu time = 7.274576
+
+real	0m0.961s
+user	0m7.344s
+sys	0m0.068s
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+area estimate = 1.508052
+Num inside: 754026
+Num outside: 2370974
+elapsed wall clock time = 0.945692
+elapsed cpu time = 7.226004
+
+real	0m0.952s
+user	0m7.247s
+sys	0m0.072s
+
+
+Number of threads =  24
+OMP_SCHEDULE = 
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+area estimate = 1.507894
+Num inside: 753947
+Num outside: 2371053
+elapsed wall clock time = 0.529861
+elapsed cpu time = 9.091373
+
+real	0m0.536s
+user	0m9.135s
+sys	0m0.141s
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+area estimate = 1.507894
+Num inside: 753947
+Num outside: 2371053
+elapsed wall clock time = 0.529500
+elapsed cpu time = 9.129691
+
+real	0m0.536s
+user	0m9.160s
+sys	0m0.098s
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+area estimate = 1.507894
+Num inside: 753947
+Num outside: 2371053
+elapsed wall clock time = 0.529333
+elapsed cpu time = 9.201867
+
+real	0m0.535s
+user	0m9.241s
+sys	0m0.108s

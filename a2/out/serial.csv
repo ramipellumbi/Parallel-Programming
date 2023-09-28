@@ -1,0 +1,4 @@
+num_cores,num_threads,seed,program,wc_time,area
+24,1,144545,serial,4.810604,1.506110
+24,1,144545,serial,4.810511,1.506110
+24,1,144545,serial,4.815115,1.506110

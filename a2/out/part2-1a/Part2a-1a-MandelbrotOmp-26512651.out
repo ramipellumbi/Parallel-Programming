@@ -1,0 +1,53 @@
+SRC_FILES = src/drand.c src/mandomp-ts.c src/mandomp.c src/mandseq.c src/timing.c src/utilities.c src/writer.c
+OBJ_FILES =  obj/drand.o  obj/mandomp-ts.o  obj/mandomp.o  obj/mandseq.o  obj/timing.o  obj/utilities.o  obj/writer.o
+rm -rf obj bin
+make mandomp
+SRC_FILES = src/drand.c src/mandomp-ts.c src/mandomp.c src/mandseq.c src/timing.c src/utilities.c src/writer.c
+OBJ_FILES =  obj/drand.o  obj/mandomp-ts.o  obj/mandomp.o  obj/mandseq.o  obj/timing.o  obj/utilities.o  obj/writer.o
+icc -g -O3 -xHost -fno-alias -std=c99 -qopenmp -I include  -c src/mandomp.c -o obj/mandomp.o
+icc -g -O3 -xHost -fno-alias -std=c99 -I include  -c src/drand.c -o obj/drand.o
+icc -g -O3 -xHost -fno-alias -std=c99 -I include  -c src/writer.c -o obj/writer.o
+icc -g -O3 -xHost -fno-alias -std=c99 -I include  -c src/timing.c -o obj/timing.o
+icc -g -O3 -xHost -fno-alias -std=c99 -I include  -c src/utilities.c -o obj/utilities.o
+icc -g -O3 -xHost -fno-alias -std=c99 -qopenmp -I include  obj/mandomp.o obj/drand.o obj/writer.o obj/timing.o obj/utilities.o -o bin/mandomp
+
+
+OMP version
+Number of threads =  2
+OMP_SCHEDULE = 
+Seed = 144544. RAND_MAX = 2147483647.
+Seed = 144544. RAND_MAX = 2147483647.
+
+area estimate = 1.508238
+Num inside: 754119
+Num outside: 2370881
+elapsed wall clock time = 4.103495
+elapsed cpu time = 5.016488
+
+real	0m4.111s
+user	0m5.020s
+sys	0m0.008s
+Seed = 144544. RAND_MAX = 2147483647.
+Seed = 144544. RAND_MAX = 2147483647.
+
+area estimate = 1.508126
+Num inside: 754063
+Num outside: 2370937
+elapsed wall clock time = 4.099692
+elapsed cpu time = 5.009035
+
+real	0m4.110s
+user	0m5.016s
+sys	0m0.005s
+Seed = 144544. RAND_MAX = 2147483647.
+Seed = 144544. RAND_MAX = 2147483647.
+
+area estimate = 1.508068
+Num inside: 754034
+Num outside: 2370966
+elapsed wall clock time = 4.099715
+elapsed cpu time = 5.009648
+
+real	0m4.125s
+user	0m5.012s
+sys	0m0.010s

@@ -56,7 +56,6 @@ dkms.conf
 *.log
 *.lot
 *.fls
-*.out
 *.toc
 *.fmt
 *.fot

@@ -8,7 +8,7 @@
 #SBATCH --time=4:00:00
 #SBATCH --mem-per-cpu=7G
 #SBATCH --job-name=Part1MandelbrotSeq
-#SBATCH --output=out/%x-%j.out
+#SBATCH --output=out/part1-serial/%x-%j.out
 
 # Load Required Modules
 
@@ -20,8 +20,8 @@ make clean
 echo "make mandseq"
 make mandseq
 
-echo ""
-echo ""
 echo "Serial version"
 
+time ./bin/mandseq
+time ./bin/mandseq
 time ./bin/mandseq
