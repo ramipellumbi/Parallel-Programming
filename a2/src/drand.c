@@ -5,7 +5,7 @@
 
 #include "drand.h"
 
-static uint64_t seed; 
+static uint64_t seed;
 
 void dsrand(unsigned s)
 {
@@ -19,8 +19,6 @@ double drand(void)
     return ((double)(seed >> 33) / (double)RAND_MAX);
 }
 
-// using thread_local much faster than #omp critical section
-// https://stackoverflow.com/questions/71609066/are-thread-local-objects-initialized-to-0-in-c
 // https://gcc.gnu.org/onlinedocs/gcc/Thread-Local.html
 thread_local uint64_t seed_ts;
 
