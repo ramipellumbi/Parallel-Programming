@@ -30,11 +30,13 @@ int main(int argc, char *argv[])
 
     // start the timing
     timing(&start_wc_time, &start_cpu_time);
-    for (double current_bottom_left_x = -2.0; current_bottom_left_x <= 0.5; current_bottom_left_x += CELL_SIDE_LENGTH)
+    for (size_t n = 0; n < 2500; n++)
     {
+        double current_bottom_left_x = -2.0 + CELL_SIDE_LENGTH * n;
         double max_x = current_bottom_left_x + CELL_SIDE_LENGTH;
-        for (double current_bottom_left_y = 0.0; current_bottom_left_y <= 1.25; current_bottom_left_y += CELL_SIDE_LENGTH)
+        for (size_t m = 0; m < 1250; m++)
         {
+            double current_bottom_left_y = 0.0 + CELL_SIDE_LENGTH * m;
             double max_y = current_bottom_left_y + CELL_SIDE_LENGTH;
             double random_x = get_random_double_in_bounds(current_bottom_left_x, max_x);
             double random_y = get_random_double_in_bounds(current_bottom_left_y, max_y);

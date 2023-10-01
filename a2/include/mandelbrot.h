@@ -26,7 +26,7 @@ static inline int mandelbrot_iteration(double c_re, double c_im)
     size_t UNROLL_COUNT = 10;
 
     // Outer loop: Process batches of UNROLL_COUNT iterations at a time
-    for (size_t i = 0; i < MAX_ITERATIONS / UNROLL_COUNT; i += UNROLL_COUNT)
+    for (size_t i = 0; i < MAX_ITERATIONS / UNROLL_COUNT; i += 1)
     {
         // This is a loop unrolling optimization to minimize the loop overhead.
         for (size_t i = 0; i < UNROLL_COUNT; ++i)

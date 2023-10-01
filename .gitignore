@@ -28,6 +28,9 @@
 *.so.*
 *.dylib
 
+ssh_vscode_grace.out
+main.out
+
 # Executables
 *.exe
 *.app
