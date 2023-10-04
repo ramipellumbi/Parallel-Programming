@@ -16,7 +16,7 @@ module load intel
 
 # Task 2 part 1a
 
-make clean
+make clean-mandomp
 echo "make mandomp"
 make mandomp 
 

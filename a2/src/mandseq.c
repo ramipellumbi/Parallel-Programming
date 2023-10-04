@@ -1,11 +1,8 @@
 #include <stdio.h>
 
-#include "complex.h"
-#include "drand.h"
 #include "mandelbrot.h"
 #include "timing.h"
 #include "utilities.h"
-#include "writer.h"
 
 static const double CELL_SIDE_LENGTH = 0.001;
 
@@ -42,6 +39,11 @@ int main(int argc, char *argv[])
             double random_y = get_random_double_in_bounds(current_bottom_left_y, max_y);
 
             int increment = mandelbrot_iteration(random_x, random_y);
+
+            if (increment == 1)
+            {
+                write_success_to_file("test.csv", "seq", random_x, random_y, n, m);
+            }
 
             number_of_cells_inside_mandelbrot_set += increment;
             total_iterations += 1;

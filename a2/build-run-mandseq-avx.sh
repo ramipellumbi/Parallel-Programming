@@ -16,12 +16,12 @@ module load intel
 
 # Task 1
 
-make clean-mandseq
-echo "make mandseq"
-make mandseq
+make clean-mandseq-avx
+echo "make mandseq-avx"
+make mandseq-avx
 
-echo "Serial version"
+echo "Serial version with AVX"
 
-time ./bin/mandseq
-time ./bin/mandseq
-time ./bin/mandseq
+time ./bin/mandseq-avx
+time ./bin/mandseq-avx
+time ./bin/mandseq-avx

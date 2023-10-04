@@ -6,7 +6,6 @@
 #include "mandelbrot.h"
 #include "timing.h"
 #include "utilities.h"
-#include "writer.h"
 
 static const double CELL_SIDE_LENGTH = 0.001;
 
@@ -39,12 +38,12 @@ int main(int argc, char *argv[])
 
     // start the timing
     timing(&start_wc_time, &start_cpu_time);
-    #pragma omp parallel shared(number_of_cells_inside_mandelbrot_set, total_iterations)
+#pragma omp parallel shared(number_of_cells_inside_mandelbrot_set, total_iterations)
     {
         dsrand(seed);
         int number_of_cells_inside_mandelbrot_set_th = 0, total_iterations_th = 0;
 
-        #pragma omp for
+#pragma omp for
         for (size_t i = 0; i <= max_x; ++i)
         {
             double current_bottom_left_x = -2.0 + i * CELL_SIDE_LENGTH;
@@ -64,11 +63,11 @@ int main(int argc, char *argv[])
             }
         }
 
-        // add each threads results to the desired totals
-        #pragma omp atomic
+// add each threads results to the desired totals
+#pragma omp atomic
         number_of_cells_inside_mandelbrot_set += number_of_cells_inside_mandelbrot_set_th;
 
-        #pragma omp atomic
+#pragma omp atomic
         total_iterations += total_iterations_th;
     }
     // end the timing

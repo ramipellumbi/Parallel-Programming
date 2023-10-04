@@ -6,7 +6,6 @@
 #include "mandelbrot.h"
 #include "timing.h"
 #include "utilities.h"
-#include "writer.h"
 
 static const double CELL_SIDE_LENGTH = 0.001;
 

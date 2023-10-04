@@ -17,11 +17,10 @@ SRC_FILES = $(shell find $(SRC_DIR) -name '*.c')
 OBJ_FILES = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRC_FILES))
 
 DRAND  	  = $(OBJ_DIR)/drand.o
-WRITER 	  = $(OBJ_DIR)/writer.o
 TIMING 	  = $(OBJ_DIR)/timing.o
 UTILITIES = $(OBJ_DIR)/utilities.o
 
-MODULES = $(DRAND) $(WRITER) $(TIMING) $(UTILITIES)
+MODULES = $(DRAND) $(TIMING) $(UTILITIES)
 
 # For debugging
 $(info SRC_FILES = $(SRC_FILES))
@@ -50,6 +49,11 @@ $(BIN_DIR)/mandseq: $(OBJ_DIR)/mandseq.o $(MODULES)
 	@mkdir -p $(BIN_DIR)
 	$(CC) $(CFLAGS_SERIAL) $^ -o $@
 
+mandseq-avx: $(BIN_DIR)/mandseq-avx
+$(BIN_DIR)/mandseq-avx: $(OBJ_DIR)/mandseq-avx.o $(MODULES)
+	@mkdir -p $(BIN_DIR)
+	$(CC) $(CFLAGS_SERIAL) $^ -o $@
+
 # Specific rule for mandomp
 mandomp: $(BIN_DIR)/mandomp
 $(BIN_DIR)/mandomp: $(OBJ_DIR)/mandomp.o $(MODULES)
@@ -65,4 +69,12 @@ $(BIN_DIR)/mandomp-ts: $(OBJ_DIR)/mandomp-ts.o $(MODULES)
 clean:
 	rm -rf $(OBJ_DIR) $(BIN_DIR)
 
-.PHONY: all clean
+# Specific clean targets for each executable
+clean-mandseq: 
+	rm -f $(BIN_DIR)/mandseq $(OBJ_DIR)/mandseq.o
+
+clean-mandomp: 
+	rm -f $(BIN_DIR)/mandomp $(OBJ_DIR)/mandomp.o
+
+clean-mandomp-ts:
+	rm -f $(BIN_DIR)/mandomp-ts $(OBJ_DIR)/mandomp-ts.o
