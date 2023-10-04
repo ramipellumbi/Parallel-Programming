@@ -13,6 +13,11 @@ static inline double get_random_double_in_bounds_ts(double min, double max)
     return min + drand_ts() * (max - min);
 }
 
+double compute_mandelbrot_area_estimate(int n_i, int total_it);
+
+/**
+ * Get the integer value of an environment variable if possible
+ */
 int get_environment_value(const char *env_name);
 
 /**
@@ -25,15 +30,5 @@ void write_data_to_file(const char *filename,
                         unsigned seed,
                         float wc_time,
                         float area);
-
-/**
- * write runs to csv for tabulation
- */
-void write_success_to_file(const char *filename,
-                           const char *program,
-                           double c_re,
-                           double c_im,
-                           int n,
-                           int m);
 
 #endif

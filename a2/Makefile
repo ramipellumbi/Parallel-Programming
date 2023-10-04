@@ -4,7 +4,7 @@
 CC = icc
 
 CFLAGS_OMP    = -g -O3 -xHost -fno-alias -std=c99 -qopenmp -I include 
-CFLAGS_SERIAL = -g -O3 -xHost -fno-alias -std=c99 -I include 
+CFLAGS_SERIAL = -g -O3 -xHost -fno-alias -std=c99 -I include
 
 EXECUTABLES = mandseq mandomp mandomp-ts mandomp-collapse mandomp-tasks mandomp-tasks-row mandomp-tasks-row-shared
 
@@ -72,6 +72,10 @@ clean:
 # Specific clean targets for each executable
 clean-mandseq: 
 	rm -f $(BIN_DIR)/mandseq $(OBJ_DIR)/mandseq.o
+
+# Specific clean targets for each executable
+clean-mandseq-avx: 
+	rm -f $(BIN_DIR)/mandseq-avx $(OBJ_DIR)/mandseq-avx.o
 
 clean-mandomp: 
 	rm -f $(BIN_DIR)/mandomp $(OBJ_DIR)/mandomp.o
