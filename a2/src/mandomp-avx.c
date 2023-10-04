@@ -71,90 +71,92 @@ int main(int argc, char *argv[])
         _mm512_set1_pd(CELL_SIDE_LENGTH));
 #pragma omp parallel shared(number_of_cells_inside_mandelbrot_set, total_iterations) private(number_of_cells_inside_mandelbrot_set_th, total_iterations_th) default(none)
     {
-    
+        number_of_cells_inside_mandelbrot_set_th = 0;
+        total_iterations_th = 0;
+
 #pragma omp for
-    // for each x value
-    for (size_t n = 0; n < NUM_X_ITERATIONS; n++)
-    {
-        double current_bottom_left_x = -2.0 + CELL_SIDE_LENGTH * n;
-        double max_x = current_bottom_left_x + CELL_SIDE_LENGTH;
-
-        // let's compute 8 y-values simultaneously
-        for (size_t m = 0; m < NUM_Y_PS; m += PACKING_SIZE)
+        // for each x value
+        for (size_t n = 0; n < NUM_X_ITERATIONS; n++)
         {
-            for (int i = 0; i < PACKING_SIZE; ++i)
+            double current_bottom_left_x = -2.0 + CELL_SIDE_LENGTH * n;
+            double max_x = current_bottom_left_x + CELL_SIDE_LENGTH;
+
+            // let's compute 8 y-values simultaneously
+            for (size_t m = 0; m < NUM_Y_PS; m += PACKING_SIZE)
             {
-                random_x[i] = drand();
-                random_y[i] = drand();
+                for (int i = 0; i < PACKING_SIZE; ++i)
+                {
+                    random_x[i] = drand();
+                    random_y[i] = drand();
+                }
+                // grab 8 random numbers for the 8 needed random x coordinates
+                __m512d random_numbers_x = _mm512_load_pd(&random_x[0]);
+                // grab 8 random numbers for the 8 needed random y coordinates
+                __m512d random_numbers_y = _mm512_load_pd(&random_y[0]);
+
+                // get the 8 bottom left corners for this iteration of the loop
+                __m512d bottom_left_y_values = _mm512_add_pd(
+                    _mm512_set1_pd(0.0),
+                    _mm512_add_pd(_mm512_set1_pd(m * CELL_SIDE_LENGTH), pxs_deltas512));
+                // get the 8 top left corners for this iteration of the loop
+                __m512d top_left_y_values = _mm512_add_pd(
+                    _mm512_set1_pd(CELL_SIDE_LENGTH),
+                    bottom_left_y_values);
+
+                // compute the random x coordinates for the 8 cells
+                __m512d x_values = _mm512_fmadd_pd(
+                    random_numbers_x,
+                    _mm512_set1_pd(max_x - current_bottom_left_x),
+                    _mm512_set1_pd(current_bottom_left_x));
+
+                // compute the random y coordinates for the 8 cells
+                __m512d y_values = _mm512_fmadd_pd(
+                    random_numbers_y,
+                    _mm512_sub_pd(top_left_y_values, bottom_left_y_values),
+                    bottom_left_y_values);
+
+                // stores the number of iterations each c went through
+                __m512i iters = _mm512_setzero_si512();
+
+                // These are the 8 z values
+                __m512d z_re = _mm512_set1_pd(0.0);
+                __m512d z_im = _mm512_set1_pd(0.0);
+
+                // Assess the 8 c values concurrently
+                __mmask8 diverged_indices = mandelbrot_iteration_avx(
+                    x_values,
+                    y_values,
+                    MAX_ITERATIONS);
+
+                // the 1's in this mask are the iterations that did NOT diverge
+                __mmask8 indices_in_set = ~diverged_indices;
+                int count = sum_of_bits_in_mmask8(indices_in_set);
+                number_of_cells_inside_mandelbrot_set_th += count;
+
+                random_index += PACKING_SIZE * 2;
+                total_iterations_th += PACKING_SIZE;
             }
-            // grab 8 random numbers for the 8 needed random x coordinates
-            __m512d random_numbers_x = _mm512_load_pd(&random_x[0]);
-            // grab 8 random numbers for the 8 needed random y coordinates
-            __m512d random_numbers_y = _mm512_load_pd(&random_y[0]);
 
-            // get the 8 bottom left corners for this iteration of the loop
-            __m512d bottom_left_y_values = _mm512_add_pd(
-                _mm512_set1_pd(0.0),
-                _mm512_add_pd(_mm512_set1_pd(m * CELL_SIDE_LENGTH), pxs_deltas512));
-            // get the 8 top left corners for this iteration of the loop
-            __m512d top_left_y_values = _mm512_add_pd(
-                _mm512_set1_pd(CELL_SIDE_LENGTH),
-                bottom_left_y_values);
+            // cleanup by performing the naive serial implementation
+            for (size_t m = NUM_Y_PS; m < NUM_Y_ITERATIONS; m++)
+            {
+                double current_bottom_left_y = 0.0 + CELL_SIDE_LENGTH * m;
+                double max_y = current_bottom_left_y + CELL_SIDE_LENGTH;
 
-            // compute the random x coordinates for the 8 cells
-            __m512d x_values = _mm512_fmadd_pd(
-                random_numbers_x,
-                _mm512_set1_pd(max_x - current_bottom_left_x),
-                _mm512_set1_pd(current_bottom_left_x));
+                double c_re = current_bottom_left_x + drand() * (max_x - current_bottom_left_x);
+                double c_im = current_bottom_left_y + drand() * (max_y - current_bottom_left_y);
 
-            // compute the random y coordinates for the 8 cells
-            __m512d y_values = _mm512_fmadd_pd(
-                random_numbers_y,
-                _mm512_sub_pd(top_left_y_values, bottom_left_y_values),
-                bottom_left_y_values);
+                int counter = mandelbrot_iteration(c_re, c_im, MAX_ITERATIONS);
 
-            // stores the number of iterations each c went through
-            __m512i iters = _mm512_setzero_si512();
-
-            // These are the 8 z values
-            __m512d z_re = _mm512_set1_pd(0.0);
-            __m512d z_im = _mm512_set1_pd(0.0);
-
-            // Assess the 8 c values concurrently
-            __mmask8 diverged_indices = mandelbrot_iteration_avx(
-                x_values,
-                y_values,
-                MAX_ITERATIONS);
-
-            // the 1's in this mask are the iterations that did NOT diverge
-            __mmask8 indices_in_set = ~diverged_indices;
-            int count = sum_of_bits_in_mmask8(indices_in_set);
-            number_of_cells_inside_mandelbrot_set_th += count;
-
-            random_index += PACKING_SIZE * 2;
-            total_iterations_th += PACKING_SIZE;
-        }
-
-        // cleanup by performing the naive serial implementation
-        for (size_t m = NUM_Y_PS; m < NUM_Y_ITERATIONS; m++)
-        {
-            double current_bottom_left_y = 0.0 + CELL_SIDE_LENGTH * m;
-            double max_y = current_bottom_left_y + CELL_SIDE_LENGTH;
-
-            double c_re = current_bottom_left_x + drand() * (max_x - current_bottom_left_x);
-            double c_im = current_bottom_left_y + drand() * (max_y - current_bottom_left_y);
-
-            int counter = mandelbrot_iteration(c_re, c_im, MAX_ITERATIONS);
-
-            number_of_cells_inside_mandelbrot_set_th += counter;
-            total_iterations_th++;
-        }
+                number_of_cells_inside_mandelbrot_set_th += counter;
+                total_iterations_th++;
+            }
 
 #pragma omp atomic
-        number_of_cells_inside_mandelbrot_set += number_of_cells_inside_mandelbrot_set_th;
+            number_of_cells_inside_mandelbrot_set += number_of_cells_inside_mandelbrot_set_th;
 
 #pragma omp atomic
-        total_iterations += total_iterations_th;
+            total_iterations += total_iterations_th;
         }
     }
     // end the timing
@@ -169,8 +171,8 @@ int main(int argc, char *argv[])
     double area = compute_mandelbrot_area_estimate(number_of_cells_inside_mandelbrot_set,
                                                    total_iterations);
 
-    write_data_to_file("out/serial.csv",
-                       "serial-avx",
+    write_data_to_file("out/omp.csv",
+                       "omp-avx",
                        num_cores,
                        1,
                        seed,
