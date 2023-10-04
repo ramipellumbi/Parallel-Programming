@@ -60,6 +60,11 @@ $(BIN_DIR)/mandomp: $(OBJ_DIR)/mandomp.o $(MODULES)
 	@mkdir -p $(BIN_DIR)
 	$(CC) $(CFLAGS_OMP) $^ -o $@
 
+mandomp-avx: $(BIN_DIR)/mandomp-avx
+$(BIN_DIR)/mandomp-avx: $(OBJ_DIR)/mandomp-avx.o $(MODULES)
+	@mkdir -p $(BIN_DIR)
+	$(CC) $(CFLAGS_OMP) $^ -o $@
+
 # Specific rule for mandomp-ts
 mandomp-ts: $(BIN_DIR)/mandomp-ts
 $(BIN_DIR)/mandomp-ts: $(OBJ_DIR)/mandomp-ts.o $(MODULES)
@@ -79,6 +84,9 @@ clean-mandseq-avx:
 
 clean-mandomp: 
 	rm -f $(BIN_DIR)/mandomp $(OBJ_DIR)/mandomp.o
+
+clean-mandomp-avx: 
+	rm -f $(BIN_DIR)/mandomp-avx $(OBJ_DIR)/mandomp-avx.o
 
 clean-mandomp-ts:
 	rm -f $(BIN_DIR)/mandomp-ts $(OBJ_DIR)/mandomp-ts.o
