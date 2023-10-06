@@ -1,0 +1,95 @@
+---
+title: "Data Exploration Mandelbrot"
+author: "Rami Pellumbi"
+date: "October 6, 2023"
+output:
+  pdf_document: default
+---
+
+```{r}
+library(ggplot2)
+library(pubtheme)
+library(tidyverse)
+```
+
+```{r}
+serial <- read_csv("a2/out/serial.csv", show_col_types = FALSE)
+omp <- read_csv("a2/out/omp.csv", show_col_types = FALSE)
+```
+
+```{r}
+serial <- serial %>%
+  group_by(program) %>%
+  summarize(wc_time = mean(wc_time),
+            area = first(area))
+```
+
+```{r}
+p <- ggplot(serial, aes(x = program, y = wc_time)) +
+  geom_point() +
+  geom_text(aes(label = sprintf("Area: %.6f", area)), vjust = -1) +
+  ggtitle("Wall Clock Time and Area by Program") +
+  xlab("Program") +
+  ylab("Wall Clock Time") +
+  theme_pub() +
+  theme(
+    plot.title = element_text(size = 20),
+    axis.title.x = element_text(size = 16),
+    axis.title.y = element_text(size = 16),
+    axis.text.x = element_text(size = 14),
+    axis.text.y = element_text(size = 14),
+    strip.text = element_text(size = 16)
+  )
+
+p
+```
+
+```{r}
+p <- ggplot(omp %>%
+              filter(program == "omp-not-ts" | program == "omp-avx-not-ts"),
+            aes(x = wc_time, y = area)) +
+  geom_point() +
+  facet_wrap(~program, scales = "free_y") +
+  ggtitle("Area vs. Wall Clock Time - Mandomp (Not Thread Safe)") +
+  xlab("Wall Clock Time") +
+  ylab("Area") +
+  theme_pub() +
+  theme(
+    plot.title = element_text(size = 20),
+    axis.title.x = element_text(size = 16),
+    axis.title.y = element_text(size = 16),
+    axis.text.x = element_text(size = 14),
+    axis.text.y = element_text(size = 14),
+    strip.text = element_text(size = 16)
+  )
+
+p
+```
+
+```{r}
+data <- omp %>%
+  filter(program != "omp-not-ts", program != "omp-avx-not-ts") %>%
+  mutate(schedule = ifelse(schedule == "UNDEFINED", "None", schedule)) %>%
+  group_by(program, schedule, num_threads) %>%
+  summarise(wc_time = mean(wc_time), area = first(area), .groups = "keep")
+
+p <- ggplot(data %>% filter(num_threads > 1),
+            aes(x = program, y = wc_time, fill = schedule)) +
+  geom_bar(position = "dodge", stat = "identity") +
+  geom_text(aes(label = sprintf("Area: %.4f", area)), nudge_y = 1) +
+  facet_wrap(~num_threads) +
+  ggtitle("Area vs. Wall Clock Time - Mandomp (Thread Safe)") +
+  xlab("") +
+  ylab("Wall Clock Time") +
+  theme_pub() +
+  theme(
+    plot.title = element_text(size = 20),
+    axis.title.x = element_text(size = 16),
+    axis.title.y = element_text(size = 16),
+    axis.text.x = element_text(size = 14),
+    axis.text.y = element_text(size = 14),
+    strip.text = element_text(size = 16)
+  )
+
+p
+```
