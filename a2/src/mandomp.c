@@ -13,20 +13,6 @@ static const double CELL_SIDE_LENGTH = 0.001;
 
 int main(int argc, char *argv[])
 {
-    int num_cores = get_environment_value("SLURM_CPUS_PER_TASK");
-    if (num_cores == -1)
-    {
-        fprintf(stderr, "SLURM_CPUS_PER_TASK not set");
-        return 0;
-    }
-
-    int num_threads = get_environment_value("OMP_NUM_THREADS");
-    if (num_threads == -1)
-    {
-        fprintf(stderr, "OMP_NUM_THREADS not set");
-        return 0;
-    }
-
     // set seed
     unsigned seed = 144545;
     dsrand(seed);
@@ -55,8 +41,8 @@ int main(int argc, char *argv[])
             {
                 double current_bottom_left_y = 0.0 + j * CELL_SIDE_LENGTH;
                 double cell_max_y = current_bottom_left_y + CELL_SIDE_LENGTH;
-                double random_x = get_random_double_in_bounds(current_bottom_left_x, cell_max_x);
-                double random_y = get_random_double_in_bounds(current_bottom_left_y, cell_max_y);
+                double random_x = current_bottom_left_x + (cell_max_x - current_bottom_left_x) * drand();
+                double random_y = current_bottom_left_y + (cell_max_y - current_bottom_left_y) * drand();
 
                 int increment = mandelbrot_iteration(random_x, random_y, MAX_ITERATIONS);
 
@@ -78,22 +64,16 @@ int main(int argc, char *argv[])
     double elapsed_wc_time = end_wc_time - start_wc_time;
     double elapsed_cpu_time = end_cpu_time - start_cpu_time;
 
-    int number_of_cells_outside_mandelbrot_set = total_iterations - number_of_cells_inside_mandelbrot_set;
-    double area_of_grid = 1.25 * 2.5;
-    double ratio = (double)number_of_cells_inside_mandelbrot_set / (number_of_cells_inside_mandelbrot_set + number_of_cells_outside_mandelbrot_set);
-    double area = 2.0 * area_of_grid * ratio;
+    double area = compute_mandelbrot_area_estimate(number_of_cells_inside_mandelbrot_set,
+                                                   total_iterations);
 
-    write_data_to_file("out/omp-2.csv",
-                       "omp",
-                       num_cores,
-                       num_threads,
+    write_data_to_file("out/omp.csv",
+                       "omp-not-ts",
                        seed,
                        elapsed_wc_time,
                        area);
 
     printf("\narea estimate = %f\n", area);
-    printf("Num inside: %d\n", number_of_cells_inside_mandelbrot_set);
-    printf("Num outside: %d\n", number_of_cells_outside_mandelbrot_set);
     printf("elapsed wall clock time = %f\n", elapsed_wc_time);
     printf("elapsed cpu time = %f\n", elapsed_cpu_time);
 

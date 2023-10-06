@@ -19,13 +19,6 @@ static const int PACKING_SIZE = 8;
 
 int main(int argc, char *argv[])
 {
-    int num_cores = get_environment_value("SLURM_CPUS_PER_TASK");
-    if (num_cores == -1)
-    {
-        fprintf(stderr, "SLURM_CPUS_PER_TASK not set");
-        return 0;
-    }
-
     // set seed
     unsigned seed = 144545;
     dsrand(seed);
@@ -140,13 +133,10 @@ int main(int argc, char *argv[])
 
     write_data_to_file("out/serial.csv",
                        "serial-avx",
-                       num_cores,
-                       1,
                        seed,
                        elapsed_wc_time,
                        area);
     printf("\narea estimate = %f\n", area);
-    printf("Num inside: %d\n", number_of_cells_inside_mandelbrot_set);
     printf("elapsed wall clock time = %f\n", elapsed_wc_time);
     printf("elapsed cpu time = %f\n", elapsed_cpu_time);
 

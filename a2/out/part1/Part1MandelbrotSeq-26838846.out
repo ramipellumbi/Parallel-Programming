@@ -8,6 +8,9 @@ make mandseq
 SRC_FILES = src/drand.c src/mandomp-avx.c src/mandomp-ts-avx.c src/mandomp-ts.c src/mandomp.c src/mandseq-avx.c src/mandseq.c src/timing.c src/utilities.c
 OBJ_FILES =  obj/drand.o  obj/mandomp-avx.o  obj/mandomp-ts-avx.o  obj/mandomp-ts.o  obj/mandomp.o  obj/mandseq-avx.o  obj/mandseq.o  obj/timing.o  obj/utilities.o
 icc -g -O3 -xHost -fno-alias -std=c99 -I include -c src/mandseq.c -o obj/mandseq.o
+icc -g -O3 -xHost -fno-alias -std=c99 -I include -c src/drand.c -o obj/drand.o
+icc -g -O3 -xHost -fno-alias -std=c99 -I include -c src/timing.c -o obj/timing.o
+icc -g -O3 -xHost -fno-alias -std=c99 -I include -c src/utilities.c -o obj/utilities.o
 icc -g -O3 -xHost -fno-alias -std=c99 -I include obj/mandseq.o obj/drand.o obj/timing.o obj/utilities.o -o bin/mandseq
 SRC_FILES = src/drand.c src/mandomp-avx.c src/mandomp-ts-avx.c src/mandomp-ts.c src/mandomp.c src/mandseq-avx.c src/mandseq.c src/timing.c src/utilities.c
 OBJ_FILES =  obj/drand.o  obj/mandomp-avx.o  obj/mandomp-ts-avx.o  obj/mandomp-ts.o  obj/mandomp.o  obj/mandseq-avx.o  obj/mandseq.o  obj/timing.o  obj/utilities.o
@@ -16,66 +19,72 @@ icc -g -O3 -xHost -fno-alias -std=c99 -I include obj/mandseq-avx.o obj/drand.o o
 
 
 Serial version
+OMP_NUM_THREADS not setWarning: OMP_SCHEDULE environment variable is not set.
 Seed = 144544. RAND_MAX = 2147483647.
 
 area estimate = 1.506700
 Num inside: 753350
-elapsed wall clock time = 49.236732
-elapsed cpu time = 49.183239
+elapsed wall clock time = 49.239751
+elapsed cpu time = 49.181218
 
-real	0m49.264s
-user	0m49.183s
+real	0m49.286s
+user	0m49.182s
 sys	0m0.002s
+OMP_NUM_THREADS not setWarning: OMP_SCHEDULE environment variable is not set.
 Seed = 144544. RAND_MAX = 2147483647.
 
 area estimate = 1.506700
 Num inside: 753350
-elapsed wall clock time = 49.236358
-elapsed cpu time = 49.183464
+elapsed wall clock time = 49.247162
+elapsed cpu time = 49.181491
 
-real	0m49.281s
-user	0m49.184s
+real	0m49.307s
+user	0m49.182s
 sys	0m0.002s
+OMP_NUM_THREADS not setWarning: OMP_SCHEDULE environment variable is not set.
 Seed = 144544. RAND_MAX = 2147483647.
 
 area estimate = 1.506700
 Num inside: 753350
-elapsed wall clock time = 49.238373
-elapsed cpu time = 49.182751
+elapsed wall clock time = 49.239709
+elapsed cpu time = 49.181340
 
-real	0m49.292s
-user	0m49.183s
-sys	0m0.003s
+real	0m49.270s
+user	0m49.182s
+sys	0m0.002s
 
 
 Serial version AVX
+OMP_NUM_THREADS not setWarning: OMP_SCHEDULE environment variable is not set.
 Seed = 144544. RAND_MAX = 2147483647.
 
 area estimate = 1.506826
 Num inside: 753413
-elapsed wall clock time = 17.809780
-elapsed cpu time = 17.787788
+elapsed wall clock time = 17.797520
+elapsed cpu time = 17.767612
 
-real	0m17.839s
-user	0m17.788s
-sys	0m0.002s
+real	0m17.835s
+user	0m17.769s
+sys	0m0.001s
+OMP_NUM_THREADS not setWarning: OMP_SCHEDULE environment variable is not set.
 Seed = 144544. RAND_MAX = 2147483647.
 
 area estimate = 1.506826
 Num inside: 753413
-elapsed wall clock time = 17.810091
-elapsed cpu time = 17.788256
+elapsed wall clock time = 17.789065
+elapsed cpu time = 17.767026
 
-real	0m17.858s
-user	0m17.791s
-sys	0m0.000s
+real	0m17.815s
+user	0m17.768s
+sys	0m0.001s
+OMP_NUM_THREADS not setWarning: OMP_SCHEDULE environment variable is not set.
 Seed = 144544. RAND_MAX = 2147483647.
 
 area estimate = 1.506826
 Num inside: 753413
-elapsed wall clock time = 17.809833
-elapsed cpu time = 17.788309
+elapsed wall clock time = 17.793551
+elapsed cpu time = 17.767416
 
-real	0m17.840s
-user	0m17.789s
-sys	0m0.002s
+real	0m17.811s
+user	0m17.769s
+sys	0m0.001s

@@ -13,49 +13,36 @@ static const double CELL_SIDE_LENGTH = 0.001;
 
 int main(int argc, char *argv[])
 {
-    int num_cores = get_environment_value("SLURM_CPUS_PER_TASK");
-    if (num_cores == -1)
-    {
-        fprintf(stderr, "SLURM_CPUS_PER_TASK not set");
-        return 0;
-    }
-
-    int num_threads = get_environment_value("OMP_NUM_THREADS");
-    if (num_threads == -1)
-    {
-        fprintf(stderr, "OMP_NUM_THREADS not set");
-        return 0;
-    }
+    unsigned seed = 144545;
 
     // initialize timing measures
     double start_wc_time = 0.0, end_wc_time = 0.0;
     double start_cpu_time = 0.0, end_cpu_time = 0.0;
 
     int number_of_cells_inside_mandelbrot_set = 0, total_iterations = 0;
-    int max_x = (int)(2.5 / CELL_SIDE_LENGTH);
-    int max_y = (int)(1.25 / CELL_SIDE_LENGTH);
+    int number_of_cells_inside_mandelbrot_set_th, total_iterations_th;
 
-    unsigned seed = 144545;
     // start the timing
     timing(&start_wc_time, &start_cpu_time);
-#pragma omp parallel shared(number_of_cells_inside_mandelbrot_set, total_iterations)
+#pragma omp parallel shared(number_of_cells_inside_mandelbrot_set, total_iterations, seed) private(number_of_cells_inside_mandelbrot_set_th, total_iterations_th) default(none)
     {
-        dsrand_ts(seed); // Ensure that this is set for each thread
-
-        int number_of_cells_inside_mandelbrot_set_th = 0, total_iterations_th = 0;
+        // set seed
+        dsrand_ts(seed);
+        number_of_cells_inside_mandelbrot_set_th = 0;
+        total_iterations_th = 0;
 
 #pragma omp for
-        for (size_t i = 0; i < max_x; ++i)
+        for (size_t i = 0; i < NUM_X_ITERATIONS; ++i)
         {
             double current_bottom_left_x = -2.0 + i * CELL_SIDE_LENGTH;
             double cell_max_x = current_bottom_left_x + CELL_SIDE_LENGTH;
 
-            for (size_t j = 0; j < max_y; ++j)
+            for (size_t j = 0; j < NUM_Y_ITERATIONS; ++j)
             {
                 double current_bottom_left_y = 0.0 + j * CELL_SIDE_LENGTH;
                 double cell_max_y = current_bottom_left_y + CELL_SIDE_LENGTH;
-                double random_x = get_random_double_in_bounds_ts(current_bottom_left_x, cell_max_x);
-                double random_y = get_random_double_in_bounds_ts(current_bottom_left_y, cell_max_y);
+                double random_x = current_bottom_left_x + (cell_max_x - current_bottom_left_x) * drand_ts();
+                double random_y = current_bottom_left_y + (cell_max_y - current_bottom_left_y) * drand_ts();
 
                 int increment = mandelbrot_iteration(random_x, random_y, MAX_ITERATIONS);
 
@@ -77,22 +64,15 @@ int main(int argc, char *argv[])
     double elapsed_wc_time = end_wc_time - start_wc_time;
     double elapsed_cpu_time = end_cpu_time - start_cpu_time;
 
-    int number_of_cells_outside_mandelbrot_set = total_iterations - number_of_cells_inside_mandelbrot_set;
-    double area_of_grid = 1.25 * 2.5;
-    double ratio = (double)number_of_cells_inside_mandelbrot_set / (number_of_cells_inside_mandelbrot_set + number_of_cells_outside_mandelbrot_set);
-    double area = 2.0 * area_of_grid * ratio;
+    double area = compute_mandelbrot_area_estimate(number_of_cells_inside_mandelbrot_set,
+                                                   total_iterations);
 
-    write_data_to_file("out/omp-2.csv",
+    write_data_to_file("out/omp.csv",
                        "omp-ts",
-                       num_cores,
-                       num_threads,
                        seed,
                        elapsed_wc_time,
                        area);
-
     printf("\narea estimate = %f\n", area);
-    printf("Num inside: %d\n", number_of_cells_inside_mandelbrot_set);
-    printf("Num outside: %d\n", number_of_cells_outside_mandelbrot_set);
     printf("elapsed wall clock time = %f\n", elapsed_wc_time);
     printf("elapsed cpu time = %f\n", elapsed_cpu_time);
 

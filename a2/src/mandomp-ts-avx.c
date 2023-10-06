@@ -18,19 +18,6 @@ static const int PACKING_SIZE = 8;
 
 int main(int argc, char *argv[])
 {
-    int num_cores = get_environment_value("SLURM_CPUS_PER_TASK");
-    if (num_cores == -1)
-    {
-        fprintf(stderr, "SLURM_CPUS_PER_TASK not set");
-        return 0;
-    }
-    int num_threads = get_environment_value("OMP_NUM_THREADS");
-    if (num_threads == -1)
-    {
-        fprintf(stderr, "OMP_NUM_THREADS not set");
-        return 0;
-    }
-
     // number of iterations for y that is a multiple of PACKING_SIZE
     int NUM_Y_PS = NUM_Y_ITERATIONS / PACKING_SIZE * PACKING_SIZE;
 
@@ -160,19 +147,16 @@ int main(int argc, char *argv[])
 
     double elapsed_wc_time = end_wc_time - start_wc_time;
     double elapsed_cpu_time = end_cpu_time - start_cpu_time;
+
     double area = compute_mandelbrot_area_estimate(number_of_cells_inside_mandelbrot_set,
                                                    total_iterations);
 
     write_data_to_file("out/omp.csv",
                        "omp-avx-ts",
-                       num_cores,
-                       num_threads,
                        seed,
                        elapsed_wc_time,
                        area);
-    printf("\nTotal iter = %d", total_iterations);
     printf("\narea estimate = %f\n", area);
-    printf("Num inside: %d\n", number_of_cells_inside_mandelbrot_set);
     printf("elapsed wall clock time = %f\n", elapsed_wc_time);
     printf("elapsed cpu time = %f\n", elapsed_cpu_time);
 

@@ -1,5 +1,6 @@
 #include <stdio.h>
 
+#include "drand.h"
 #include "mandelbrot.h"
 #include "timing.h"
 #include "utilities.h"
@@ -11,13 +12,6 @@ static const double CELL_SIDE_LENGTH = 0.001;
 
 int main(int argc, char *argv[])
 {
-    int num_cores = get_environment_value("SLURM_CPUS_PER_TASK");
-    if (num_cores == -1)
-    {
-        fprintf(stderr, "SLURM_CPUS_PER_TASK not set");
-        return 0;
-    }
-
     // set seed
     unsigned seed = 144545;
     dsrand(seed);
@@ -38,8 +32,8 @@ int main(int argc, char *argv[])
         {
             double current_bottom_left_y = 0.0 + CELL_SIDE_LENGTH * m;
             double max_y = current_bottom_left_y + CELL_SIDE_LENGTH;
-            double random_x = get_random_double_in_bounds(current_bottom_left_x, max_x);
-            double random_y = get_random_double_in_bounds(current_bottom_left_y, max_y);
+            double random_x = current_bottom_left_x + (max_x - current_bottom_left_x) * drand();
+            double random_y = current_bottom_left_y + (max_y - current_bottom_left_y) * drand();
 
             int increment = mandelbrot_iteration(random_x, random_y, MAX_ITERATIONS);
 
@@ -58,13 +52,10 @@ int main(int argc, char *argv[])
 
     write_data_to_file("out/serial.csv",
                        "serial",
-                       num_cores,
-                       1,
                        seed,
                        elapsed_wc_time,
                        area);
     printf("\narea estimate = %f\n", area);
-    printf("Num inside: %d\n", number_of_cells_inside_mandelbrot_set);
     printf("elapsed wall clock time = %f\n", elapsed_wc_time);
     printf("elapsed cpu time = %f\n", elapsed_cpu_time);
 
