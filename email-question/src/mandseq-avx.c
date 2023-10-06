@@ -29,6 +29,7 @@ int main(int argc, char *argv[])
     unsigned seed = 144545;
     dsrand(seed);
 
+    // number of iterations for y that is a multiple of PACKING_SIZE
     int NUM_Y_PS = NUM_Y_ITERATIONS / PACKING_SIZE * PACKING_SIZE;
 
     // arrays to store the 16 needed random numbers (8 real, 8 imaginary) each iteration
@@ -92,9 +93,6 @@ int main(int argc, char *argv[])
                 random_numbers_y,
                 _mm512_sub_pd(top_left_y_values, bottom_left_y_values),
                 bottom_left_y_values);
-
-            // stores the number of iterations each c went through
-            __m512i iters = _mm512_setzero_si512();
 
             // These are the 8 z values
             __m512d z_re = _mm512_set1_pd(0.0);

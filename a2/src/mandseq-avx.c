@@ -30,10 +30,10 @@ int main(int argc, char *argv[])
     unsigned seed = 144545;
     dsrand(seed);
 
-    // initialize a random number for each cell immediately
-    // each cell needs 2 random numbers so we have 2 * num_cells in the packing loop
-    // precomputed numbers
+    // number of iterations for y that is a multiple of PACKING_SIZE
     int NUM_Y_PS = NUM_Y_ITERATIONS / PACKING_SIZE * PACKING_SIZE;
+
+    // arrays to store the 16 needed random numbers (8 real, 8 imaginary) each iteration
     double *random_x = (double *)_mm_malloc(PACKING_SIZE * sizeof(double), 64);
     double *random_y = (double *)_mm_malloc(PACKING_SIZE * sizeof(double), 64);
 
@@ -43,18 +43,15 @@ int main(int argc, char *argv[])
 
     int number_of_cells_inside_mandelbrot_set = 0, total_iterations = 0;
 
-    // start the timing
-    timing(&start_wc_time, &start_cpu_time);
-
-    // index to track where we are in the random index array
-    int random_index = 0;
-
     // We have 8 packed doubles in a 512 bit register
     // This stores the corner offsets - 0, 0.001, 0.002, ..., 0.007
     // so that at every x value we can assess 8 y values at a time
     __m512d pxs_deltas512 = _mm512_mul_pd(
         _mm512_set_pd(0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0),
         _mm512_set1_pd(CELL_SIDE_LENGTH));
+
+    // start the timing
+    timing(&start_wc_time, &start_cpu_time);
 
     // for each x value
     for (size_t n = 0; n < NUM_X_ITERATIONS; n++)
@@ -96,9 +93,6 @@ int main(int argc, char *argv[])
                 _mm512_sub_pd(top_left_y_values, bottom_left_y_values),
                 bottom_left_y_values);
 
-            // stores the number of iterations each c went through
-            __m512i iters = _mm512_setzero_si512();
-
             // These are the 8 z values
             __m512d z_re = _mm512_set1_pd(0.0);
             __m512d z_im = _mm512_set1_pd(0.0);
@@ -114,7 +108,6 @@ int main(int argc, char *argv[])
             int count = _popcnt32((unsigned int)indices_in_set);
             number_of_cells_inside_mandelbrot_set += count;
 
-            random_index += PACKING_SIZE * 2;
             total_iterations += PACKING_SIZE;
         }
 
