@@ -45,19 +45,19 @@ int main(int argc, char *argv[])
         int number_of_cells_inside_mandelbrot_set_th = 0, total_iterations_th = 0;
 
 #pragma omp for
-        for (size_t i = 0; i <= max_x; ++i)
+        for (size_t i = 0; i < max_x; ++i)
         {
             double current_bottom_left_x = -2.0 + i * CELL_SIDE_LENGTH;
             double cell_max_x = current_bottom_left_x + CELL_SIDE_LENGTH;
 
-            for (size_t j = 0; j <= max_y; ++j)
+            for (size_t j = 0; j < max_y; ++j)
             {
                 double current_bottom_left_y = 0.0 + j * CELL_SIDE_LENGTH;
                 double cell_max_y = current_bottom_left_y + CELL_SIDE_LENGTH;
                 double random_x = get_random_double_in_bounds_ts(current_bottom_left_x, cell_max_x);
                 double random_y = get_random_double_in_bounds_ts(current_bottom_left_y, cell_max_y);
 
-                int increment = mandelbrot_iteration(random_x, random_y);
+                int increment = mandelbrot_iteration(random_x, random_y, MAX_ITERATIONS);
 
                 number_of_cells_inside_mandelbrot_set_th += increment;
                 total_iterations_th += 1;

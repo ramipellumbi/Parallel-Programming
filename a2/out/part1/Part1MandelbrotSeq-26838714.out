@@ -1,0 +1,81 @@
+SRC_FILES = src/drand.c src/mandomp-avx.c src/mandomp-ts-avx.c src/mandomp-ts.c src/mandomp.c src/mandseq-avx.c src/mandseq.c src/timing.c src/utilities.c
+OBJ_FILES =  obj/drand.o  obj/mandomp-avx.o  obj/mandomp-ts-avx.o  obj/mandomp-ts.o  obj/mandomp.o  obj/mandseq-avx.o  obj/mandseq.o  obj/timing.o  obj/utilities.o
+rm -f bin/mandseq obj/mandseq.o
+SRC_FILES = src/drand.c src/mandomp-avx.c src/mandomp-ts-avx.c src/mandomp-ts.c src/mandomp.c src/mandseq-avx.c src/mandseq.c src/timing.c src/utilities.c
+OBJ_FILES =  obj/drand.o  obj/mandomp-avx.o  obj/mandomp-ts-avx.o  obj/mandomp-ts.o  obj/mandomp.o  obj/mandseq-avx.o  obj/mandseq.o  obj/timing.o  obj/utilities.o
+rm -f bin/mandseq-avx obj/mandseq-avx.o
+make mandseq
+SRC_FILES = src/drand.c src/mandomp-avx.c src/mandomp-ts-avx.c src/mandomp-ts.c src/mandomp.c src/mandseq-avx.c src/mandseq.c src/timing.c src/utilities.c
+OBJ_FILES =  obj/drand.o  obj/mandomp-avx.o  obj/mandomp-ts-avx.o  obj/mandomp-ts.o  obj/mandomp.o  obj/mandseq-avx.o  obj/mandseq.o  obj/timing.o  obj/utilities.o
+icc -g -O3 -xHost -fno-alias -std=c99 -I include -c src/mandseq.c -o obj/mandseq.o
+icc -g -O3 -xHost -fno-alias -std=c99 -I include obj/mandseq.o obj/drand.o obj/timing.o obj/utilities.o -o bin/mandseq
+SRC_FILES = src/drand.c src/mandomp-avx.c src/mandomp-ts-avx.c src/mandomp-ts.c src/mandomp.c src/mandseq-avx.c src/mandseq.c src/timing.c src/utilities.c
+OBJ_FILES =  obj/drand.o  obj/mandomp-avx.o  obj/mandomp-ts-avx.o  obj/mandomp-ts.o  obj/mandomp.o  obj/mandseq-avx.o  obj/mandseq.o  obj/timing.o  obj/utilities.o
+icc -g -O3 -xHost -fno-alias -std=c99 -I include -c src/mandseq-avx.c -o obj/mandseq-avx.o
+icc -g -O3 -xHost -fno-alias -std=c99 -I include obj/mandseq-avx.o obj/drand.o obj/timing.o obj/utilities.o -o bin/mandseq-avx
+
+
+Serial version
+Seed = 144544. RAND_MAX = 2147483647.
+
+area estimate = 1.506700
+Num inside: 753350
+elapsed wall clock time = 49.236732
+elapsed cpu time = 49.183239
+
+real	0m49.264s
+user	0m49.183s
+sys	0m0.002s
+Seed = 144544. RAND_MAX = 2147483647.
+
+area estimate = 1.506700
+Num inside: 753350
+elapsed wall clock time = 49.236358
+elapsed cpu time = 49.183464
+
+real	0m49.281s
+user	0m49.184s
+sys	0m0.002s
+Seed = 144544. RAND_MAX = 2147483647.
+
+area estimate = 1.506700
+Num inside: 753350
+elapsed wall clock time = 49.238373
+elapsed cpu time = 49.182751
+
+real	0m49.292s
+user	0m49.183s
+sys	0m0.003s
+
+
+Serial version AVX
+Seed = 144544. RAND_MAX = 2147483647.
+
+area estimate = 1.506826
+Num inside: 753413
+elapsed wall clock time = 17.809780
+elapsed cpu time = 17.787788
+
+real	0m17.839s
+user	0m17.788s
+sys	0m0.002s
+Seed = 144544. RAND_MAX = 2147483647.
+
+area estimate = 1.506826
+Num inside: 753413
+elapsed wall clock time = 17.810091
+elapsed cpu time = 17.788256
+
+real	0m17.858s
+user	0m17.791s
+sys	0m0.000s
+Seed = 144544. RAND_MAX = 2147483647.
+
+area estimate = 1.506826
+Num inside: 753413
+elapsed wall clock time = 17.809833
+elapsed cpu time = 17.788309
+
+real	0m17.840s
+user	0m17.789s
+sys	0m0.002s
