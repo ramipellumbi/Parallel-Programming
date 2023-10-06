@@ -1,8 +1,8 @@
-#ifndef MANDELBROT_H
-#define MANDELBROT_H
-
 #include <immintrin.h>
 #include <nmmintrin.h>
+
+#ifndef MANDELBROT_H
+#define MANDELBROT_H
 
 /**
  * Determines if a complex number c = c_re + i*c_im belongs to the Mandelbrot set.
@@ -69,8 +69,8 @@ static inline __mmask8 mandelbrot_iteration_avx(__m512d x_values,
 
         // componentwise: z_im = 2 * z_re * z_im + c_im
         __m512d ysn = _mm512_add_pd(_mm512_mul_pd(
-                                        _mm512_mul_pd(
-                                            _mm512_set1_pd(2.0),
+                                        _mm512_add_pd(
+                                            z_re,
                                             z_re),
                                         z_im),
                                     y_values);

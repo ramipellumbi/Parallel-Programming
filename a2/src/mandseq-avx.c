@@ -1,11 +1,11 @@
 #include <immintrin.h>
 #include <nmmintrin.h>
+
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
 
-#include "complex.h"
 #include "drand.h"
 #include "mandelbrot.h"
 #include "timing.h"
@@ -16,18 +16,6 @@ static const size_t NUM_Y_ITERATIONS = 1250;
 static const size_t MAX_ITERATIONS = 25000;
 static const double CELL_SIDE_LENGTH = 0.001;
 static const int PACKING_SIZE = 8;
-
-static inline int sum_of_bits_in_mmask8(__mmask8 mask)
-{
-    int mask_as_int = (int)mask;
-    int count = 0;
-    while (mask_as_int)
-    {
-        count += mask_as_int & 1;
-        mask_as_int >>= 1;
-    }
-    return count;
-}
 
 int main(int argc, char *argv[])
 {
@@ -123,7 +111,7 @@ int main(int argc, char *argv[])
 
             // the 1's in this mask are the iterations that did NOT diverge
             __mmask8 indices_in_set = ~diverged_indices;
-            int count = sum_of_bits_in_mmask8(indices_in_set);
+            int count = _popcnt32((unsigned int)indices_in_set);
             number_of_cells_inside_mandelbrot_set += count;
 
             random_index += PACKING_SIZE * 2;

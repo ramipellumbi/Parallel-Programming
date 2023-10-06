@@ -5,7 +5,6 @@
 #include <stdio.h>
 #include <stdint.h>
 
-#include "complex.h"
 #include "drand.h"
 #include "mandelbrot.h"
 #include "timing.h"
@@ -17,25 +16,18 @@ static const size_t MAX_ITERATIONS = 25000;
 static const double CELL_SIDE_LENGTH = 0.001;
 static const int PACKING_SIZE = 8;
 
-static inline int sum_of_bits_in_mmask8(__mmask8 mask)
-{
-    int mask_as_int = (int)mask;
-    int count = 0;
-    while (mask_as_int)
-    {
-        count += mask_as_int & 1;
-        mask_as_int >>= 1;
-    }
-
-    return count;
-}
-
 int main(int argc, char *argv[])
 {
     int num_cores = get_environment_value("SLURM_CPUS_PER_TASK");
     if (num_cores == -1)
     {
         fprintf(stderr, "SLURM_CPUS_PER_TASK not set");
+        return 0;
+    }
+    int num_threads = get_environment_value("OMP_NUM_THREADS");
+    if (num_threads == -1)
+    {
+        fprintf(stderr, "OMP_NUM_THREADS not set");
         return 0;
     }
 
@@ -61,14 +53,16 @@ int main(int argc, char *argv[])
         _mm512_set_pd(0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0),
         _mm512_set1_pd(CELL_SIDE_LENGTH));
 
+    __m512d four_512 = _mm512_set1_pd(4.0);
+
     // set seed
     unsigned seed = 144545;
-    dsrand(seed);
+    dsrand_ts(seed);
 
     double *random_x;
     double *random_y;
 
-#pragma omp parallel shared(number_of_cells_inside_mandelbrot_set, total_iterations, pxs_deltas512, NUM_Y_PS, seed) private(number_of_cells_inside_mandelbrot_set_th, total_iterations_th, random_x, random_y) default(none)
+#pragma omp parallel shared(number_of_cells_inside_mandelbrot_set, total_iterations, pxs_deltas512, four_512, NUM_Y_PS, seed) private(number_of_cells_inside_mandelbrot_set_th, total_iterations_th, random_x, random_y) default(none)
     {
         random_x = (double *)malloc(PACKING_SIZE * sizeof(double));
         random_y = (double *)malloc(PACKING_SIZE * sizeof(double));
@@ -76,16 +70,19 @@ int main(int argc, char *argv[])
         total_iterations_th = 0;
 
 #pragma omp for
+        // for each x value
         for (size_t n = 0; n < NUM_X_ITERATIONS; n++)
         {
             double current_bottom_left_x = -2.0 + CELL_SIDE_LENGTH * n;
             double max_x = current_bottom_left_x + CELL_SIDE_LENGTH;
+
+            // let's compute 8 y-values simultaneously
             for (size_t m = 0; m < NUM_Y_PS; m += PACKING_SIZE)
             {
                 for (int i = 0; i < PACKING_SIZE; ++i)
                 {
-                    random_x[i] = drand();
-                    random_y[i] = drand();
+                    random_x[i] = drand_ts();
+                    random_y[i] = drand_ts();
                 }
                 // grab 8 random numbers for the 8 needed random x coordinates
                 __m512d random_numbers_x = _mm512_loadu_pd(random_x);
@@ -128,7 +125,7 @@ int main(int argc, char *argv[])
 
                 // the 1's in this mask are the iterations that did NOT diverge
                 __mmask8 indices_in_set = ~diverged_indices;
-                int count = sum_of_bits_in_mmask8(indices_in_set);
+                int count = _popcnt32((unsigned int)indices_in_set);
                 number_of_cells_inside_mandelbrot_set_th += count;
 
                 total_iterations_th += PACKING_SIZE;
@@ -140,8 +137,8 @@ int main(int argc, char *argv[])
                 double current_bottom_left_y = 0.0 + CELL_SIDE_LENGTH * m;
                 double max_y = current_bottom_left_y + CELL_SIDE_LENGTH;
 
-                double c_re = current_bottom_left_x + drand() * (max_x - current_bottom_left_x);
-                double c_im = current_bottom_left_y + drand() * (max_y - current_bottom_left_y);
+                double c_re = current_bottom_left_x + drand_ts() * (max_x - current_bottom_left_x);
+                double c_im = current_bottom_left_y + drand_ts() * (max_y - current_bottom_left_y);
 
                 int counter = mandelbrot_iteration(c_re, c_im, MAX_ITERATIONS);
 
@@ -171,9 +168,9 @@ int main(int argc, char *argv[])
                                                    total_iterations);
 
     write_data_to_file("out/omp.csv",
-                       "omp-avx",
+                       "omp-avx-ts",
                        num_cores,
-                       1,
+                       num_threads,
                        seed,
                        elapsed_wc_time,
                        area);

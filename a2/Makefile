@@ -38,8 +38,16 @@ $(OBJ_DIR)/mandomp.o: $(SRC_DIR)/mandomp.c
 	@mkdir -p $(@D)
 	$(CC) $(CFLAGS_OMP) -c $< -o $@
 
+$(OBJ_DIR)/mandomp-avx.o: $(SRC_DIR)/mandomp-avx.c
+	@mkdir -p $(@D)
+	$(CC) $(CFLAGS_OMP) -c $< -o $@
+
 # Specific rule for mandomp-ts.o (requiring OpenMP)
 $(OBJ_DIR)/mandomp-ts.o: $(SRC_DIR)/mandomp-ts.c
+	@mkdir -p $(@D)
+	$(CC) $(CFLAGS_OMP) -c $< -o $@
+
+$(OBJ_DIR)/mandomp-ts-avx.o: $(SRC_DIR)/mandomp-ts-avx.c
 	@mkdir -p $(@D)
 	$(CC) $(CFLAGS_OMP) -c $< -o $@
 
@@ -71,6 +79,11 @@ $(BIN_DIR)/mandomp-ts: $(OBJ_DIR)/mandomp-ts.o $(MODULES)
 	@mkdir -p $(BIN_DIR)
 	$(CC) $(CFLAGS_OMP) $^ -o $@
 
+mandomp-ts-avx: $(BIN_DIR)/mandomp-ts-avx
+$(BIN_DIR)/mandomp-ts-avx: $(OBJ_DIR)/mandomp-ts-avx.o $(MODULES)
+	@mkdir -p $(BIN_DIR)
+	$(CC) $(CFLAGS_OMP) $^ -o $@
+
 clean:
 	rm -rf $(OBJ_DIR) $(BIN_DIR)
 
@@ -90,3 +103,6 @@ clean-mandomp-avx:
 
 clean-mandomp-ts:
 	rm -f $(BIN_DIR)/mandomp-ts $(OBJ_DIR)/mandomp-ts.o
+
+clean-mandomp-ts-avx:
+	rm -f $(BIN_DIR)/mandomp-ts-avx $(OBJ_DIR)/mandomp-ts-avx.o

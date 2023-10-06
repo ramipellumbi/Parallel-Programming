@@ -1,0 +1,935 @@
+SRC_FILES = src/drand.c src/mandomp-avx.c src/mandomp-ts-avx.c src/mandomp-ts.c src/mandomp.c src/mandseq-avx.c src/mandseq.c src/timing.c src/utilities.c
+OBJ_FILES =  obj/drand.o  obj/mandomp-avx.o  obj/mandomp-ts-avx.o  obj/mandomp-ts.o  obj/mandomp.o  obj/mandseq-avx.o  obj/mandseq.o  obj/timing.o  obj/utilities.o
+rm -f bin/mandomp-ts-avx obj/mandomp-ts-avx.o
+make mandomp-ts-avx
+SRC_FILES = src/drand.c src/mandomp-avx.c src/mandomp-ts-avx.c src/mandomp-ts.c src/mandomp.c src/mandseq-avx.c src/mandseq.c src/timing.c src/utilities.c
+OBJ_FILES =  obj/drand.o  obj/mandomp-avx.o  obj/mandomp-ts-avx.o  obj/mandomp-ts.o  obj/mandomp.o  obj/mandseq-avx.o  obj/mandseq.o  obj/timing.o  obj/utilities.o
+icc -g -O3 -xHost -fno-alias -std=c99 -qopenmp -I include  -c src/mandomp-ts-avx.c -o obj/mandomp-ts-avx.o
+icc -g -O3 -xHost -fno-alias -std=c99 -qopenmp -I include  obj/mandomp-ts-avx.o obj/drand.o obj/timing.o obj/utilities.o -o bin/mandomp-ts-avx
+
+
+
+
+Number of threads =  1
+OMP_SCHEDULE = 
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506826
+Num inside: 753413
+elapsed wall clock time = 17.649677
+elapsed cpu time = 17.619250
+
+real	0m17.664s
+user	0m17.620s
+sys	0m0.002s
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506826
+Num inside: 753413
+elapsed wall clock time = 17.633995
+elapsed cpu time = 17.608155
+
+real	0m17.685s
+user	0m17.609s
+sys	0m0.003s
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506826
+Num inside: 753413
+elapsed wall clock time = 17.669322
+elapsed cpu time = 17.643407
+
+real	0m17.696s
+user	0m17.644s
+sys	0m0.003s
+
+
+Number of threads =  2
+OMP_SCHEDULE = 
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506640
+Num inside: 753320
+elapsed wall clock time = 15.048362
+elapsed cpu time = 17.829620
+
+real	0m15.087s
+user	0m17.850s
+sys	0m0.007s
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506640
+Num inside: 753320
+elapsed wall clock time = 15.040474
+elapsed cpu time = 17.826009
+
+real	0m15.070s
+user	0m17.833s
+sys	0m0.008s
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506640
+Num inside: 753320
+elapsed wall clock time = 15.035566
+elapsed cpu time = 17.834161
+
+real	0m15.064s
+user	0m17.844s
+sys	0m0.005s
+
+
+Number of threads =  4
+OMP_SCHEDULE = 
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506636
+Num inside: 753318
+elapsed wall clock time = 8.008799
+elapsed cpu time = 18.384369
+
+real	0m8.035s
+user	0m18.403s
+sys	0m0.029s
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506636
+Num inside: 753318
+elapsed wall clock time = 8.011063
+elapsed cpu time = 18.344827
+
+real	0m8.040s
+user	0m18.372s
+sys	0m0.022s
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506636
+Num inside: 753318
+elapsed wall clock time = 7.933928
+elapsed cpu time = 18.315135
+
+real	0m7.963s
+user	0m18.344s
+sys	0m0.018s
+
+
+Number of threads =  12
+OMP_SCHEDULE = 
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506726
+Num inside: 753363
+elapsed wall clock time = 3.459551
+elapsed cpu time = 20.059104
+
+real	0m3.483s
+user	0m20.087s
+sys	0m0.074s
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506726
+Num inside: 753363
+elapsed wall clock time = 3.458308
+elapsed cpu time = 20.137726
+
+real	0m3.464s
+user	0m20.156s
+sys	0m0.062s
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506726
+Num inside: 753363
+elapsed wall clock time = 3.459380
+elapsed cpu time = 20.430014
+
+real	0m3.478s
+user	0m20.441s
+sys	0m0.072s
+
+
+Number of threads =  24
+OMP_SCHEDULE = 
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506684
+Num inside: 753342
+elapsed wall clock time = 1.943508
+elapsed cpu time = 23.382936
+
+real	0m1.950s
+user	0m23.438s
+sys	0m0.150s
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506684
+Num inside: 753342
+elapsed wall clock time = 1.966262
+elapsed cpu time = 23.203523
+
+real	0m1.974s
+user	0m23.244s
+sys	0m0.188s
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506684
+Num inside: 753342
+elapsed wall clock time = 1.944093
+elapsed cpu time = 23.404221
+
+real	0m1.952s
+user	0m23.505s
+sys	0m0.132s
+
+
+Number of threads =  2
+OMP_SCHEDULE =  static,1
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506640
+Num inside: 753320
+elapsed wall clock time = 15.027651
+elapsed cpu time = 17.802826
+
+real	0m15.041s
+user	0m17.812s
+sys	0m0.007s
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506640
+Num inside: 753320
+elapsed wall clock time = 15.046407
+elapsed cpu time = 17.828414
+
+real	0m15.074s
+user	0m17.836s
+sys	0m0.010s
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506640
+Num inside: 753320
+elapsed wall clock time = 15.037873
+elapsed cpu time = 17.814099
+
+real	0m15.065s
+user	0m17.824s
+sys	0m0.008s
+
+
+Number of threads =  4
+OMP_SCHEDULE =  static,1
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506636
+Num inside: 753318
+elapsed wall clock time = 8.015976
+elapsed cpu time = 18.419692
+
+real	0m8.057s
+user	0m18.481s
+sys	0m0.025s
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506636
+Num inside: 753318
+elapsed wall clock time = 8.008015
+elapsed cpu time = 18.385615
+
+real	0m8.062s
+user	0m18.412s
+sys	0m0.026s
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506636
+Num inside: 753318
+elapsed wall clock time = 8.007968
+elapsed cpu time = 18.395233
+
+real	0m8.043s
+user	0m18.426s
+sys	0m0.018s
+
+
+Number of threads =  12
+OMP_SCHEDULE =  static,1
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506726
+Num inside: 753363
+elapsed wall clock time = 3.464164
+elapsed cpu time = 20.151850
+
+real	0m3.490s
+user	0m20.177s
+sys	0m0.049s
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506726
+Num inside: 753363
+elapsed wall clock time = 3.463796
+elapsed cpu time = 20.143841
+
+real	0m3.470s
+user	0m20.168s
+sys	0m0.066s
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506726
+Num inside: 753363
+elapsed wall clock time = 3.461715
+elapsed cpu time = 20.125046
+
+real	0m3.467s
+user	0m20.142s
+sys	0m0.076s
+
+
+Number of threads =  24
+OMP_SCHEDULE =  static,1
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506684
+Num inside: 753342
+elapsed wall clock time = 1.942625
+elapsed cpu time = 22.810132
+
+real	0m1.949s
+user	0m22.843s
+sys	0m0.128s
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506684
+Num inside: 753342
+elapsed wall clock time = 1.942587
+elapsed cpu time = 23.220678
+
+real	0m1.956s
+user	0m23.327s
+sys	0m0.156s
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506684
+Num inside: 753342
+elapsed wall clock time = 1.947640
+elapsed cpu time = 23.250585
+
+real	0m1.954s
+user	0m23.281s
+sys	0m0.113s
+
+
+Number of threads =  2
+OMP_SCHEDULE =  static,100
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506640
+Num inside: 753320
+elapsed wall clock time = 15.026082
+elapsed cpu time = 17.816698
+
+real	0m15.038s
+user	0m17.826s
+sys	0m0.009s
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506640
+Num inside: 753320
+elapsed wall clock time = 15.019475
+elapsed cpu time = 17.788584
+
+real	0m15.058s
+user	0m17.808s
+sys	0m0.012s
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506640
+Num inside: 753320
+elapsed wall clock time = 15.030808
+elapsed cpu time = 17.815251
+
+real	0m15.063s
+user	0m17.826s
+sys	0m0.008s
+
+
+Number of threads =  4
+OMP_SCHEDULE =  static,100
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506636
+Num inside: 753318
+elapsed wall clock time = 8.010720
+elapsed cpu time = 18.417218
+
+real	0m8.040s
+user	0m18.438s
+sys	0m0.022s
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506636
+Num inside: 753318
+elapsed wall clock time = 8.017815
+elapsed cpu time = 18.375380
+
+real	0m8.044s
+user	0m18.399s
+sys	0m0.029s
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506636
+Num inside: 753318
+elapsed wall clock time = 8.015625
+elapsed cpu time = 18.332768
+
+real	0m8.043s
+user	0m18.360s
+sys	0m0.019s
+
+
+Number of threads =  12
+OMP_SCHEDULE =  static,100
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506726
+Num inside: 753363
+elapsed wall clock time = 3.462868
+elapsed cpu time = 20.110046
+
+real	0m3.485s
+user	0m20.137s
+sys	0m0.067s
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506726
+Num inside: 753363
+elapsed wall clock time = 3.458947
+elapsed cpu time = 20.357566
+
+real	0m3.465s
+user	0m20.379s
+sys	0m0.062s
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506726
+Num inside: 753363
+elapsed wall clock time = 3.461375
+elapsed cpu time = 20.337853
+
+real	0m3.469s
+user	0m20.353s
+sys	0m0.064s
+
+
+Number of threads =  24
+OMP_SCHEDULE =  static,100
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506684
+Num inside: 753342
+elapsed wall clock time = 1.929931
+elapsed cpu time = 23.168322
+
+real	0m1.936s
+user	0m23.201s
+sys	0m0.164s
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506684
+Num inside: 753342
+elapsed wall clock time = 1.928952
+elapsed cpu time = 22.762742
+
+real	0m1.936s
+user	0m22.807s
+sys	0m0.151s
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506684
+Num inside: 753342
+elapsed wall clock time = 1.943905
+elapsed cpu time = 22.809585
+
+real	0m1.951s
+user	0m22.850s
+sys	0m0.133s
+
+
+Number of threads =  2
+OMP_SCHEDULE =  dynamic
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506640
+Num inside: 753320
+elapsed wall clock time = 15.037691
+elapsed cpu time = 17.813765
+
+real	0m15.063s
+user	0m17.834s
+sys	0m0.013s
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506640
+Num inside: 753320
+elapsed wall clock time = 15.034370
+elapsed cpu time = 17.816006
+
+real	0m15.068s
+user	0m17.829s
+sys	0m0.010s
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506640
+Num inside: 753320
+elapsed wall clock time = 15.038157
+elapsed cpu time = 17.814309
+
+real	0m15.068s
+user	0m17.822s
+sys	0m0.014s
+
+
+Number of threads =  4
+OMP_SCHEDULE =  dynamic
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506636
+Num inside: 753318
+elapsed wall clock time = 8.014750
+elapsed cpu time = 18.312867
+
+real	0m8.041s
+user	0m18.335s
+sys	0m0.019s
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506636
+Num inside: 753318
+elapsed wall clock time = 7.994278
+elapsed cpu time = 18.318174
+
+real	0m8.025s
+user	0m18.342s
+sys	0m0.022s
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506636
+Num inside: 753318
+elapsed wall clock time = 8.018347
+elapsed cpu time = 18.414637
+
+real	0m8.049s
+user	0m18.434s
+sys	0m0.025s
+
+
+Number of threads =  12
+OMP_SCHEDULE =  dynamic
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506726
+Num inside: 753363
+elapsed wall clock time = 3.463161
+elapsed cpu time = 20.404733
+
+real	0m3.485s
+user	0m20.427s
+sys	0m0.074s
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506726
+Num inside: 753363
+elapsed wall clock time = 3.465319
+elapsed cpu time = 20.351178
+
+real	0m3.472s
+user	0m20.376s
+sys	0m0.073s
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506726
+Num inside: 753363
+elapsed wall clock time = 3.462360
+elapsed cpu time = 20.322497
+
+real	0m3.480s
+user	0m20.340s
+sys	0m0.073s
+
+
+Number of threads =  24
+OMP_SCHEDULE =  dynamic
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506684
+Num inside: 753342
+elapsed wall clock time = 1.941621
+elapsed cpu time = 23.228841
+
+real	0m1.948s
+user	0m23.261s
+sys	0m0.123s
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506684
+Num inside: 753342
+elapsed wall clock time = 1.942610
+elapsed cpu time = 23.217698
+
+real	0m1.954s
+user	0m23.339s
+sys	0m0.143s
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506684
+Num inside: 753342
+elapsed wall clock time = 1.929253
+elapsed cpu time = 23.188513
+
+real	0m1.935s
+user	0m23.203s
+sys	0m0.153s
+
+
+Number of threads =  2
+OMP_SCHEDULE =  dynamic,250
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506640
+Num inside: 753320
+elapsed wall clock time = 15.035861
+elapsed cpu time = 17.823246
+
+real	0m15.049s
+user	0m17.833s
+sys	0m0.003s
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506640
+Num inside: 753320
+elapsed wall clock time = 15.045422
+elapsed cpu time = 17.822574
+
+real	0m15.076s
+user	0m17.833s
+sys	0m0.009s
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506640
+Num inside: 753320
+elapsed wall clock time = 15.058328
+elapsed cpu time = 17.815098
+
+real	0m15.089s
+user	0m17.823s
+sys	0m0.006s
+
+
+Number of threads =  4
+OMP_SCHEDULE =  dynamic,250
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506636
+Num inside: 753318
+elapsed wall clock time = 8.015846
+elapsed cpu time = 18.411994
+
+real	0m8.055s
+user	0m18.468s
+sys	0m0.025s
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506636
+Num inside: 753318
+elapsed wall clock time = 8.013908
+elapsed cpu time = 18.390583
+
+real	0m8.063s
+user	0m18.415s
+sys	0m0.028s
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506636
+Num inside: 753318
+elapsed wall clock time = 8.014220
+elapsed cpu time = 18.382153
+
+real	0m8.039s
+user	0m18.406s
+sys	0m0.030s
+
+
+Number of threads =  12
+OMP_SCHEDULE =  dynamic,250
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506726
+Num inside: 753363
+elapsed wall clock time = 3.459209
+elapsed cpu time = 20.346461
+
+real	0m3.480s
+user	0m20.369s
+sys	0m0.061s
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506726
+Num inside: 753363
+elapsed wall clock time = 3.463048
+elapsed cpu time = 20.431132
+
+real	0m3.468s
+user	0m20.445s
+sys	0m0.062s
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506726
+Num inside: 753363
+elapsed wall clock time = 3.459536
+elapsed cpu time = 20.353321
+
+real	0m3.477s
+user	0m20.463s
+sys	0m0.074s
+
+
+Number of threads =  24
+OMP_SCHEDULE =  dynamic,250
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506684
+Num inside: 753342
+elapsed wall clock time = 1.941793
+elapsed cpu time = 23.364290
+
+real	0m1.948s
+user	0m23.399s
+sys	0m0.157s
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506684
+Num inside: 753342
+elapsed wall clock time = 1.943494
+elapsed cpu time = 23.253487
+
+real	0m1.950s
+user	0m23.304s
+sys	0m0.142s
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506684
+Num inside: 753342
+elapsed wall clock time = 1.947162
+elapsed cpu time = 22.941599
+
+real	0m1.954s
+user	0m22.970s
+sys	0m0.145s
+
+
+Number of threads =  2
+OMP_SCHEDULE =  guided
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506640
+Num inside: 753320
+elapsed wall clock time = 15.028997
+elapsed cpu time = 17.792024
+
+real	0m15.042s
+user	0m17.800s
+sys	0m0.010s
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506640
+Num inside: 753320
+elapsed wall clock time = 15.045720
+elapsed cpu time = 17.825999
+
+real	0m15.085s
+user	0m17.843s
+sys	0m0.009s
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506640
+Num inside: 753320
+elapsed wall clock time = 15.045632
+elapsed cpu time = 17.820547
+
+real	0m15.075s
+user	0m17.828s
+sys	0m0.011s
+
+
+Number of threads =  4
+OMP_SCHEDULE =  guided
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506636
+Num inside: 753318
+elapsed wall clock time = 8.014071
+elapsed cpu time = 18.366348
+
+real	0m8.043s
+user	0m18.392s
+sys	0m0.021s
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506636
+Num inside: 753318
+elapsed wall clock time = 8.020049
+elapsed cpu time = 18.398760
+
+real	0m8.047s
+user	0m18.422s
+sys	0m0.021s
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506636
+Num inside: 753318
+elapsed wall clock time = 8.015005
+elapsed cpu time = 18.392712
+
+real	0m8.047s
+user	0m18.428s
+sys	0m0.022s
+
+
+Number of threads =  12
+OMP_SCHEDULE =  guided
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506726
+Num inside: 753363
+elapsed wall clock time = 3.462919
+elapsed cpu time = 20.344751
+
+real	0m3.486s
+user	0m20.366s
+sys	0m0.069s
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506726
+Num inside: 753363
+elapsed wall clock time = 3.463011
+elapsed cpu time = 20.342477
+
+real	0m3.471s
+user	0m20.373s
+sys	0m0.072s
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506726
+Num inside: 753363
+elapsed wall clock time = 3.462233
+elapsed cpu time = 20.328830
+
+real	0m3.470s
+user	0m20.350s
+sys	0m0.070s
+
+
+Number of threads =  24
+OMP_SCHEDULE =  guided
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506684
+Num inside: 753342
+elapsed wall clock time = 1.943120
+elapsed cpu time = 23.201988
+
+real	0m1.949s
+user	0m23.232s
+sys	0m0.166s
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506684
+Num inside: 753342
+elapsed wall clock time = 1.941537
+elapsed cpu time = 23.198775
+
+real	0m1.948s
+user	0m23.247s
+sys	0m0.162s
+Seed_ts = 144544. RAND_MAX = 2147483647.
+
+Total iter = 3125000
+area estimate = 1.506684
+Num inside: 753342
+elapsed wall clock time = 1.942980
+elapsed cpu time = 23.349450
+
+real	0m1.948s
+user	0m23.381s
+sys	0m0.162s

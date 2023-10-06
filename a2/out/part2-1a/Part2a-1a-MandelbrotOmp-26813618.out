@@ -1,0 +1,39 @@
+SRC_FILES = src/drand.c src/mandomp-avx.c src/mandomp-ts-avx.c src/mandomp-ts.c src/mandomp.c src/mandseq-avx.c src/mandseq.c src/timing.c src/utilities.c
+OBJ_FILES =  obj/drand.o  obj/mandomp-avx.o  obj/mandomp-ts-avx.o  obj/mandomp-ts.o  obj/mandomp.o  obj/mandseq-avx.o  obj/mandseq.o  obj/timing.o  obj/utilities.o
+rm -f bin/mandomp obj/mandomp.o
+make mandomp
+SRC_FILES = src/drand.c src/mandomp-avx.c src/mandomp-ts-avx.c src/mandomp-ts.c src/mandomp.c src/mandseq-avx.c src/mandseq.c src/timing.c src/utilities.c
+OBJ_FILES =  obj/drand.o  obj/mandomp-avx.o  obj/mandomp-ts-avx.o  obj/mandomp-ts.o  obj/mandomp.o  obj/mandseq-avx.o  obj/mandseq.o  obj/timing.o  obj/utilities.o
+icc -g -O3 -xHost -fno-alias -std=c99 -qopenmp -I include  -c src/mandomp.c -o obj/mandomp.o
+In file included from src/mandomp.c(6):
+include/mandelbrot.h(7): warning #303: explicit type is missing ("int" assumed)
+  static const M512_FOUR_PD = _mm512_set1_pd(4.0);
+               ^
+
+In file included from src/mandomp.c(6):
+include/mandelbrot.h(7): error: function call is not allowed in a constant expression
+  static const M512_FOUR_PD = _mm512_set1_pd(4.0);
+                              ^
+
+compilation aborted for src/mandomp.c (code 2)
+make: *** [Makefile:39: obj/mandomp.o] Error 2
+
+
+OMP version
+Number of threads =  2
+OMP_SCHEDULE = 
+/var/spool/slurmd/job26813618/slurm_script: line 32: ./bin/mandomp: No such file or directory
+
+real	0m0.001s
+user	0m0.001s
+sys	0m0.000s
+/var/spool/slurmd/job26813618/slurm_script: line 33: ./bin/mandomp: No such file or directory
+
+real	0m0.001s
+user	0m0.000s
+sys	0m0.000s
+/var/spool/slurmd/job26813618/slurm_script: line 34: ./bin/mandomp: No such file or directory
+
+real	0m0.001s
+user	0m0.000s
+sys	0m0.000s
