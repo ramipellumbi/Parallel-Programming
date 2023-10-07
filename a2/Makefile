@@ -102,6 +102,11 @@ $(BIN_DIR)/mandomp-tasks-columns-shared: $(OBJ_DIR)/mandomp-tasks-columns-shared
 	@mkdir -p $(BIN_DIR)
 	$(CC) $(CFLAGS_OMP) $^ -o $@
 
+mandomp-ts-avx-parallel: $(BIN_DIR)/mandomp-ts-avx-parallel
+$(BIN_DIR)/mandomp-ts-avx-parallel: $(OBJ_DIR)/mandomp-ts-avx-parallel.o $(MODULES_TS)
+	@mkdir -p $(BIN_DIR)
+	$(CC) $(CFLAGS_OMP) $^ -o $@
+
 clean:
 	rm -rf $(OBJ_DIR) $(BIN_DIR)
 
@@ -139,3 +144,6 @@ clean-mandomp-tasks-columns:
 
 clean-mandomp-tasks-columns-shared:
 	rm -f $(BIN_DIR)/mandomp-tasks-columns-shared $(OBJ_DIR)/mandomp-tasks-columns-shared.o
+
+clean-mandomp-ts-avx-parallel:
+	rm -f $(BIN_DIR)/mandomp-ts-avx-parallel $(OBJ_DIR)/mandomp-ts-avx-parallel.o

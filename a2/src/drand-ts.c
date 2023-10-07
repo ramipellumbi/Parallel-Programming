@@ -1,3 +1,4 @@
+#include <stdbool.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -27,24 +28,25 @@ double drand_ts(void)
 
 void dsrand_parallel_ts(unsigned s)
 {
-    seed_ts = s - 1;
-    is_thread_seed_initialized = true;
-    printf("Seed_ts = %lu. RAND_MAX = %d.\n", seed_ts, RAND_MAX);
+#pragma omp critical
+    {
+        is_thread_seed_initialized = true;
+
+        int prime = 23;
+        int thread_id = omp_get_thread_num();
+        printf("Thread %d is initializing seed\n", thread_id);
+
+        // ensure this thread gets a unique seed
+        uint64_t thread_seed = (s - 1) + thread_id * prime;
+        seed_ts = thread_seed - 1;
+        is_thread_seed_initialized = true;
+
+        printf("Seed_ts = %lu. RAND_MAX = %d.\n", seed_ts, RAND_MAX);
+    }
 }
 
 double drand_parallel_ts()
 {
-    // if the thread has not initialized it's own unique seed do so
-    if (!is_thread_seed_initialized)
-    {
-        int offset = 10;
-        int prime = 23;
-        int thread_id = omp_get_thread_num();
-        // ensure this thread gets a unique seed
-        uint64_t thread_seed = offset + thread_id * prime;
-        dsrand_ts(thread_seed);
-    }
-
     seed_ts = 6364136223846793005ULL * seed_ts + 1;
     return ((double)(seed_ts >> 33) / (double)RAND_MAX);
 }
