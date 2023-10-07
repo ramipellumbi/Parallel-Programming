@@ -13,9 +13,12 @@
 module load intel
 
 make clean
-make mandomp-avx
-make mandomp-ts-avx
-make mandomp-ts
-make mandomp
-make mandseq-avx
+
 make mandseq
+make mandseq-avx
+make mandomp
+make mandomp-avx
+make mandomp-ts
+make mandomp-ts-avx
+make mandomp-collapse
+make mandomp-collapse-avx

@@ -6,7 +6,7 @@ CC = icc
 CFLAGS_OMP    = -g -O3 -xHost -fno-alias -std=c99 -qopenmp -I include 
 CFLAGS_SERIAL = -g -O3 -xHost -fno-alias -std=c99 -I include
 
-EXECUTABLES = mandseq mandomp mandomp-ts mandomp-collapse mandomp-tasks mandomp-tasks-row mandomp-tasks-row-shared
+EXECUTABLES = mandseq mandseq-avx mandomp mandomp-avx mandomp-ts-avx mandomp-collapse mandomp-collapse-avx mandomp-tasks mandomp-tasks-row mandomp-tasks-row-shared
 
 SRC_DIR 	= src
 OBJ_DIR 	= obj
@@ -51,6 +51,14 @@ $(OBJ_DIR)/mandomp-ts-avx.o: $(SRC_DIR)/mandomp-ts-avx.c
 	@mkdir -p $(@D)
 	$(CC) $(CFLAGS_OMP) -c $< -o $@
 
+$(OBJ_DIR)/mandomp-collapse.o: $(SRC_DIR)/mandomp-collapse.c
+	@mkdir -p $(@D)
+	$(CC) $(CFLAGS_OMP) -c $< -o $@
+
+$(OBJ_DIR)/mandomp-collapse-avx.o: $(SRC_DIR)/mandomp-collapse-avx.c
+	@mkdir -p $(@D)
+	$(CC) $(CFLAGS_OMP) -c $< -o $@
+
 # Specific rule for mandseq
 mandseq: $(BIN_DIR)/mandseq
 $(BIN_DIR)/mandseq: $(OBJ_DIR)/mandseq.o $(MODULES)
@@ -84,6 +92,16 @@ $(BIN_DIR)/mandomp-ts-avx: $(OBJ_DIR)/mandomp-ts-avx.o $(MODULES)
 	@mkdir -p $(BIN_DIR)
 	$(CC) $(CFLAGS_OMP) $^ -o $@
 
+mandomp-collapse: $(BIN_DIR)/mandomp-collapse
+$(BIN_DIR)/mandomp-collapse: $(OBJ_DIR)/mandomp-collapse.o $(MODULES)
+	@mkdir -p $(BIN_DIR)
+	$(CC) $(CFLAGS_OMP) $^ -o $@
+
+mandomp-collapse-avx: $(BIN_DIR)/mandomp-collapse-avx
+$(BIN_DIR)/mandomp-collapse-avx: $(OBJ_DIR)/mandomp-collapse-avx.o $(MODULES)
+	@mkdir -p $(BIN_DIR)
+	$(CC) $(CFLAGS_OMP) $^ -o $@
+
 clean:
 	rm -rf $(OBJ_DIR) $(BIN_DIR)
 
@@ -106,3 +124,9 @@ clean-mandomp-ts:
 
 clean-mandomp-ts-avx:
 	rm -f $(BIN_DIR)/mandomp-ts-avx $(OBJ_DIR)/mandomp-ts-avx.o
+
+clean-mandomp-collapse:
+	rm -f $(BIN_DIR)/mandomp-collapse $(OBJ_DIR)/mandomp-collapse.o
+
+clean-mandomp-collapse-avx:
+	rm -f $(BIN_DIR)/mandomp-collapse-avx $(OBJ_DIR)/mandomp-collapse-avx.o

@@ -19,12 +19,16 @@ make clean-mandomp
 make clean-mandomp-avx
 make clean-mandomp-ts
 make clean-mandomp-ts-avx
+make clean-mandomp-collapse
+make clean-mandomp-collapse-avx
 
 echo "compiling"
 make mandomp
 make mandomp-avx
 make mandomp-ts
 make mandomp-ts-avx
+make mandomp-collapse
+make mandomp-collapse-avx
 
 # Part 2 - 1a
 echo ""
@@ -94,6 +98,30 @@ do
             echo ""
             echo "AVX"
             time ./bin/mandomp-ts-avx
+        done
+    done 
+done
+
+# Part 2 - 3
+for schedule in "${schedules[@]}"; 
+do
+    for k in 2 4 12 24
+    do 
+        export OMP_NUM_THREADS=$k
+        export OMP_SCHEDULE=$schedule
+
+        echo ""
+        echo ""
+        echo "Number of threads = " $OMP_NUM_THREADS
+        echo "OMP_SCHEDULE = " $OMP_SCHEDULE
+
+        for i in {1..3}
+        do
+            echo "NON AVX"
+            time ./bin/mandomp-collapse
+            echo ""
+            echo "AVX"
+            time ./bin/mandomp-collapse-avx
         done
     done 
 done

@@ -27,8 +27,8 @@ int main(int argc, char *argv[])
     int NUM_Y_PS = NUM_Y_ITERATIONS / PACKING_SIZE * PACKING_SIZE;
 
     // arrays to store the 16 needed random numbers (8 real, 8 imaginary) each iteration
-    double *random_x = (double *)_mm_malloc(PACKING_SIZE * sizeof(double), 64);
-    double *random_y = (double *)_mm_malloc(PACKING_SIZE * sizeof(double), 64);
+    double *random_x = (double *)malloc(PACKING_SIZE * sizeof(double));
+    double *random_y = (double *)malloc(PACKING_SIZE * sizeof(double));
 
     // initialize timing measures
     double start_wc_time = 0.0, end_wc_time = 0.0;
@@ -61,9 +61,9 @@ int main(int argc, char *argv[])
                 random_y[i] = drand();
             }
             // grab 8 random numbers for the 8 needed random x coordinates
-            __m512d random_numbers_x = _mm512_load_pd(&random_x[0]);
+            __m512d random_numbers_x = _mm512_loadu_pd(random_x);
             // grab 8 random numbers for the 8 needed random y coordinates
-            __m512d random_numbers_y = _mm512_load_pd(&random_y[0]);
+            __m512d random_numbers_y = _mm512_loadu_pd(random_y);
 
             // get the 8 bottom left corners for this iteration of the loop
             __m512d bottom_left_y_values = _mm512_add_pd(
@@ -123,8 +123,8 @@ int main(int argc, char *argv[])
     timing(&end_wc_time, &end_cpu_time);
 
     // free the arrays for holding x and y
-    _mm_free(random_x);
-    _mm_free(random_y);
+    free(random_x);
+    free(random_y);
 
     double elapsed_wc_time = end_wc_time - start_wc_time;
     double elapsed_cpu_time = end_cpu_time - start_cpu_time;

@@ -41,30 +41,33 @@ int main(int argc, char *argv[])
 
     // set seed
     unsigned seed = 144545;
-    dsrand(seed);
+    dsrand_ts(seed);
 
     // arrays to store the 16 needed random numbers (8 real, 8 imaginary) each iteration
     double *random_x;
     double *random_y;
 
-#pragma omp parallel shared(number_of_cells_inside_mandelbrot_set, total_iterations, pxs_deltas512, NUM_Y_PS, seed) private(number_of_cells_inside_mandelbrot_set_th, total_iterations_th, random_x, random_y) default(none)
+#pragma omp parallel shared(number_of_cells_inside_mandelbrot_set, total_iterations, pxs_deltas512, NUM_Y_PS, seed) private(random_x, random_y, number_of_cells_inside_mandelbrot_set_th, total_iterations_th) default(none)
     {
         random_x = (double *)malloc(PACKING_SIZE * sizeof(double));
         random_y = (double *)malloc(PACKING_SIZE * sizeof(double));
-        number_of_cells_inside_mandelbrot_set_th = 0;
         total_iterations_th = 0;
+        number_of_cells_inside_mandelbrot_set_th = 0;
 
-#pragma omp for
+#pragma omp for collapse(2)
         for (size_t n = 0; n < NUM_X_ITERATIONS; n++)
         {
-            double current_bottom_left_x = -2.0 + CELL_SIDE_LENGTH * n;
-            double max_x = current_bottom_left_x + CELL_SIDE_LENGTH;
             for (size_t m = 0; m < NUM_Y_PS; m += PACKING_SIZE)
             {
+                // to support collapse have to compute the current bottom
+                // left x for all  y values now
+                double current_bottom_left_x = -2.0 + CELL_SIDE_LENGTH * n;
+                double max_x = current_bottom_left_x + CELL_SIDE_LENGTH;
+
                 for (int i = 0; i < PACKING_SIZE; ++i)
                 {
-                    random_x[i] = drand();
-                    random_y[i] = drand();
+                    random_x[i] = drand_ts();
+                    random_y[i] = drand_ts();
                 }
                 // grab 8 random numbers for the 8 needed random x coordinates
                 __m512d random_numbers_x = _mm512_loadu_pd(random_x);
@@ -109,25 +112,32 @@ int main(int argc, char *argv[])
 
                 total_iterations_th += PACKING_SIZE;
             }
+        }
 
-            // cleanup by performing the naive serial implementation
-            for (size_t m = NUM_Y_PS; m < NUM_Y_ITERATIONS; m++)
+// to support collapsing the cleanup iterations must be their own collapse
+// so we now iterate over all x values twice - not so ideal
+#pragma omp for collapse(2)
+        for (size_t i = 0; i < NUM_X_ITERATIONS; ++i)
+        {
+            for (size_t j = NUM_Y_PS; j < NUM_Y_ITERATIONS; ++j)
             {
-                double current_bottom_left_y = 0.0 + CELL_SIDE_LENGTH * m;
-                double max_y = current_bottom_left_y + CELL_SIDE_LENGTH;
+                // have to compute x for all y values to support collapsing
+                double current_bottom_left_x = -2.0 + i * CELL_SIDE_LENGTH;
+                double cell_max_x = current_bottom_left_x + CELL_SIDE_LENGTH;
+                double current_bottom_left_y = 0.0 + j * CELL_SIDE_LENGTH;
+                double cell_max_y = current_bottom_left_y + CELL_SIDE_LENGTH;
+                double random_x = current_bottom_left_x + (cell_max_x - current_bottom_left_x) * drand_ts();
+                double random_y = current_bottom_left_y + (cell_max_y - current_bottom_left_y) * drand_ts();
 
-                double c_re = current_bottom_left_x + drand() * (max_x - current_bottom_left_x);
-                double c_im = current_bottom_left_y + drand() * (max_y - current_bottom_left_y);
+                int increment = mandelbrot_iteration(random_x, random_y, MAX_ITERATIONS);
+                number_of_cells_inside_mandelbrot_set_th += increment;
 
-                int counter = mandelbrot_iteration(c_re, c_im, MAX_ITERATIONS);
-                number_of_cells_inside_mandelbrot_set_th += counter;
                 total_iterations_th++;
             }
         }
 
 #pragma omp atomic
         number_of_cells_inside_mandelbrot_set += number_of_cells_inside_mandelbrot_set_th;
-
 #pragma omp atomic
         total_iterations += total_iterations_th;
 
@@ -135,6 +145,7 @@ int main(int argc, char *argv[])
         free(random_x);
         free(random_y);
     }
+
     // end the timing
     timing(&end_wc_time, &end_cpu_time);
 
@@ -145,7 +156,7 @@ int main(int argc, char *argv[])
                                                    total_iterations);
 
     write_data_to_file("out/omp.csv",
-                       "omp-avx-not-ts",
+                       "omp-collapse-avx",
                        seed,
                        elapsed_wc_time,
                        area);

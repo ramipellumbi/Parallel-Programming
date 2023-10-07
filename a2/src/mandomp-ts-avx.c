@@ -128,15 +128,13 @@ int main(int argc, char *argv[])
                 number_of_cells_inside_mandelbrot_set_th += counter;
                 total_iterations_th++;
             }
-
-#pragma omp atomic
-            number_of_cells_inside_mandelbrot_set += number_of_cells_inside_mandelbrot_set_th;
-            number_of_cells_inside_mandelbrot_set_th = 0;
-
-#pragma omp atomic
-            total_iterations += total_iterations_th;
-            total_iterations_th = 0;
         }
+
+#pragma omp atomic
+        number_of_cells_inside_mandelbrot_set += number_of_cells_inside_mandelbrot_set_th;
+
+#pragma omp atomic
+        total_iterations += total_iterations_th;
 
         // free the arrays for holding x and y
         free(random_x);
