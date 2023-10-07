@@ -38,8 +38,6 @@ int main(int argc, char *argv[])
         _mm512_set_pd(0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0),
         _mm512_set1_pd(CELL_SIDE_LENGTH));
 
-    __m512d four_512 = _mm512_set1_pd(4.0);
-
     // set seed
     unsigned seed = 144545;
     dsrand_ts(seed);
@@ -48,7 +46,7 @@ int main(int argc, char *argv[])
     double *random_x;
     double *random_y;
 
-#pragma omp parallel shared(number_of_cells_inside_mandelbrot_set, total_iterations, pxs_deltas512, four_512, NUM_Y_PS) private(number_of_cells_inside_mandelbrot_set_th, total_iterations_th, random_x, random_y) default(none)
+#pragma omp parallel shared(number_of_cells_inside_mandelbrot_set, total_iterations, pxs_deltas512, NUM_Y_PS) private(number_of_cells_inside_mandelbrot_set_th, total_iterations_th, random_x, random_y) default(none)
     {
         random_x = (double *)malloc(PACKING_SIZE * sizeof(double));
         random_y = (double *)malloc(PACKING_SIZE * sizeof(double));

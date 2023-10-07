@@ -87,6 +87,16 @@ $(BIN_DIR)/mandomp-collapse-avx: $(OBJ_DIR)/mandomp-collapse-avx.o $(MODULES_TS)
 	@mkdir -p $(BIN_DIR)
 	$(CC) $(CFLAGS_OMP) $^ -o $@
 
+mandomp-tasks: $(BIN_DIR)/mandomp-tasks
+$(BIN_DIR)/mandomp-tasks: $(OBJ_DIR)/mandomp-tasks.o $(MODULES_TS)
+	@mkdir -p $(BIN_DIR)
+	$(CC) $(CFLAGS_OMP) $^ -o $@
+
+mandomp-tasks-columns: $(BIN_DIR)/mandomp-tasks-columns
+$(BIN_DIR)/mandomp-tasks-columns: $(OBJ_DIR)/mandomp-tasks-columns.o $(MODULES_TS)
+	@mkdir -p $(BIN_DIR)
+	$(CC) $(CFLAGS_OMP) $^ -o $@
+
 clean:
 	rm -rf $(OBJ_DIR) $(BIN_DIR)
 
@@ -115,3 +125,9 @@ clean-mandomp-collapse:
 
 clean-mandomp-collapse-avx:
 	rm -f $(BIN_DIR)/mandomp-collapse-avx $(OBJ_DIR)/mandomp-collapse-avx.o
+
+clean-mandomp-tasks:
+	rm -f $(BIN_DIR)/mandomp-tasks $(OBJ_DIR)/mandomp-tasks.o
+
+clean-mandomp-tasks-columns:
+	rm -f $(BIN_DIR)/mandomp-tasks-columns $(OBJ_DIR)/mandomp-tasks-columns.o

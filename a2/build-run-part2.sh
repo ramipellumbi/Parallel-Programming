@@ -7,7 +7,7 @@
 #SBATCH --ntasks=1
 #SBATCH --time=4:00:00
 #SBATCH --mem-per-cpu=7G
-#SBATCH --job-name=Part2a-MandelbrotOMP
+#SBATCH --job-name=Part2-MandelbrotOMPLoops
 #SBATCH --output=out/part2/%x-%j.out
 
 # Load Required Modules
