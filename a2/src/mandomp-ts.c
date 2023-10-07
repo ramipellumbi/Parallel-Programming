@@ -1,7 +1,7 @@
 #include <omp.h>
 #include <stdio.h>
 
-#include "drand.h"
+#include "drand-ts.h"
 #include "mandelbrot.h"
 #include "timing.h"
 #include "utilities.h"
@@ -13,7 +13,9 @@ static const double CELL_SIDE_LENGTH = 0.001;
 
 int main(int argc, char *argv[])
 {
+    // set seed
     unsigned seed = 144545;
+    dsrand_ts(seed);
 
     // initialize timing measures
     double start_wc_time = 0.0, end_wc_time = 0.0;
@@ -24,10 +26,8 @@ int main(int argc, char *argv[])
 
     // start the timing
     timing(&start_wc_time, &start_cpu_time);
-#pragma omp parallel shared(number_of_cells_inside_mandelbrot_set, total_iterations, seed) private(number_of_cells_inside_mandelbrot_set_th, total_iterations_th) default(none)
+#pragma omp parallel shared(number_of_cells_inside_mandelbrot_set, total_iterations) private(number_of_cells_inside_mandelbrot_set_th, total_iterations_th) default(none)
     {
-        // set seed
-        dsrand_ts(seed);
         number_of_cells_inside_mandelbrot_set_th = 0;
         total_iterations_th = 0;
 

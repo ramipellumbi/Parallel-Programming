@@ -39,23 +39,44 @@ unset OMP_SCHEDULE
 
 echo "Number of threads = " $OMP_NUM_THREADS
 echo "OMP_SCHEDULE = " $OMP_SCHEDULE
+
+echo ""
+echo ""
+echo "MANDOMP"
+
 time ./bin/mandomp
 time ./bin/mandomp
 time ./bin/mandomp
 
 echo ""
 echo ""
-echo "OMP version"
+echo "MANDOMP AVX"
 
 time ./bin/mandomp-avx
 time ./bin/mandomp-avx
 time ./bin/mandomp-avx
+
+echo ""
+echo ""
+echo "MANDOMP TS"
+
+time ./bin/mandomp-ts
+time ./bin/mandomp-ts
+time ./bin/mandomp-ts
+
+echo ""
+echo ""
+echo "MANDOMP TS AVX"
+
+time ./bin/mandomp-ts-avx
+time ./bin/mandomp-ts-avx
+time ./bin/mandomp-ts-avx
 
 # Part 2 - 1b
 
 echo ""
 echo ""
-echo "OMP THREAD SAFE version"
+echo "MANDOMP THREAD SAFE VERSION ACROSS THREAD COUNTS"
 
 for k in 1 2 4 12 24
 do
@@ -76,6 +97,10 @@ do
         time ./bin/mandomp-ts-avx
     done
 done
+
+echo ""
+echo ""
+echo "MANDOMP THREAD SAFE VERSION ACROSS SCHEDULES ACROSS THREAD COUNTS"
 
 # Part 2 - 2
 schedules=("static,1" "static,100" "dynamic" "dynamic,250" "guided")
@@ -101,6 +126,10 @@ do
         done
     done 
 done
+
+echo ""
+echo ""
+echo "MANDOMP THREAD SAFE VERSION COLLAPSED ACROSS SCHEDULES ACROSS THREAD COUNTS"
 
 # Part 2 - 3
 for schedule in "${schedules[@]}"; 

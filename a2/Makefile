@@ -17,10 +17,12 @@ SRC_FILES = $(shell find $(SRC_DIR) -name '*.c')
 OBJ_FILES = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRC_FILES))
 
 DRAND  	  = $(OBJ_DIR)/drand.o
+DRAND_TS  = $(OBJ_DIR)/drand-ts.o
 TIMING 	  = $(OBJ_DIR)/timing.o
 UTILITIES = $(OBJ_DIR)/utilities.o
 
-MODULES = $(DRAND) $(TIMING) $(UTILITIES)
+MODULES    = $(DRAND) $(TIMING) $(UTILITIES)
+MODULES_TS = $(DRAND_TS) $(TIMING) $(UTILITIES)
 
 # For debugging
 $(info SRC_FILES = $(SRC_FILES))
@@ -28,36 +30,19 @@ $(info OBJ_FILES = $(OBJ_FILES))
 
 all: $(addprefix $(BIN_DIR)/, $(EXECUTABLES))
 
-# General rule for object files (not requiring OpenMP)
+# General rule for object files (requiring OpenMP)
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	@mkdir -p $(@D)
-	$(CC) $(CFLAGS_SERIAL) -c $< -o $@
-
-# Specific rule for mandomp.o (requiring OpenMP)
-$(OBJ_DIR)/mandomp.o: $(SRC_DIR)/mandomp.c
-	@mkdir -p $(@D)
 	$(CC) $(CFLAGS_OMP) -c $< -o $@
 
-$(OBJ_DIR)/mandomp-avx.o: $(SRC_DIR)/mandomp-avx.c
+# Specific rule for mandseq
+$(OBJ_DIR)/mandseq.o: $(SRC_DIR)/mandseq.c
 	@mkdir -p $(@D)
-	$(CC) $(CFLAGS_OMP) -c $< -o $@
+	$(CC) $(CFLAGS_SERIAL) -c $< -o $@	
 
-# Specific rule for mandomp-ts.o (requiring OpenMP)
-$(OBJ_DIR)/mandomp-ts.o: $(SRC_DIR)/mandomp-ts.c
+$(OBJ_DIR)/mandseq-avx.o: $(SRC_DIR)/mandseq-avx.c
 	@mkdir -p $(@D)
-	$(CC) $(CFLAGS_OMP) -c $< -o $@
-
-$(OBJ_DIR)/mandomp-ts-avx.o: $(SRC_DIR)/mandomp-ts-avx.c
-	@mkdir -p $(@D)
-	$(CC) $(CFLAGS_OMP) -c $< -o $@
-
-$(OBJ_DIR)/mandomp-collapse.o: $(SRC_DIR)/mandomp-collapse.c
-	@mkdir -p $(@D)
-	$(CC) $(CFLAGS_OMP) -c $< -o $@
-
-$(OBJ_DIR)/mandomp-collapse-avx.o: $(SRC_DIR)/mandomp-collapse-avx.c
-	@mkdir -p $(@D)
-	$(CC) $(CFLAGS_OMP) -c $< -o $@
+	$(CC) $(CFLAGS_SERIAL) -c $< -o $@	
 
 # Specific rule for mandseq
 mandseq: $(BIN_DIR)/mandseq
@@ -83,22 +68,22 @@ $(BIN_DIR)/mandomp-avx: $(OBJ_DIR)/mandomp-avx.o $(MODULES)
 
 # Specific rule for mandomp-ts
 mandomp-ts: $(BIN_DIR)/mandomp-ts
-$(BIN_DIR)/mandomp-ts: $(OBJ_DIR)/mandomp-ts.o $(MODULES)
+$(BIN_DIR)/mandomp-ts: $(OBJ_DIR)/mandomp-ts.o $(MODULES_TS)
 	@mkdir -p $(BIN_DIR)
 	$(CC) $(CFLAGS_OMP) $^ -o $@
 
 mandomp-ts-avx: $(BIN_DIR)/mandomp-ts-avx
-$(BIN_DIR)/mandomp-ts-avx: $(OBJ_DIR)/mandomp-ts-avx.o $(MODULES)
+$(BIN_DIR)/mandomp-ts-avx: $(OBJ_DIR)/mandomp-ts-avx.o $(MODULES_TS)
 	@mkdir -p $(BIN_DIR)
 	$(CC) $(CFLAGS_OMP) $^ -o $@
 
 mandomp-collapse: $(BIN_DIR)/mandomp-collapse
-$(BIN_DIR)/mandomp-collapse: $(OBJ_DIR)/mandomp-collapse.o $(MODULES)
+$(BIN_DIR)/mandomp-collapse: $(OBJ_DIR)/mandomp-collapse.o $(MODULES_TS)
 	@mkdir -p $(BIN_DIR)
 	$(CC) $(CFLAGS_OMP) $^ -o $@
 
 mandomp-collapse-avx: $(BIN_DIR)/mandomp-collapse-avx
-$(BIN_DIR)/mandomp-collapse-avx: $(OBJ_DIR)/mandomp-collapse-avx.o $(MODULES)
+$(BIN_DIR)/mandomp-collapse-avx: $(OBJ_DIR)/mandomp-collapse-avx.o $(MODULES_TS)
 	@mkdir -p $(BIN_DIR)
 	$(CC) $(CFLAGS_OMP) $^ -o $@
 
