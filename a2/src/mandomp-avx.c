@@ -5,7 +5,6 @@
 #include <stdio.h>
 #include <stdint.h>
 
-#include "complex.h"
 #include "drand.h"
 #include "mandelbrot.h"
 #include "timing.h"
