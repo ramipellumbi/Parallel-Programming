@@ -97,6 +97,11 @@ $(BIN_DIR)/mandomp-tasks-columns: $(OBJ_DIR)/mandomp-tasks-columns.o $(MODULES_T
 	@mkdir -p $(BIN_DIR)
 	$(CC) $(CFLAGS_OMP) $^ -o $@
 
+mandomp-tasks-columns-shared: $(BIN_DIR)/mandomp-tasks-columns-shared
+$(BIN_DIR)/mandomp-tasks-columns-shared: $(OBJ_DIR)/mandomp-tasks-columns-shared.o $(MODULES_TS)
+	@mkdir -p $(BIN_DIR)
+	$(CC) $(CFLAGS_OMP) $^ -o $@
+
 clean:
 	rm -rf $(OBJ_DIR) $(BIN_DIR)
 
@@ -131,3 +136,6 @@ clean-mandomp-tasks:
 
 clean-mandomp-tasks-columns:
 	rm -f $(BIN_DIR)/mandomp-tasks-columns $(OBJ_DIR)/mandomp-tasks-columns.o
+
+clean-mandomp-tasks-columns-shared:
+	rm -f $(BIN_DIR)/mandomp-tasks-columns-shared $(OBJ_DIR)/mandomp-tasks-columns-shared.o

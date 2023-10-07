@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
                 double current_bottom_left_x = -2.0 + CELL_SIDE_LENGTH * n;
                 double max_x = current_bottom_left_x + CELL_SIDE_LENGTH;
 
-#pragma omp task firstprivate(current_bottom_left_x, max_x)
+#pragma omp task firstprivate(current_bottom_left_x, max_x, random_x, random_y)
                 {
                     // let's compute 8 y-values simultaneously
                     for (size_t m = 0; m < NUM_Y_PS; m += PACKING_SIZE)

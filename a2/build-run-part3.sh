@@ -17,11 +17,13 @@ module load intel
 echo "cleaning"
 make clean-mandomp-tasks
 make clean-mandomp-tasks-columns
+make clean-mandomp-tasks-columns-shared
 echo ""
 
 echo "compiling"
 make mandomp-tasks
 make mandomp-tasks-columns
+make mandomp-tasks-columns-shared
 
 echo ""
 echo ""
@@ -43,5 +45,8 @@ do
         echo ""
         echo "Per column"
         time ./bin/mandomp-tasks-columns
+        echo ""
+        echo "Shared Task Creation"
+        time ./bin/mandomp-tasks-columns-shared
     done
 done
