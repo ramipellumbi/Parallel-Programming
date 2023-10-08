@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
         _mm512_set1_pd(CELL_SIDE_LENGTH));
 
     // set seed
-    unsigned seed = 144545;
+    unsigned seed = 12345;
     dsrand_ts(seed);
 
     // arrays to store the 16 needed random numbers (8 real, 8 imaginary) each iteration

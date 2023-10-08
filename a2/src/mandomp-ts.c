@@ -14,7 +14,7 @@ static const double CELL_SIDE_LENGTH = 0.001;
 int main(int argc, char *argv[])
 {
     // set seed
-    unsigned seed = 144545;
+    unsigned seed = 12345;
     dsrand_ts(seed);
 
     // initialize timing measures

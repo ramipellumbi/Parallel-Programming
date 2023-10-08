@@ -20,7 +20,7 @@ static const int PACKING_SIZE = 8;
 int main(int argc, char *argv[])
 {
     // set seed
-    unsigned seed = 144545;
+    unsigned seed = 12345;
     dsrand(seed);
 
     // number of iterations for y that is a multiple of PACKING_SIZE

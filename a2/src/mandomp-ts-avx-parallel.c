@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
     // arrays to store the 16 needed random numbers (8 real, 8 imaginary) each iteration
     double *random_x;
     double *random_y;
-    unsigned seed = 144545;
+    unsigned seed = 12345;
 
 #pragma omp parallel shared(number_of_cells_inside_mandelbrot_set, total_iterations, pxs_deltas512, NUM_Y_PS, seed) private(number_of_cells_inside_mandelbrot_set_th, total_iterations_th, random_x, random_y) default(none)
     {
