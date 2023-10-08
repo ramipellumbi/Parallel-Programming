@@ -112,7 +112,7 @@ int main(int argc, char *argv[])
                     }
                 }
 
-                // cleanup by performing the naive serial implementation
+                // cleanup by performing the standard serial implementation
                 for (size_t m = NUM_Y_PS; m < NUM_Y_ITERATIONS; m++)
                 {
                     double current_bottom_left_y = 0.0 + CELL_SIDE_LENGTH * m;
