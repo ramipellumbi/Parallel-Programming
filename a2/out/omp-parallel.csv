@@ -2,3 +2,6 @@ num_cores,num_threads,schedule,seed,program,wc_time,area
 24,24,"static,1",144545,omp-avx-ts,1.947835,1.506646
 24,24,"static,1",144545,omp-avx-ts,1.957353,1.506646
 24,24,"static,1",144545,omp-avx-ts,1.949927,1.506646
+24,24,"static,1",12345,omp-avx-ts,1.952269,1.506782
+24,24,"static,1",12345,omp-avx-ts,1.950993,1.506782
+24,24,"static,1",12345,omp-avx-ts,1.952520,1.506782
