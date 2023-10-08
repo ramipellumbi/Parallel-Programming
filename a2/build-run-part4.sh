@@ -21,7 +21,7 @@ echo "compiling"
 make mandomp-ts-avx-parallel
 
 export OMP_NUM_THREADS=24
-export OMP_SCHEDULE="static,1"
+export OMP_SCHEDULE="guided"
 
 time ./bin/mandomp-ts-avx-parallel
 time ./bin/mandomp-ts-avx-parallel
