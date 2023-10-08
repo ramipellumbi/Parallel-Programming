@@ -93,10 +93,6 @@ int main(int argc, char *argv[])
                         _mm512_sub_pd(top_left_y_values, bottom_left_y_values),
                         bottom_left_y_values);
 
-                    // These are the 8 z values
-                    __m512d z_re = _mm512_set1_pd(0.0);
-                    __m512d z_im = _mm512_set1_pd(0.0);
-
 // Assess the 8 c values concurrently
 #pragma omp task firstprivate(x_values, y_values)
                     {
@@ -116,7 +112,7 @@ int main(int argc, char *argv[])
                     }
                 }
 
-                // cleanup by performing the naive serial implementation
+                // cleanup by performing the standard serial implementation
                 for (size_t m = NUM_Y_PS; m < NUM_Y_ITERATIONS; m++)
                 {
                     double current_bottom_left_y = 0.0 + CELL_SIDE_LENGTH * m;

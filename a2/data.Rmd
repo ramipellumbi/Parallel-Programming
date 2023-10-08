@@ -7,6 +7,8 @@ output:
 ---
 
 ```{r}
+library(knitr)
+library(kableExtra)
 library(ggplot2)
 library(pubtheme)
 library(tidyverse)
@@ -15,24 +17,66 @@ library(tidyverse)
 ```{r}
 serial <- read_csv("a2/out/serial.csv", show_col_types = FALSE)
 omp <- read_csv("a2/out/omp.csv", show_col_types = FALSE)
-```
+tasks <- read_csv("a2/out/tasks.csv", show_col_types = FALSE)
 
-```{r}
 serial <- serial %>%
-  group_by(program) %>%
-  summarize(wc_time = mean(wc_time),
-            area = first(area))
+  filter(seed == 12345)
+omp <- omp %>%
+  filter(seed == 12345)
+tasks <- tasks %>%
+  filter(seed == 12345)
 ```
 
 ```{r}
-p <- ggplot(serial, aes(x = program, y = wc_time)) +
-  geom_point() +
-  geom_text(aes(label = sprintf("Area: %.6f", area)), vjust = -1) +
-  ggtitle("Wall Clock Time and Area by Program") +
+q1 <- serial %>% dplyr::select(-num_cores, num_threads, -schedule)
+
+kable(q1 %>% slice_head(n = 3), format = "latex", row.names = FALSE,
+      caption = "Serial Wall Clock Time and Area", digits = 8) %>%
+  kable_styling(bootstrap_options = c("striped", "hover"),
+                full_width = TRUE,
+                font_size = 12,
+                position = "left")
+```
+
+```{r}
+q21a <- omp %>% filter(program == "omp-avx-not-ts" |
+                         program == "omp-not-ts") %>%
+  mutate(program = ifelse(program == "omp-avx-not-ts", "avx", "standard")) %>%
+  dplyr::select(-num_cores, -schedule)
+
+q21b <- omp %>% filter(program == "omp-avx-ts" | program == "omp-ts",
+                       num_threads == 2, schedule == "UNDEFINED") %>%
+  dplyr::select(-num_cores, -schedule) %>%
+  slice_head(n = 6)
+
+omp_results <- omp %>%
+  filter(program != "omp-avx-not-ts",
+         program != "omp-not-ts") %>%
+  mutate(schedule = ifelse(schedule == "UNDEFINED", "None", schedule)) %>%
+  group_by(program, schedule, num_threads) %>%
+  summarize(wc_time = mean(wc_time),
+            area = mean(area)) %>%
+  filter(num_threads > 1, !grepl("avx", program, fixed = TRUE)) %>%
+  mutate(num_threads = as.factor(num_threads)) %>%
+  mutate(num_threads = paste0("Threads: ", num_threads))
+
+kable(omp_results, format = "latex", row.names = FALSE,
+      caption = "Serial Wall Clock Time and Area", digits = 6) %>%
+  kable_styling(bootstrap_options = c("striped", "hover"),
+                full_width = TRUE,
+                font_size = 14)
+
+g1 <- ggplot(omp_results, aes(x = factor(program, c("omp-ts", "omp-collapse")), y = wc_time, fill = schedule)) +
+  geom_bar(position = "dodge", stat = "identity") +
+  facet_wrap(~factor(num_threads,
+                     c("Threads: 2", "Threads: 4",
+                       "Threads: 12", "Threads: 24")), scales = "free_y") +
+  ggtitle("Area vs. Wall Clock Time - Mandomp (Thread Safe)") +
   xlab("Program") +
   ylab("Wall Clock Time") +
   theme_pub() +
   theme(
+    text = element_text(family = "Times"), # LaTeX-like font
     plot.title = element_text(size = 20),
     axis.title.x = element_text(size = 16),
     axis.title.y = element_text(size = 16),
@@ -41,43 +85,21 @@ p <- ggplot(serial, aes(x = program, y = wc_time)) +
     strip.text = element_text(size = 16)
   )
 
-p
-```
+# Save the plot
+ggsave("q2-img.pdf", g1, width = 10, height = 10, units = "in")
 
-```{r}
-p <- ggplot(omp %>%
-              filter(program == "omp-not-ts" | program == "omp-avx-not-ts"),
-            aes(x = wc_time, y = area)) +
-  geom_point() +
-  facet_wrap(~program, scales = "free_y") +
-  ggtitle("Area vs. Wall Clock Time - Mandomp (Not Thread Safe)") +
-  xlab("Wall Clock Time") +
-  ylab("Area") +
-  theme_pub() +
-  theme(
-    plot.title = element_text(size = 20),
-    axis.title.x = element_text(size = 16),
-    axis.title.y = element_text(size = 16),
-    axis.text.x = element_text(size = 14),
-    axis.text.y = element_text(size = 14),
-    strip.text = element_text(size = 16)
-  )
+kable(omp_results %>% filter(!grepl("collapse", program, fixed = TRUE)),
+      format = "html", row.names = FALSE,
+      caption = "OMP Loop Directives Clock Time and Area", digits = 6) %>%
+  kable_styling(bootstrap_options = c("striped", "hover"),
+                full_width = FALSE,
+                font_size = 12,
+                position = "left") %>%
+  save_kable(file = "q22-table.png", zoom = 2)
 
-p
-```
-
-```{r}
-data <- omp %>%
-  filter(program != "omp-not-ts", program != "omp-avx-not-ts") %>%
-  mutate(schedule = ifelse(schedule == "UNDEFINED", "None", schedule)) %>%
-  group_by(program, schedule, num_threads) %>%
-  summarise(wc_time = mean(wc_time), area = first(area), .groups = "keep")
-
-p <- ggplot(data %>% filter(num_threads > 1),
-            aes(x = program, y = wc_time, fill = schedule)) +
+g1 <- ggplot(omp_results, aes(x = program, y = wc_time, fill = schedule)) +
   geom_bar(position = "dodge", stat = "identity") +
-  geom_text(aes(label = sprintf("Area: %.4f", area)), nudge_y = 1) +
-  facet_wrap(~num_threads) +
+  facet_wrap(~num_threads, scales = "free_y") +
   ggtitle("Area vs. Wall Clock Time - Mandomp (Thread Safe)") +
   xlab("") +
   ylab("Wall Clock Time") +
@@ -90,6 +112,36 @@ p <- ggplot(data %>% filter(num_threads > 1),
     axis.text.y = element_text(size = 14),
     strip.text = element_text(size = 16)
   )
+ggsave("q2-img.png", g1, width = 10, height = 10, units = "in", dpi = 300)
 
-p
+tasks <- tasks %>%
+  filter(num_threads > 1) %>%
+  group_by(program, num_threads) %>%
+  summarize(wc_time = mean(wc_time),
+            area = mean(area))
+
+kable(tasks, format = "html", row.names = FALSE,
+      caption = "OMP Tasks Clock Time and Area", digits = 6) %>%
+  kable_styling(bootstrap_options = c("striped", "hover"),
+                full_width = FALSE,
+                font_size = 12,
+                position = "left")
+
+ggplot(tasks, aes(x = program, y = wc_time)) +
+  geom_bar(position = "dodge", stat = "identity") +
+  geom_text(aes(label = "Area"), nudge_y = 0.45) +
+  geom_text(aes(label = sprintf("%.6f", area)), nudge_y = 0.2) +
+  facet_wrap(~num_threads, scales = "free_y") +
+  ggtitle("Wall Clock Time vs. Program - Tasks") +
+  xlab("Program") +
+  ylab("Wall Clock Time") +
+  theme_pub() +
+  theme(
+    plot.title = element_text(size = 20),
+    axis.title.x = element_text(size = 16),
+    axis.title.y = element_text(size = 16),
+    axis.text.x = element_text(size = 14, angle = 90),
+    axis.text.y = element_text(size = 14),
+    strip.text = element_text(size = 16)
+  )
 ```
