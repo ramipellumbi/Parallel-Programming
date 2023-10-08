@@ -1,4 +1,3 @@
-#include <stdbool.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -8,11 +7,8 @@
 // same impact as threadprivate
 static uint64_t seed_ts;
 
-// add for parallel fix - tracks if a thread has been assigned a seed
-static bool is_thread_seed_initialized = false;
-
 // ensures each thread is modifying it's own seed
-#pragma omp threadprivate(seed_ts, is_thread_seed_initialized)
+#pragma omp threadprivate(seed_ts)
 
 void dsrand_ts(unsigned s)
 {
@@ -26,27 +22,33 @@ double drand_ts(void)
     return ((double)(seed_ts >> 33) / (double)RAND_MAX);
 }
 
-void dsrand_parallel_ts(unsigned s)
+/**
+ * Leapfrog Method
+ *
+ * 1. Each thread needs to be initialized with a seed that is a function of the master seed and the thread's ID.
+ * 2. The thread updates its seed by advancing the seed by the number of threads.
+ *
+ * Thread 0 uses numbers at position 0, NUM_THREADS, 2*NUM_THREADS,...
+ * Thread 1 uses numbers at position 1, NUM_THREADS + 1, 2*NUM_THREADS + 1,...
+ * ...
+ */
+
+// Advance the RNG state by `n` steps
+void leapfrog(uint64_t *seed, uint64_t n)
 {
-#pragma omp critical
+    for (uint64_t i = 0; i < n; ++i)
     {
-        is_thread_seed_initialized = true;
-
-        int prime = 23;
-        int thread_id = omp_get_thread_num();
-        printf("Thread %d is initializing seed\n", thread_id);
-
-        // ensure this thread gets a unique seed
-        uint64_t thread_seed = (s - 1) + thread_id * prime;
-        seed_ts = thread_seed - 1;
-        is_thread_seed_initialized = true;
-
-        printf("Seed_ts = %lu. RAND_MAX = %d.\n", seed_ts, RAND_MAX);
+        *seed = 6364136223846793005ULL * (*seed) + 1;
     }
 }
 
-double drand_parallel_ts()
+void dsrand_parallel_ts(unsigned s)
 {
-    seed_ts = 6364136223846793005ULL * seed_ts + 1;
-    return ((double)(seed_ts >> 33) / (double)RAND_MAX);
+    int thread_id = omp_get_thread_num();
+
+    uint64_t master_seed = s - 1;
+    seed_ts = master_seed;
+
+    // Each thread leapfrogs `thread_id` steps from master_seed
+    leapfrog(&seed_ts, thread_id);
 }

@@ -1,0 +1,81 @@
+SRC_FILES = src/drand-ts.c src/drand.c src/mandomp-avx.c src/mandomp-collapse-avx.c src/mandomp-collapse.c src/mandomp-tasks-columns-shared.c src/mandomp-tasks-columns.c src/mandomp-tasks.c src/mandomp-ts-avx-parallel.c src/mandomp-ts-avx.c src/mandomp-ts.c src/mandomp.c src/mandseq-avx.c src/mandseq.c src/timing.c src/utilities.c
+OBJ_FILES =  obj/drand-ts.o  obj/drand.o  obj/mandomp-avx.o  obj/mandomp-collapse-avx.o  obj/mandomp-collapse.o  obj/mandomp-tasks-columns-shared.o  obj/mandomp-tasks-columns.o  obj/mandomp-tasks.o  obj/mandomp-ts-avx-parallel.o  obj/mandomp-ts-avx.o  obj/mandomp-ts.o  obj/mandomp.o  obj/mandseq-avx.o  obj/mandseq.o  obj/timing.o  obj/utilities.o
+rm -f bin/mandseq obj/mandseq.o
+SRC_FILES = src/drand-ts.c src/drand.c src/mandomp-avx.c src/mandomp-collapse-avx.c src/mandomp-collapse.c src/mandomp-tasks-columns-shared.c src/mandomp-tasks-columns.c src/mandomp-tasks.c src/mandomp-ts-avx-parallel.c src/mandomp-ts-avx.c src/mandomp-ts.c src/mandomp.c src/mandseq-avx.c src/mandseq.c src/timing.c src/utilities.c
+OBJ_FILES =  obj/drand-ts.o  obj/drand.o  obj/mandomp-avx.o  obj/mandomp-collapse-avx.o  obj/mandomp-collapse.o  obj/mandomp-tasks-columns-shared.o  obj/mandomp-tasks-columns.o  obj/mandomp-tasks.o  obj/mandomp-ts-avx-parallel.o  obj/mandomp-ts-avx.o  obj/mandomp-ts.o  obj/mandomp.o  obj/mandseq-avx.o  obj/mandseq.o  obj/timing.o  obj/utilities.o
+rm -f bin/mandseq-avx obj/mandseq-avx.o
+make mandseq
+SRC_FILES = src/drand-ts.c src/drand.c src/mandomp-avx.c src/mandomp-collapse-avx.c src/mandomp-collapse.c src/mandomp-tasks-columns-shared.c src/mandomp-tasks-columns.c src/mandomp-tasks.c src/mandomp-ts-avx-parallel.c src/mandomp-ts-avx.c src/mandomp-ts.c src/mandomp.c src/mandseq-avx.c src/mandseq.c src/timing.c src/utilities.c
+OBJ_FILES =  obj/drand-ts.o  obj/drand.o  obj/mandomp-avx.o  obj/mandomp-collapse-avx.o  obj/mandomp-collapse.o  obj/mandomp-tasks-columns-shared.o  obj/mandomp-tasks-columns.o  obj/mandomp-tasks.o  obj/mandomp-ts-avx-parallel.o  obj/mandomp-ts-avx.o  obj/mandomp-ts.o  obj/mandomp.o  obj/mandseq-avx.o  obj/mandseq.o  obj/timing.o  obj/utilities.o
+icc -g -O3 -xHost -fno-alias -std=c99 -I include -c src/mandseq.c -o obj/mandseq.o	
+icc -g -O3 -xHost -fno-alias -std=c99 -I include obj/mandseq.o obj/drand.o obj/timing.o obj/utilities.o -o bin/mandseq
+SRC_FILES = src/drand-ts.c src/drand.c src/mandomp-avx.c src/mandomp-collapse-avx.c src/mandomp-collapse.c src/mandomp-tasks-columns-shared.c src/mandomp-tasks-columns.c src/mandomp-tasks.c src/mandomp-ts-avx-parallel.c src/mandomp-ts-avx.c src/mandomp-ts.c src/mandomp.c src/mandseq-avx.c src/mandseq.c src/timing.c src/utilities.c
+OBJ_FILES =  obj/drand-ts.o  obj/drand.o  obj/mandomp-avx.o  obj/mandomp-collapse-avx.o  obj/mandomp-collapse.o  obj/mandomp-tasks-columns-shared.o  obj/mandomp-tasks-columns.o  obj/mandomp-tasks.o  obj/mandomp-ts-avx-parallel.o  obj/mandomp-ts-avx.o  obj/mandomp-ts.o  obj/mandomp.o  obj/mandseq-avx.o  obj/mandseq.o  obj/timing.o  obj/utilities.o
+icc -g -O3 -xHost -fno-alias -std=c99 -I include -c src/mandseq-avx.c -o obj/mandseq-avx.o	
+icc -g -O3 -xHost -fno-alias -std=c99 -I include obj/mandseq-avx.o obj/drand.o obj/timing.o obj/utilities.o -o bin/mandseq-avx
+
+
+Serial version
+OMP_NUM_THREADS not setWarning: OMP_SCHEDULE environment variable is not set.
+Seed = 12344. RAND_MAX = 2147483647.
+
+area estimate = 1.506648
+elapsed wall clock time = 49.282019
+elapsed cpu time = 49.183152
+
+real	0m49.289s
+user	0m49.183s
+sys	0m0.003s
+OMP_NUM_THREADS not setWarning: OMP_SCHEDULE environment variable is not set.
+Seed = 12344. RAND_MAX = 2147483647.
+
+area estimate = 1.506648
+elapsed wall clock time = 49.261938
+elapsed cpu time = 49.185532
+
+real	0m49.279s
+user	0m49.186s
+sys	0m0.002s
+OMP_NUM_THREADS not setWarning: OMP_SCHEDULE environment variable is not set.
+Seed = 12344. RAND_MAX = 2147483647.
+
+area estimate = 1.506648
+elapsed wall clock time = 49.257488
+elapsed cpu time = 49.183837
+
+real	0m49.272s
+user	0m49.184s
+sys	0m0.004s
+
+
+Serial version AVX
+OMP_NUM_THREADS not setWarning: OMP_SCHEDULE environment variable is not set.
+Seed = 12344. RAND_MAX = 2147483647.
+
+area estimate = 1.506656
+elapsed wall clock time = 17.770612
+elapsed cpu time = 17.740100
+
+real	0m17.808s
+user	0m17.741s
+sys	0m0.002s
+OMP_NUM_THREADS not setWarning: OMP_SCHEDULE environment variable is not set.
+Seed = 12344. RAND_MAX = 2147483647.
+
+area estimate = 1.506656
+elapsed wall clock time = 17.768701
+elapsed cpu time = 17.740307
+
+real	0m17.794s
+user	0m17.740s
+sys	0m0.002s
+OMP_NUM_THREADS not setWarning: OMP_SCHEDULE environment variable is not set.
+Seed = 12344. RAND_MAX = 2147483647.
+
+area estimate = 1.506656
+elapsed wall clock time = 17.752538
+elapsed cpu time = 17.725359
+
+real	0m17.784s
+user	0m17.726s
+sys	0m0.002s

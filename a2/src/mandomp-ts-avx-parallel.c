@@ -45,12 +45,11 @@ int main(int argc, char *argv[])
 
 #pragma omp parallel shared(number_of_cells_inside_mandelbrot_set, total_iterations, pxs_deltas512, NUM_Y_PS, seed) private(number_of_cells_inside_mandelbrot_set_th, total_iterations_th, random_x, random_y) default(none)
     {
+        dsrand_parallel_ts(seed); // each thread uses sequence based on leapfrog method
         random_x = (double *)malloc(PACKING_SIZE * sizeof(double));
         random_y = (double *)malloc(PACKING_SIZE * sizeof(double));
         number_of_cells_inside_mandelbrot_set_th = 0;
         total_iterations_th = 0;
-
-        dsrand_parallel_ts(seed);
 
 #pragma omp for
         // for each x value
@@ -64,8 +63,8 @@ int main(int argc, char *argv[])
             {
                 for (int i = 0; i < PACKING_SIZE; ++i)
                 {
-                    random_x[i] = drand_parallel_ts();
-                    random_y[i] = drand_parallel_ts();
+                    random_x[i] = drand_ts();
+                    random_y[i] = drand_ts();
                 }
                 // grab 8 random numbers for the 8 needed random x coordinates
                 __m512d random_numbers_x = _mm512_loadu_pd(random_x);
@@ -117,8 +116,8 @@ int main(int argc, char *argv[])
                 double current_bottom_left_y = 0.0 + CELL_SIDE_LENGTH * m;
                 double max_y = current_bottom_left_y + CELL_SIDE_LENGTH;
 
-                double c_re = current_bottom_left_x + drand_parallel_ts() * (max_x - current_bottom_left_x);
-                double c_im = current_bottom_left_y + drand_parallel_ts() * (max_y - current_bottom_left_y);
+                double c_re = current_bottom_left_x + drand_ts() * (max_x - current_bottom_left_x);
+                double c_im = current_bottom_left_y + drand_ts() * (max_y - current_bottom_left_y);
 
                 int counter = mandelbrot_iteration(c_re, c_im, MAX_ITERATIONS);
 

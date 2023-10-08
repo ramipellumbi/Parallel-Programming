@@ -15,7 +15,6 @@ int main(int argc, char *argv[])
 {
     // set seed
     unsigned seed = 12345;
-    dsrand_ts(seed);
 
     // initialize timing measures
     double start_wc_time = 0.0, end_wc_time = 0.0;
@@ -26,8 +25,9 @@ int main(int argc, char *argv[])
 
     // start the timing
     timing(&start_wc_time, &start_cpu_time);
-#pragma omp parallel shared(number_of_cells_inside_mandelbrot_set, total_iterations) private(number_of_cells_inside_mandelbrot_set_th, total_iterations_th) default(none)
+#pragma omp parallel shared(number_of_cells_inside_mandelbrot_set, total_iterations, seed) private(number_of_cells_inside_mandelbrot_set_th, total_iterations_th) default(none)
     {
+        dsrand_ts(seed);
         number_of_cells_inside_mandelbrot_set_th = 0;
         total_iterations_th = 0;
 
