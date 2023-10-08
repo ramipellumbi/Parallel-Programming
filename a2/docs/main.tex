@@ -1,5 +1,6 @@
 \documentclass{article}
 \usepackage[margin=1in]{geometry}
+\usepackage{url}
 \usepackage{forest}
 \usepackage{tabu}
 \usepackage{listings}
@@ -205,27 +206,18 @@ stored in the relevant subdirectory of the \texttt{out} directory.
 The serial implementation was first written in the standard way to achieve a runtime of approximately 
 49.2 seconds. After some searching, an optimized implementation using AVX 256 instructions was found.\footnote{Source: \MYhref{https://polarnick.com/blogs/other/cpu/gpu/sse/opencl/openmp/2016/10/01/mandelbrot-set-sse-opencl.html}{https://polarnick.com/blogs/other/cpu/gpu/sse/opencl/openmp/2016/10/01/mandelbrot-set-sse-opencl.html}} 
 This source was rewritten to the assignment at hand using AVX 512 instructions found in the \MYhref{https://www.intel.com/content/www/us/en/docs/intrinsics-guide/index.html}{intel intrinsics guide}. 
+The serial implementation and all subsequent implementations make use of the provided 
+random number generator seeded at value 12345.
 
 \subsection{Standard Implementation}
 \subsubsection{Implementation}
 First, we iterate over the cells in \textbf{R} by a double for loop 
-through the sets $X$ and $Y$. Concretely, the below loops iterate over all $(x, y) \in T$:
-\newpage
-\begin{lstlisting}
-    for (size_t n = 0; n < 2500; n++)
-    {
-        double current_bottom_left_x = -2.0 + CELL_SIDE_LENGTH * n;
-        for (size_t m = 0; m < 1250; m++)
-        {
-            double current_bottom_left_y = 0.0 + CELL_SIDE_LENGTH * m;
-        }
-    }
-\end{lstlisting}
-Next, for each cell, we generate a random coordinate inside the cell and perform the 
+through the sets $X$ and $Y$. Concretely, the below loops iterate over all $(x, y) \in T$.
+For each cell $C_{x, y}$, we generate a random coordinate inside the cell and perform the 
 mandelbrot iteration on it. Since we are performing $N = 3125000$ iterations total, we 
 can simply count the number of cells inside the mandelbrot set and then compute $N_O = N - N_I$. 
 This gets rid of any conditional checks in the loop helping optimize.
-Adjusting our for-loop above:
+The resulting for loop is:
 \begin{lstlisting}
     int N = 3125000, N_I = 0;
     for (size_t n = 0; n < 2500; n++)
@@ -279,29 +271,28 @@ be a \MYhref{https://stackoverflow.com/questions/42659668/stdcomplex-multiplicat
 \subsubsection{Results}
 Running the standard implementation 3 times, the following results were obtained:
 \begin{table}[H]
-    \caption{Serial Wall Clock Time and Area}
-    \fontsize{14}{16}\selectfont
+    \caption{Serial Wall Clock Time and Area - Standard Algorithm}
+    \fontsize{12}{14}\selectfont
     \begin{tabu} to \linewidth {>{\raggedleft}X>{\raggedleft}X>{\raggedright}X>{\raggedleft}X>{\raggedleft}X}
     \hline
     num\_threads & seed & program & wc\_time & area\\
     \hline
-    1 & 12345 & serial & 49.27677 & 1.506648\\
+    1 & 12345 & serial & 49.26491 & 1.506648\\
     \hline
-    1 & 12345 & serial & 49.27758 & 1.506648\\
+    1 & 12345 & serial & 49.28202 & 1.506648\\
     \hline
-    1 & 12345 & serial & 49.26532 & 1.506648\\
+    1 & 12345 & serial & 49.25730 & 1.506648\\
     \hline
     \end{tabu}
 \end{table}
-\noindent The wall clock time
-is approximately 49.2 seconds. Each run produced a consistent area estimate of 1.506648. This result deviates 
-slightly from the 1.506632 value given in the assignment guide. One possible reason for this discrepancy is the order in 
-which the cells were traversed during the computation. In this implementation, we selected $C_{x,y}$ column-wise, 
-meaning that for every fixed $x$, we iterated over all possible values of $y$. 
-It is important to note that floating-point operations are not strictly associative; therefore, a different 
-traversal order, such as row-wise, could lead to a slightly different result.\footnote{In a row-wise traversal, for every fixed $y$, we would iterate over all possible values of $x$.} 
-Another contributing factor is the state of the random number generator during the traversal, which would 
-be at different points in its sequence, thereby selecting different points within each cell.
+\noindent The wall clock time is roughly 49.2 seconds. 
+Each execution yielded a stable area estimate of 1.506648, 
+which is a minor deviation from the 1.506632 value cited in the assignment guidelines. 
+In our algorithm, we adopted a column-wise selection strategy for \( C_{x,y} \). 
+Specifically, we looped over all available \( y \) values for a given fixed \( x \). 
+The state of the random number generator evolves as we traverse the cells, 
+occupying distinct positions in its sequence. 
+This results in different sampling points within each cell for each traversal scheme. 
 
 \subsection{AVX 512 Implementation}
 The AVX 512 version is implemented using the intel AVX 512 instruction set from the 
@@ -313,7 +304,6 @@ The Intel(R) Xeon(R) Platinum 8268 supports AVX 512 and so 8 doubles can be oper
 We still iterate over the cells in \textbf{R} by a double loop through the sets 
 $X$ and $Y$, but now we process 8 $y$ values at a time. Since 1250 is not a multiple of 8, the remaining 
 values are processed in a cleanup loop that is the standard serial implementation:
-\newpage
 \begin{lstlisting}
     for (size_t n = 0; n < 2500; n++)
     {
@@ -324,9 +314,9 @@ values are processed in a cleanup loop that is the standard serial implementatio
         for (size_t m = 0; m < 1250 / 8 * 8; m += 8)
         {
             // need to generate the 16 random numbers for the 8 cells
-            for (int i = 0; i < PACKING_SIZE; ++i)
+            for (int i = 0; i < 8; ++i)
             {
-                random_x[i] = drand();
+                random_x[i] = drand(); // pre-allocated arrays for 8 doubles
                 random_y[i] = drand();
             }
             // load the random numbers into a 512 bit register via an unaligned load
@@ -362,7 +352,7 @@ values are processed in a cleanup loop that is the standard serial implementatio
             int count = _popcnt32((unsigned int)indices_in_set);
             number_of_cells_inside_mandelbrot_set += count;
 
-            total_iterations += PACKING_SIZE;
+            total_iterations += 8;
         }
 
         // cleanup by performing the standard serial implementation
@@ -372,7 +362,6 @@ values are processed in a cleanup loop that is the standard serial implementatio
         }
     }
 \end{lstlisting}
-\newpage
 \noindent The \texttt{mandelbrot\_iteration\_avx} assesses the 8 $C_{x,y}$ values simultaneously as follows:
 \begin{lstlisting}
     static inline __mmask8 mandelbrot_iteration_avx(__m512d x_values,
@@ -440,17 +429,17 @@ find a way around this issue.
 \subsubsection{Results}
 Running the AVX 512 implementation 3 times, the following results were obtained:
 \begin{table}[H]
-    \caption{Serial Wall Clock Time and Area}
-    \fontsize{14}{16}\selectfont
+    \caption{Serial Wall Clock Time and Area - AVX Algorithm}
+    \fontsize{12}{14}\selectfont
     \begin{tabu} to \linewidth {>{\raggedleft}X>{\raggedleft}X>{\raggedright}X>{\raggedleft}X>{\raggedleft}X}
     \hline
     num\_threads & seed & program & wc\_time & area\\
     \hline
-    1 & 12345 & serial-avx & 17.76418 & 1.506656\\
+    1 & 12345 & serial-avx & 17.76870 & 1.506656\\
     \hline
-    1 & 12345 & serial-avx & 17.76508 & 1.506656\\
+    1 & 12345 & serial-avx & 17.76229 & 1.506656\\
     \hline
-    1 & 12345 & serial-avx & 17.76751 & 1.506656\\
+    1 & 12345 & serial-avx & 17.75254 & 1.506656\\
     \hline
     \end{tabu}
 \end{table}
@@ -483,13 +472,15 @@ and scheduling, respectively.
 
 \subsection{Parallel threads using \texttt{omp for} - No Scheduling}
 Each thread has private variables \texttt{total\_iterations\_th} and \texttt{number\_of\_cells\_in\_mandelbrot\_set\_th} 
-which tally the total iterations that thread performed and the number of points in the mandelbrot set that thread determined, respectively. 
+which tally the total iterations that thread performed and the number of points in the mandelbrot set that thread determined, respectively. Additionally, 
+each thread instantiates its own seed.
 At the end, each threads private variables are added atomically to the shared variables \texttt{total\_iterations} and \texttt{number\_of\_cells\_in\_mandelbrot\_set}. 
 For the AVX version, each thread also needs two 8 length double arrays for the random numbers. Explicitly, the AVX algorithm is something like:\footnote{The non AVX version is 
 near identical. The only difference is each thread does not require an array to store the random numbers in since they can be computed on the fly and are not loaded into a register.}
 \begin{lstlisting}
     #pragma omp parallel shared(number_of_cells_inside_mandelbrot_set, total_iterations) private(number_of_cells_inside_mandelbrot_set_th, total_iterations_th, random_x, random_y) default(none)
     {
+        dsrand(seed); // each thread initializes a seed
         random_x = (double *)malloc(8 * sizeof(double));
         random_y = (double *)malloc(8 * sizeof(double));
         number_of_cells_inside_mandelbrot_set_th = 0;
@@ -523,30 +514,30 @@ The above algorithm is run using the base \texttt{drand} implementation with the
 \end{itemize}
 This runs the algorithm with two cores (one thread per core) and no scheduling. The results are:
 \begin{table}[H]
-    \caption{Wall Clock Time and Area - Using Loop Directives and Base \texttt{drand}}
+    \caption{OMP Wall Clock Time and Area - drand}
     \centering
-    \fontsize{14}{16}\selectfont
+    \fontsize{12}{14}\selectfont
     \begin{tabu} to \linewidth {>{\raggedleft}X>{\raggedleft}X>{\raggedright}X>{\raggedleft}X>{\raggedleft}X}
     \hline
     num\_threads & seed & program & wc\_time & area\\
     \hline
-    2 & 12345 & standard & 42.20816 & 1.506610\\
+    2 & 12345 & standard & 42.08266 & 1.506862\\
     \hline
-    2 & 12345 & standard & 42.21574 & 1.506772\\
+    2 & 12345 & standard & 42.08794 & 1.506826\\
     \hline
-    2 & 12345 & standard & 42.21818 & 1.506736\\
+    2 & 12345 & standard & 42.07988 & 1.506716\\
     \hline
-    2 & 12345 & avx & 15.16548 & 1.506428\\
+    2 & 12345 & avx & 14.90467 & 1.506706\\
     \hline
-    2 & 12345 & avx & 15.15949 & 1.506672\\
+    2 & 12345 & avx & 14.90157 & 1.506720\\
     \hline
-    2 & 12345 & avx & 15.17243 & 1.506454\\
+    2 & 12345 & avx & 14.89628 & 1.506770\\
     \hline
     \end{tabu}
 \end{table}
 \noindent Table 3 shows both a performance improvement over the serial implementation and 
 the algorithm computing a different area estimate each run. The performance improvement for 
-both the standard and AVX serial algorithm using two threads is approximately 16\% faster.
+both the standard and AVX serial algorithm using two threads is 1.2$\times$ faster.
 
 \subsubsection{Thread Safe Random Number Generation}
 The differing area estimates are due to the lack of thread safe random number generation. In particular, 
@@ -574,27 +565,28 @@ to make running the experiments easier. Explicitly:
         return ((double)(seed_ts >> 33) / (double)RAND_MAX);
     } 
 \end{lstlisting}
-Using \texttt{dsrand\_ts} and \texttt{drand\_ts} instead of \texttt{dsrand} and \texttt{drand} in the 
+A problem with this fix in particular is each thread will use the same sequence of random numbers. 
+This is remedied in section 7. Using \texttt{dsrand\_ts} and \texttt{drand\_ts} instead of \texttt{dsrand} and \texttt{drand} in the 
 2 thread no schedule experiment yields:
 \begin{table}[H]
-    \caption{Loop Directives AVX Wall Clock Time and Area - Using \texttt{drand-ts}}
+    \caption{OMP Wall Clock Time and Area - drand-ts}
     \centering
-    \fontsize{14}{16}\selectfont
+    \fontsize{12}{14}\selectfont
     \begin{tabu} to \linewidth {>{\raggedleft}X>{\raggedleft}X>{\raggedright}X>{\raggedleft}X>{\raggedleft}X}
     \hline
     num\_threads & seed & program & wc\_time & area\\
     \hline
-    2 & 12345 & omp-ts & 42.26584 & 1.506682\\
+    2 & 12345 & omp-ts & 42.05347 & 1.506622\\
     \hline
-    2 & 12345 & omp-ts & 42.27940 & 1.506682\\
+    2 & 12345 & omp-ts & 42.03060 & 1.506622\\
     \hline
-    2 & 12345 & omp-ts & 42.27382 & 1.506682\\
+    2 & 12345 & omp-ts & 42.03824 & 1.506622\\
     \hline
-    2 & 12345 & omp-avx-ts & 15.18323 & 1.506646\\
+    2 & 12345 & omp-avx-ts & 15.10391 & 1.506716\\
     \hline
-    2 & 12345 & omp-avx-ts & 15.18105 & 1.506646\\
+    2 & 12345 & omp-avx-ts & 15.10479 & 1.506716\\
     \hline
-    2 & 12345 & omp-avx-ts & 15.19064 & 1.506646\\
+    2 & 12345 & omp-avx-ts & 15.10382 & 1.506716\\
     \hline
     \end{tabu}
 \end{table}
@@ -605,36 +597,36 @@ Moving forward, we run all experiments with the thread safe random number genera
 The algorithm is now run with \texttt{OMP\_NUM\_THREADS} set to 1, 2, 4, 12, and 24 cores (one thread per core) with no scheduling. 
 The results are: 
 \begin{table}[H]
-    \caption{Wall Clock Time and Area Across Thread Counts - Using Loop Directives and \texttt{drand-ts}}
+    \caption{OMP Wall Clock Time and Area Across Threads - No Scheduling}
     \centering
-    \fontsize{14}{16}\selectfont
-    \begin{tabu} to \linewidth {>{\raggedright}X>{\raggedright}X>{\raggedleft}X>{\raggedleft}X>{\raggedleft}X}
+    \fontsize{12}{14}\selectfont
+    \begin{tabu} to \linewidth {>{\raggedright}X>{\raggedleft}X>{\raggedleft}X>{\raggedleft}X}
     \hline
-    program & schedule & num\_threads & wc\_time & area\\
+    program & num\_threads & wc\_time & area\\
     \hline
-    serial-avx & NA & 1 & 17.76559 & 1.506656\\
+    seq-avx & 1 & 17.76118& 1.506656\\
     \hline
-    omp-avx-ts & None & 1 & 17.852172 & 1.506656\\
+    omp-avx-ts & 1 & 17.754122 & 1.506656\\
     \hline
-    omp-avx-ts & None & 2 & 15.184144 & 1.506646\\
+    omp-avx-ts & 2 & 15.104908 & 1.506716\\
     \hline
-    omp-avx-ts & None & 4 & 8.096395 & 1.506648\\
+    omp-avx-ts & 4 & 8.048316 & 1.506778\\
     \hline
-    omp-avx-ts & None & 12 & 3.493439 & 1.506726\\
+    omp-avx-ts & 12 & 3.477090 & 1.506652\\
     \hline
-    omp-avx-ts & None & 24 & 1.960974 & 1.506682\\
+    omp-avx-ts & 24 & 1.953967 & 1.506664\\
     \hline
-    serial & NA & 1 & 49.27322 & 1.506648 \\
+    seq & 1 & 49.26491 & 1.506648 \\
     \hline
-    omp-ts & None & 1 & 49.494886 & 1.506648\\
+    omp-ts & 1 & 49.221812 & 1.506648\\
     \hline
-    omp-ts & None & 2 & 42.270958 & 1.506682\\
+    omp-ts & 2 & 42.034752 & 1.506622\\
     \hline
-    omp-ts & None & 4 & 22.570957 & 1.506670\\
+    omp-ts & 4 & 22.454806 & 1.506532\\
     \hline
-    omp-ts & None & 12 & 9.768437 & 1.506656\\
+    omp-ts & 12 & 9.720917 & 1.506682\\
     \hline
-    omp-ts & None & 24 & 5.461470 & 1.506646\\
+    omp-ts & 24 & 5.433250 & 1.506800\\
     \hline
     \end{tabu}
 \end{table}
@@ -683,52 +675,52 @@ these options perform:
 \end{itemize}
 The average wall clock time and area for the AVX algorithm for each thread and schedule were:
 \begin{table}[H]
-    \caption{Wall Clock Time and Area Across Schedules - Using \texttt{drand-ts}}
+    \caption{OMP Wall Clock Time and Area Across Threads - All Schedules W/ AVX}
     \centering
-    \fontsize{14}{16}\selectfont
+    \fontsize{12}{14}\selectfont
     \begin{tabu} to \linewidth {>{\raggedright}X>{\raggedright}X>{\raggedleft}X>{\raggedleft}X>{\raggedleft}X}
     \hline
     program & schedule & num\_threads & wc\_time & area\\
     \hline
-    omp-avx-ts & dynamic & 2 & 15.185020 & 1.506646\\
+    omp-avx-ts & dynamic & 2 & 15.104199 & 1.506716\\
     \hline
-    omp-avx-ts & dynamic & 4 & 8.094955 & 1.506648\\
+    omp-avx-ts & dynamic & 4 & 8.048307 & 1.506778\\
     \hline
-    omp-avx-ts & dynamic & 12 & 3.491513 & 1.506726\\
+    omp-avx-ts & dynamic & 12 & 3.472126 & 1.506652\\
     \hline
-    omp-avx-ts & dynamic & 24 & 1.961435 & 1.506682\\
+    omp-avx-ts & dynamic & 24 & 1.949151 & 1.506664\\
     \hline
-    omp-avx-ts & dynamic,250 & 2 & 15.183604 & 1.506646\\
+    omp-avx-ts & dynamic,250 & 2 & 15.102702 & 1.506716\\
     \hline
-    omp-avx-ts & dynamic,250 & 4 & 8.094325 & 1.506648\\
+    omp-avx-ts & dynamic,250 & 4 & 8.051459 & 1.506778\\
     \hline
-    omp-avx-ts & dynamic,250 & 12 & 3.491855 & 1.506726\\
+    omp-avx-ts & dynamic,250 & 12 & 3.468803 & 1.506652\\
     \hline
-    omp-avx-ts & dynamic,250 & 24 & 1.960680 & 1.506682\\
+    omp-avx-ts & dynamic,250 & 24 & 1.949707 & 1.506664\\
     \hline
-    omp-avx-ts & guided & 2 & 15.184362 & 1.506646\\
+    omp-avx-ts & guided & 2 & 15.102247 & 1.506716\\
     \hline
-    omp-avx-ts & guided & 4 & 8.095885 & 1.506648\\
+    omp-avx-ts & guided & 4 & 8.047532 & 1.506778\\
     \hline
-    omp-avx-ts & guided & 12 & 3.492083 & 1.506726\\
+    omp-avx-ts & guided & 12 & 3.470663 & 1.506652\\
     \hline
-    omp-avx-ts & guided & 24 & 1.960761 & 1.506682\\
+    omp-avx-ts & guided & 24 & 1.950114 & 1.506664\\
     \hline
-    omp-avx-ts & static,1 & 2 & 15.185984 & 1.506646\\
+    omp-avx-ts & static,1 & 2 & 15.100223 & 1.506716\\
     \hline
-    omp-avx-ts & static,1 & 4 & 8.094061 & 1.506648\\
+    omp-avx-ts & static,1 & 4 & 8.046551 & 1.506778\\
     \hline
-    omp-avx-ts & static,1 & 12 & 3.491781 & 1.506726\\
+    omp-avx-ts & static,1 & 12 & 3.469631 & 1.506652\\
     \hline
-    omp-avx-ts & static,1 & 24 & 1.960912 & 1.506682\\
+    omp-avx-ts & static,1 & 24 & 1.949490 & 1.506664\\
     \hline
-    omp-avx-ts & static,100 & 2 & 15.183828 & 1.506646\\
+    omp-avx-ts & static,100 & 2 & 15.105248 & 1.506716\\
     \hline
-    omp-avx-ts & static,100 & 4 & 8.095005 & 1.506648\\
+    omp-avx-ts & static,100 & 4 & 8.047205 & 1.506778\\
     \hline
-    omp-avx-ts & static,100 & 12 & 3.491891 & 1.506726\\
+    omp-avx-ts & static,100 & 12 & 3.472282 & 1.506652\\
     \hline
-    omp-avx-ts & static,100 & 24 & 1.963684 & 1.506682\\
+    omp-avx-ts & static,100 & 24 & 1.949591 & 1.506664\\
     \hline
     \end{tabu}
 \end{table}
@@ -737,55 +729,55 @@ of the schedule options compared to when no schedule is set. Moreover, the avera
 for each schedule option appears to be the same for the same core count. The next table shows 
 the results for the standard algorithm, where the exact same conclusion is drawn.
 \begin{table}[H]
-    \caption{Wall Clock Time and Area}
+    \caption{OMP Wall Clock Time and Area Across Threads - All Schedules W/O AVX}
     \centering
-    \fontsize{14}{16}\selectfont
+    \fontsize{12}{14}\selectfont
     \begin{tabu} to \linewidth {>{\raggedright}X>{\raggedright}X>{\raggedleft}X>{\raggedleft}X>{\raggedleft}X}
     \hline
     program & schedule & num\_threads & wc\_time & area\\
     \hline
-    omp-ts & dynamic & 2 & 42.258952 & 1.506682\\
+    omp-ts & dynamic & 2 & 42.033625 & 1.506622\\
     \hline
-    omp-ts & dynamic & 4 & 22.571284 & 1.506670\\
+    omp-ts & dynamic & 4 & 22.466848 & 1.506532\\
     \hline
-    omp-ts & dynamic & 12 & 9.766593 & 1.506656\\
+    omp-ts & dynamic & 12 & 9.715564 & 1.506682\\
     \hline
-    omp-ts & dynamic & 24 & 5.461332 & 1.506646\\
+    omp-ts & dynamic & 24 & 5.437160 & 1.506800\\
     \hline
-    omp-ts & dynamic,250 & 2 & 42.256181 & 1.506682\\
+    omp-ts & dynamic,250 & 2 & 42.030016 & 1.506622\\
     \hline
-    omp-ts & dynamic,250 & 4 & 22.574433 & 1.506670\\
+    omp-ts & dynamic,250 & 4 & 22.446521 & 1.506532\\
     \hline
-    omp-ts & dynamic,250 & 12 & 9.768667 & 1.506656\\
+    omp-ts & dynamic,250 & 12 & 9.720649 & 1.506682\\
     \hline
-    omp-ts & dynamic,250 & 24 & 5.461932 & 1.506646\\
+    omp-ts & dynamic,250 & 24 & 5.433849 & 1.506800\\
     \hline
-    omp-ts & guided & 2 & 42.263976 & 1.506682\\
+    omp-ts & guided & 2 & 42.019440 & 1.506622\\
     \hline
-    omp-ts & guided & 4 & 22.578212 & 1.506670\\
+    omp-ts & guided & 4 & 22.455807 & 1.506532\\
     \hline
-    omp-ts & guided & 12 & 9.768234 & 1.506656\\
+    omp-ts & guided & 12 & 9.718849 & 1.506682\\
     \hline
-    omp-ts & guided & 24 & 5.463390 & 1.506646\\
+    omp-ts & guided & 24 & 5.434775 & 1.506800\\
     \hline
-    omp-ts & static,1 & 2 & 42.266979 & 1.506682\\
+    omp-ts & static,1 & 2 & 42.038014 & 1.506622\\
     \hline
-    omp-ts & static,1 & 4 & 22.573956 & 1.506670\\
+    omp-ts & static,1 & 4 & 22.453874 & 1.506532\\
     \hline
-    omp-ts & static,1 & 12 & 9.769094 & 1.506656\\
+    omp-ts & static,1 & 12 & 9.721643 & 1.506682\\
     \hline
-    omp-ts & static,1 & 24 & 5.461118 & 1.506646\\
+    omp-ts & static,1 & 24 & 5.434236 & 1.506800\\
     \hline
-    omp-ts & static,100 & 2 & 42.261431 & 1.506682\\
+    omp-ts & static,100 & 2 & 42.028027 & 1.506622\\
     \hline
-    omp-ts & static,100 & 4 & 22.574792 & 1.506670\\
+    omp-ts & static,100 & 4 & 22.454145 & 1.506532\\
     \hline
-    omp-ts & static,100 & 12 & 9.771356 & 1.506656\\
+    omp-ts & static,100 & 12 & 9.718438 & 1.506682\\
     \hline
-    omp-ts & static,100 & 24 & 5.461018 & 1.506646\\
+    omp-ts & static,100 & 24 & 5.432583 & 1.506800\\
     \hline
     \end{tabu}
-\end{table}
+    \end{table}
 
 \subsection{Parallel threads using \texttt{omp for} - With Collapsing \& Scheduling}
 Next, the loop uses the collapse clause; allowing for multiple loops in a nest to 
@@ -802,7 +794,7 @@ The AVX algorithm adjustments are shown to emphasize the changes:
         #pragma omp for collapse(2)
         for (size_t n = 0; n < NUM_X_ITERATIONS; n++)
         {
-            for (size_t m = 0; m < NUM_Y_PS; m += PACKING_SIZE)
+            for (size_t m = 0; m < NUM_Y_PS; m += 8)
             {
                 // to support collapse have to compute the current bottom left x for all  y values now
                 double current_bottom_left_x = -2.0 + CELL_SIDE_LENGTH * n;
@@ -830,126 +822,289 @@ The results were measured for \texttt{OMP\_NUM\_THREADS} set to 2, 4, 12, and 24
 \texttt{schedule(static, 1)}, \texttt{schedule(static, 100)}, \texttt{schedule(dynamic)}, \texttt{schedule(static, 250)}, and \texttt{schedule(guided)}. Below 
 is a table of the results for the AVX algorithm:
 \begin{table}[H]
-    \caption{Wall Clock Time and Area with Collapse - AVX Algorithm}
+    \caption{OMP Wall Clock Time and Area Across Threads - All Schedules With Collapse}
     \centering
-    \fontsize{14}{16}\selectfont
+    \fontsize{12}{14}\selectfont
     \begin{tabu} to \linewidth {>{\raggedright}X>{\raggedright}X>{\raggedleft}X>{\raggedleft}X>{\raggedleft}X}
     \hline
-    collapse-avx & dynamic & 2 & 15.145923 & 1.506532\\
+    program & schedule & num\_threads & wc\_time & area\\
     \hline
-    collapse-avx & dynamic & 4 & 8.080994 & 1.506674\\
+    omp-collapse & dynamic & 2 & 42.094541 & 1.506622\\
     \hline
-    collapse-avx & dynamic & 12 & 3.499424 & 1.506784\\
+    omp-collapse & dynamic & 4 & 22.483391 & 1.506532\\
     \hline
-    collapse-avx & dynamic & 24 & 1.966611 & 1.506600\\
+    omp-collapse & dynamic & 12 & 9.774133 & 1.506622\\
     \hline
-    collapse-avx & dynamic,250 & 2 & 15.153169 & 1.506532\\
+    omp-collapse & dynamic & 24 & 5.474332 & 1.506740\\
     \hline
-    collapse-avx & dynamic,250 & 4 & 8.076263 & 1.506674\\
+    omp-collapse & dynamic,250 & 2 & 42.084935 & 1.506622\\
     \hline
-    collapse-avx & dynamic,250 & 12 & 3.499730 & 1.506784\\
+    omp-collapse & dynamic,250 & 4 & 22.482011 & 1.506532\\
     \hline
-    collapse-avx & dynamic,250 & 24 & 1.968639 & 1.506600\\
+    omp-collapse & dynamic,250 & 12 & 9.776808 & 1.506622\\
     \hline
-    collapse-avx & guided & 2 & 15.158930 & 1.506532\\
+    omp-collapse & dynamic,250 & 24 & 5.469587 & 1.506740\\
     \hline
-    collapse-avx & guided & 4 & 8.079038 & 1.506674\\
+    omp-collapse & guided & 2 & 42.078677 & 1.506622\\
     \hline
-    collapse-avx & guided & 12 & 3.499219 & 1.506784\\
+    omp-collapse & guided & 4 & 22.478651 & 1.506532\\
     \hline
-    collapse-avx & guided & 24 & 1.967144 & 1.506600\\
+    omp-collapse & guided & 12 & 9.773631 & 1.506622\\
     \hline
-    collapse-avx & static,1 & 2 & 15.150731 & 1.506532\\
+    omp-collapse & guided & 24 & 5.468470 & 1.506740\\
     \hline
-    collapse-avx & static,1 & 4 & 8.076730 & 1.506674\\
+    omp-collapse & static,1 & 2 & 42.083037 & 1.506622\\
     \hline
-    collapse-avx & static,1 & 12 & 3.498152 & 1.506784\\
+    omp-collapse & static,1 & 4 & 22.490282 & 1.506532\\
     \hline
-    collapse-avx & static,1 & 24 & 1.969900 & 1.506600\\
+    omp-collapse & static,1 & 12 & 9.777043 & 1.506622\\
     \hline
-    collapse-avx & static,100 & 2 & 15.157448 & 1.506532\\
+    omp-collapse & static,1 & 24 & 5.470768 & 1.506740\\
     \hline
-    collapse-avx & static,100 & 4 & 8.079871 & 1.506674\\
+    omp-collapse & static,100 & 2 & 42.086165 & 1.506622\\
     \hline
-    collapse-avx & static,100 & 12 & 3.498834 & 1.506784\\
+    omp-collapse & static,100 & 4 & 22.479614 & 1.506532\\
     \hline
-    collapse-avx & static,100 & 24 & 1.966699 & 1.506600\\
+    omp-collapse & static,100 & 12 & 9.777202 & 1.506622\\
+    \hline
+    omp-collapse & static,100 & 24 & 5.469890 & 1.506740\\
+    \hline
+    collapse-avx & dynamic & 2 & 14.968306 & 1.506602\\
+    \hline
+    collapse-avx & dynamic & 4 & 7.979923 & 1.506796\\
+    \hline
+    collapse-avx & dynamic & 12 & 3.453810 & 1.506794\\
+    \hline
+    collapse-avx & dynamic & 24 & 1.941514 & 1.506612\\
+    \hline
+    collapse-avx & dynamic,250 & 2 & 14.966832 & 1.506602\\
+    \hline
+    collapse-avx & dynamic,250 & 4 & 7.977025 & 1.506796\\
+    \hline
+    collapse-avx & dynamic,250 & 12 & 3.453488 & 1.506794\\
+    \hline
+    collapse-avx & dynamic,250 & 24 & 1.943180 & 1.506612\\
+    \hline
+    collapse-avx & guided & 2 & 14.966452 & 1.506602\\
+    \hline
+    collapse-avx & guided & 4 & 7.974139 & 1.506796\\
+    \hline
+    collapse-avx & guided & 12 & 3.457956 & 1.506794\\
+    \hline
+    collapse-avx & guided & 24 & 1.941265 & 1.506612\\
+    \hline
+    collapse-avx & static,1 & 2 & 14.963334 & 1.506602\\
+    \hline
+    collapse-avx & static,1 & 4 & 7.978836 & 1.506796\\
+    \hline
+    collapse-avx & static,1 & 12 & 3.453612 & 1.506794\\
+    \hline
+    collapse-avx & static,1 & 24 & 1.943142 & 1.506612\\
+    \hline
+    collapse-avx & static,100 & 2 & 14.969556 & 1.506602\\
+    \hline
+    collapse-avx & static,100 & 4 & 7.978321 & 1.506796\\
+    \hline
+    collapse-avx & static,100 & 12 & 3.453792 & 1.506794\\
+    \hline
+    collapse-avx & static,100 & 24 & 1.948113 & 1.506612\\
     \hline
     \end{tabu}
 \end{table}
 \noindent The collapse clause offers no enhanced improvements and this makes sense given the source code. We can 
 no longer make use of caching the x values for each stride of y. This recomputation along with the fact we have to iterate 
 over each x value twice to support the cleanup is likely to negate any impact the collapse clause could have. The results 
-for the standard implementation are shown in the following table and have the same conclusion.
-\begin{table}[H]
-    \caption{Serial Wall Clock Time and Area}
-    \centering
-    \fontsize{14}{16}\selectfont
-    \begin{tabu} to \linewidth {>{\raggedright}X>{\raggedright}X>{\raggedleft}X>{\raggedleft}X>{\raggedleft}X}
-    \hline
-    program & schedule & num\_threads & wc\_time & area\\
-    \hline
-    omp-collapse & dynamic & 2 & 41.872304 & 1.506682\\
-    \hline
-    omp-collapse & dynamic & 4 & 22.363757 & 1.506670\\
-    \hline
-    omp-collapse & dynamic & 12 & 9.729708 & 1.506744\\
-    \hline
-    omp-collapse & dynamic & 24 & 5.439554 & 1.506696\\
-    \hline
-    omp-collapse & dynamic,250 & 2 & 41.867353 & 1.506682\\
-    \hline
-    omp-collapse & dynamic,250 & 4 & 22.361220 & 1.506670\\
-    \hline
-    omp-collapse & dynamic,250 & 12 & 9.725155 & 1.506744\\
-    \hline
-    omp-collapse & dynamic,250 & 24 & 5.439059 & 1.506696\\
-    \hline
-    omp-collapse & guided & 2 & 41.872665 & 1.506682\\
-    \hline
-    omp-collapse & guided & 4 & 22.363698 & 1.506670\\
-    \hline
-    omp-collapse & guided & 12 & 9.726760 & 1.506744\\
-    \hline
-    omp-collapse & guided & 24 & 5.440714 & 1.506696\\
-    \hline
-    omp-collapse & static,1 & 2 & 41.867036 & 1.506682\\
-    \hline
-    omp-collapse & static,1 & 4 & 22.358321 & 1.506670\\
-    \hline
-    omp-collapse & static,1 & 12 & 9.724657 & 1.506744\\
-    \hline
-    omp-collapse & static,1 & 24 & 5.439561 & 1.506696\\
-    \hline
-    omp-collapse & static,100 & 2 & 41.877160 & 1.506682\\
-    \hline
-    omp-collapse & static,100 & 4 & 22.363454 & 1.506670\\
-    \hline
-    omp-collapse & static,100 & 12 & 9.728074 & 1.506744\\
-    \hline
-    omp-collapse & static,100 & 24 & 5.440014 & 1.506696\\
-    \hline
-    \end{tabu}
-\end{table}
+for the standard implementation have the same conclusion.
 
 \subsection{Comparing It All}
 Looking at tables of value can make it difficult to compare results. We assess 
 the performance of collapsing vs. not collapsing across thread counts across schedules 
 graphically to observe the lack of performance gains that scheduling and collapsing provide 
-the algorithm here.
-
-\begin{figure}%
+the algorithm in the following figure:
+\begin{figure}[H]
     \centering
-    \subfloat[\centering label 1]{{\includegraphics[width=0.9\linewidth]{q2-img.pdf} }}%
-    \qquad
-    \subfloat[\centering label 2]{{\includegraphics[width=0.9\linewidth]{q2-avx.pdf} }}%
-    \caption{2 Figures side by side}%
-    \label{fig:example}%
+    \subfloat[\centering Standard Algorithm Performance For Each Schedule Across Thread Counts]{{\includegraphics[width=0.48\linewidth]{q2-img.pdf} }}
+    \subfloat[\centering AVX Algorithm Performance For Each Schedule Across Thread Counts]{{\includegraphics[width=0.48\linewidth]{q2-img-avx.pdf} }}
 \end{figure}
+\noindent It is visibly observable that the wall clock change is negligible across schedules for each thread count - with or without collapsing.
 
 \section{OpenMP Tasks}
+The next task takes the serial implementation and uses OpenMP tasks to parallelize it. Only 
+the AVX version is operated on in this step to compare to the loop directives performance. First, 
+a program is created in which each cell or batch of cells constitutes a task and one thread 
+is dedicated to creating all the tasks. Then, a program is created that treats each 
+column of cells as a task and one thread is dedicated to creating all the tasks. Finally, 
+the program is modified to so that each column of cells is treated as a task but all threads are able to create tasks.
+
+\subsection{One Task Per Cell Batch}
+Since the AVX algorithm operates on 8 cells at once, 
+each batch of 8 cells is its own task. The cleanup loop, which operates on one cell at once, has each individual cell 
+created as a task. To implement this, we:
+\begin{itemize}
+    \item Take the \texttt{mandseq-avx.c} and wrap the double for loop in the parallel directive - with almost same sharing and private rules as \texttt{mandomp-avx.c}.
+    \item Wrap the double for loop in the omp single directive - specifying that the for loop must run a single thread. 
+    \item Wrap the \texttt{mandelbrot\_iteration\_avx} and \texttt{mandelbrot\_iteration} functions in the omp task directive.
+    \item Each task updates the global counters \texttt{total\_iterations} and \texttt{number\_of\_cells\_inside\_mandelbrot\_set} atomically instead of each thread having its own counter.
+\end{itemize}
+In total, $2500 * (1248 / 8 + (1250 - 1248)) = 395000$ tasks are created.
+The average area and average time across core counts 1, 2, 4, 12, and 24 was:
+\begin{table}[H]
+    \centering
+    \caption{OMP Tasks Clock Time and Area - Task Per Cell Batch}
+    \fontsize{12}{14}\selectfont
+    \begin{tabular}[t]{l|r|r|r}
+    \hline
+    program & num\_threads & wc\_time & area\\
+    \hline
+    per-cell-task & 1 & 17.771752 & 1.506656\\
+    \hline
+    per-cell-task & 2 & 8.950503 & 1.506656\\
+    \hline
+    per-cell-task & 4 & 4.534696 & 1.506656\\
+    \hline
+    per-cell-task & 12 & 1.657044 & 1.506656\\
+    \hline
+    per-cell-task & 24 & 0.963572 & 1.506656\\
+    \hline
+    \end{tabular}
+    \end{table}
+\noindent It is remarkable that for core count larger than 1 the task algorithm is twice as fast as any scheduled loop directive (same performance for 1 core). 
+The average area computation is consistent across all thread counts and equal to that of the sequential algorithm - which was not the case with any of the 
+loop directive AVX algorithms. This is because tasks are being processed with the exact same random number sequence as in the sequential version.
+
+\subsection{One Task Per Column - Single Thread Task Generation}
+The program is modified so that for each $x$ value, one task is created (2500 tasks total). This is a simple change 
+and the inner for loops on $y$ are wrapped in the task directive. The average area and average time across core counts 1, 2, 4, 12, and 24 was:
+\begin{table}[H]
+    \centering
+    \caption{OMP Tasks Clock Time and Area - Task Per Column}
+    \fontsize{12}{14}\selectfont
+    \begin{tabular}[t]{l|r|r|r}
+    \hline
+    program & num\_threads & wc\_time & area\\
+    \hline
+    per-column-task & 1 & 17.584878 & 1.506656\\
+    \hline
+    per-column-task & 2 & 8.812490 & 1.506645\\
+    \hline
+    per-column-task & 4 & 4.432580 & 1.506692\\
+    \hline
+    per-column-task & 12 & 1.510451 & 1.506747\\
+    \hline
+    per-column-task & 24 & 0.777615 & 1.506649\\
+    \hline
+    \end{tabular}
+\end{table}
+\noindent For 2, 4, and 12 cores there is a minor performance gain. For 24 cores, the per column 
+task is about 1.2x faster than the per cell task. It is still near double the speed of 
+the omp for loop directives version. It is interesting to note that the area estimate now 
+differs again as the core count varies. The reasoning is the same as for the omp loop directive.
+
+\subsection{One Task Per Column - Multiple Threads Generating Tasks}
+The program is modified so that all threads generate tasks. This is done by 
+keeping the omp task directive as is, removing the omp single directive wrapping the for loops, 
+and placing an omp parallel directive on the outermost for loop. Placing the omp for directive is necessary 
+so that task creation is split evenly amongst the threads. Without it, every thread tries to create the 2500 tasks 
+leading to a lot of errors. The average area and average time across core counts 1, 2, 4, 12, and 24 was:
+\begin{table}[H]
+    \centering
+    \caption{OMP Tasks Clock Time and Area - Task Per Column Multithreaded Task Creation}
+    \fontsize{12}{14}\selectfont
+    \begin{tabular}[t]{l|r|r|r}
+    \hline
+    program & num\_threads & wc\_time & area\\
+    \hline
+    per-column-task-shared & 1 & 17.655240 & 1.506656\\
+    \hline
+    per-column-task-shared & 2 & 8.841601 & 1.506771\\
+    \hline
+    per-column-task-shared & 4 & 4.422934 & 1.506579\\
+    \hline
+    per-column-task-shared & 12 & 1.486727 & 1.506735\\
+    \hline
+    per-column-task-shared & 24 & 0.751839 & 1.506671\\
+    \hline
+    \end{tabular}
+\end{table}
+\noindent For 2, 4, 12, and 24 cores there is a minor performance gain over the prior program. 
+We are still at near 2x speedup compared to the loop directive version. It appears the program is 
+capable of load balancing the task creation and execution well even when threads are also busy creating tasks. The area 
+estimates differ from when a single thread was creating all tasks. This is again for the same reason.
 
 \section{Parallel Random Number Generation}
-
+A shortcoming of the random number generator used throughout this project is that multiple threads 
+may wind up using the same sequence of random numbers. This is due to the fact that each thread initiates itself 
+at the same seed starting point and thus each thread could wind up using the exact same sequence of random numbers. 
+One simple way to remedy this is via to give each thread its own starting point as a function of the seed. In this way, 
+results are reproducible for the same seed but each thread will wind up using a different sequence of random numbers. 
+Using Ian Foster's documented Leapfrog Method for creating a distributed number generator.
+\footnote{Source: \MYhref{https://www.mcs.anl.gov/\~itf/dbpp/text/node116.html}{https://www.mcs.anl.gov/~itf/dbpp/text/node116.html}}
+In the Leapfrog method, 
+\begin{enumerate}
+    \item Each thread needs to be initialized with a seed that is a function of the master seed and the thread's ID.
+    \item The thread updates its seed by advancing the seed by the number of threads. E.g.,
+    \begin{itemize}
+        \item Thread 0 uses numbers at position 0, \texttt{NUM\_THREADS}, 2*\texttt{NUM\_THREADS},...
+        \item Thread 1 uses numbers at position 1, \texttt{NUM\_THREADS} + 1, 2*\texttt{NUM\_THREADS} + 1,...
+    \end{itemize}
+\end{enumerate}
+The following changes are made to \texttt{drand-ts.c}
+\begin{lstlisting}
+    static uint64_t seed_ts;
+    // ensures each thread is modifying it's own seed
+    #pragma omp threadprivate(seed_ts)
+    
+    // Advance the RNG state by `n` steps
+    void leapfrog(uint64_t *seed, uint64_t n)
+    {
+        for (uint64_t i = 0; i < n; ++i)
+        {
+            *seed = 6364136223846793005ULL * (*seed) + 1;
+        }
+    }
+    
+    void dsrand_parallel_ts(unsigned s)
+    {
+        int thread_id = omp_get_thread_num();
+    
+        uint64_t master_seed = s - 1;
+        seed_ts = master_seed;
+    
+        // Each thread leapfrogs `thread_id` steps from master_seed
+        leapfrog(&seed_ts, thread_id);
+    }
+    
+    double drand_parallel_ts()
+    {
+        // leapfrog the seed ahead num_threads
+        int num_threads = omp_get_num_threads();
+        leapfrog(&seed_ts, num_threads);
+    
+        return ((double)(seed_ts >> 33) / (double)RAND_MAX);
+    }
+\end{lstlisting}
+The program \texttt{mandomp-ts-avx.c} is copied into \texttt{mandomp-ts-avx-parallel.c} and each thread 
+invokes the function \texttt{dsrand\_parallel\_ts} to set its seed to the appropriate starting value. The 
+program is rerun with 24 cores with the best performing result from part 2. Since the results in part 2 
+were all so close, the absolute minimum wall clock time was chosen. This was when there was 24 cores, the collapse clause was 
+used, and the schedule was guided. The average area and wall clock time are:
+\begin{table}[H]
+    \centering
+    \caption{OMP Tasks Parallel Random Number Generation}
+    \fontsize{12}{14}\selectfont
+    \begin{tabular}[t]{l|l|r|r|r}
+    \hline
+    program & schedule & num\_threads & wc\_time & area\\
+    \hline
+    omp-collapse-avx & guided & 24 & 1.941265 & 1.506612\\
+    \hline
+    omp-avx-parallel-rng & guided & 24 & 1.953960 & 1.506720\\
+    \hline
+    \end{tabular}
+\end{table}
+\noindent The parallel rng does make a difference on the area estimate. I would 
+have more confidence using the leapfrog method throughout to ensure the randomness 
+in each thread is independent than that of other threads. Since the leapfrog method allows 
+for reproducible results, there is no reason not to use a more parallel safe random number generator.
 \end{document}
 
