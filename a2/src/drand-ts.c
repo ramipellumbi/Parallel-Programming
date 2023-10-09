@@ -52,3 +52,12 @@ void dsrand_parallel_ts(unsigned s)
     // Each thread leapfrogs `thread_id` steps from master_seed
     leapfrog(&seed_ts, thread_id);
 }
+
+double drand_parallel_ts()
+{
+    // leapfrog the seed ahead num_threads
+    int num_threads = omp_get_num_threads();
+    leapfrog(&seed_ts, num_threads);
+
+    return ((double)(seed_ts >> 33) / (double)RAND_MAX);
+}

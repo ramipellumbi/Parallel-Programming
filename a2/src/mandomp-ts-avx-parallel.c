@@ -63,8 +63,8 @@ int main(int argc, char *argv[])
             {
                 for (int i = 0; i < PACKING_SIZE; ++i)
                 {
-                    random_x[i] = drand_ts();
-                    random_y[i] = drand_ts();
+                    random_x[i] = drand_parallel_ts();
+                    random_y[i] = drand_parallel_ts();
                 }
                 // grab 8 random numbers for the 8 needed random x coordinates
                 __m512d random_numbers_x = _mm512_loadu_pd(random_x);
@@ -112,8 +112,8 @@ int main(int argc, char *argv[])
                 double current_bottom_left_y = 0.0 + CELL_SIDE_LENGTH * m;
                 double max_y = current_bottom_left_y + CELL_SIDE_LENGTH;
 
-                double c_re = current_bottom_left_x + drand_ts() * (max_x - current_bottom_left_x);
-                double c_im = current_bottom_left_y + drand_ts() * (max_y - current_bottom_left_y);
+                double c_re = current_bottom_left_x + drand_parallel_ts() * (max_x - current_bottom_left_x);
+                double c_im = current_bottom_left_y + drand_parallel_ts() * (max_y - current_bottom_left_y);
 
                 int counter = mandelbrot_iteration(c_re, c_im, MAX_ITERATIONS);
 
