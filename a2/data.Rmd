@@ -227,7 +227,7 @@ par <- read_csv("a2/out/omp-parallel.csv") %>%
                 area = mean(area)) %>%
   mutate(program = "omp-avx-parallel-rng")
 
-t <- omp_results_schedules_collapse %>% 
+t <- omp_results_schedules %>% 
   arrange(wc_time) %>% slice_head(n = 1) %>%
   bind_rows(par)
 
