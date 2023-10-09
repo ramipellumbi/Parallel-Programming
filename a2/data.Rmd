@@ -31,11 +31,20 @@ tasks <- tasks %>%
 q1 <- serial %>% dplyr::select(-num_cores, num_threads, -schedule)
 
 kable(q1 %>% slice_head(n = 3), format = "latex", row.names = FALSE,
-      caption = "Serial Wall Clock Time and Area", digits = 8) %>%
+      caption = "Serial Wall Clock Time and Area - Standard Algorithm", digits = 8) %>%
   kable_styling(bootstrap_options = c("striped", "hover"),
                 full_width = TRUE,
                 font_size = 12,
                 position = "left")
+
+kable(q1 %>% slice_tail(n = 3), format = "latex", row.names = FALSE,
+      caption = "Serial Wall Clock Time and Area - AVX Algorithm", digits = 8) %>%
+  kable_styling(bootstrap_options = c("striped", "hover"),
+                full_width = TRUE,
+                font_size = 12,
+                position = "left")
+
+q1 %>% slice_tail(n = 3) %>% group_by(program) %>% summarise(wc_time = mean(wc_time), area = mean(area))
 ```
 
 ```{r}
@@ -49,99 +58,184 @@ q21b <- omp %>% filter(program == "omp-avx-ts" | program == "omp-ts",
   dplyr::select(-num_cores, -schedule) %>%
   slice_head(n = 6)
 
+kable(q21a, format = "latex", row.names = FALSE,
+      caption = "OMP Wall Clock Time and Area - drand", digits = 6) %>%
+  kable_styling(bootstrap_options = c("striped", "hover"),
+                full_width = TRUE,
+                font_size = 12)
+
+kable(q21b, format = "latex", row.names = FALSE,
+      caption = "OMP Wall Clock Time and Area - drand-ts", digits = 6) %>%
+  kable_styling(bootstrap_options = c("striped", "hover"),
+                full_width = TRUE,
+                font_size = 12)
+
+```
+
+```{r}
 omp_results <- omp %>%
   filter(program != "omp-avx-not-ts",
          program != "omp-not-ts") %>%
   mutate(schedule = ifelse(schedule == "UNDEFINED", "None", schedule)) %>%
   group_by(program, schedule, num_threads) %>%
   summarize(wc_time = mean(wc_time),
-            area = mean(area)) %>%
-  filter(num_threads > 1, !grepl("avx", program, fixed = TRUE)) %>%
-  mutate(num_threads = as.factor(num_threads)) %>%
-  mutate(num_threads = paste0("Threads: ", num_threads))
+            area = mean(area), .groups = "drop") %>%
+  filter(schedule == "None") %>%
+  dplyr::select(-schedule)
 
 kable(omp_results, format = "latex", row.names = FALSE,
-      caption = "Serial Wall Clock Time and Area", digits = 6) %>%
+      caption = "OMP Wall Clock Time and Area Across Threads - No Scheduling",
+      digits = 6) %>%
   kable_styling(bootstrap_options = c("striped", "hover"),
                 full_width = TRUE,
-                font_size = 14)
+                font_size = 12)
+```
 
-g1 <- ggplot(omp_results, aes(x = factor(program, c("omp-ts", "omp-collapse")), y = wc_time, fill = schedule)) +
+```{r}
+omp_results_schedules <- omp %>%
+  filter(program != "omp-avx-not-ts",
+         program != "omp-not-ts") %>%
+  mutate(schedule = ifelse(schedule == "UNDEFINED", "None", schedule)) %>%
+  group_by(program, schedule, num_threads) %>%
+  summarize(wc_time = mean(wc_time),
+            area = mean(area), .groups = "drop") %>%
+  filter(schedule != "None", !grepl("collapse", program, fixed = TRUE))
+
+kable(omp_results_schedules, format = "latex", row.names = FALSE,
+      caption = "OMP Wall Clock Time and Area Across Threads - All Schedules",
+      digits = 6) %>%
+  kable_styling(bootstrap_options = c("striped", "hover"),
+                full_width = TRUE,
+                font_size = 12)
+```
+
+```{r}
+omp_results_schedules_collapse <- omp %>%
+  filter(program != "omp-avx-not-ts",
+         program != "omp-not-ts") %>%
+  mutate(schedule = ifelse(schedule == "UNDEFINED", "None", schedule)) %>%
+  group_by(program, schedule, num_threads) %>%
+  summarize(wc_time = mean(wc_time),
+            area = mean(area), .groups = "drop") %>%
+  filter(schedule != "None", grepl("collapse", program, fixed = TRUE))
+
+kable(omp_results_schedules_collapse, format = "latex", row.names = FALSE,
+      caption = "OMP Wall Clock Time and Area Across Threads - All Schedules With Collapse",
+      digits = 6) %>%
+  kable_styling(bootstrap_options = c("striped", "hover"),
+                full_width = TRUE,
+                font_size = 12)
+```
+
+```{r}
+omp_plot <- omp %>%
+  filter(program != "omp-avx-not-ts",
+         program != "omp-not-ts") %>%
+  mutate(schedule = ifelse(schedule == "UNDEFINED", "None", schedule)) %>%
+  group_by(program, schedule, num_threads) %>%
+  summarize(wc_time = mean(wc_time),
+            area = mean(area), .groups = "drop") %>%
+  filter(num_threads > 1) %>%
+  mutate(num_threads = paste0("Threads: ", num_threads))
+
+g1 <- ggplot(omp_plot %>% filter(grepl("avx", program, fixed = TRUE)),
+             aes(x = program, y = wc_time, fill = schedule)) +
   geom_bar(position = "dodge", stat = "identity") +
   facet_wrap(~factor(num_threads,
                      c("Threads: 2", "Threads: 4",
                        "Threads: 12", "Threads: 24")), scales = "free_y") +
-  ggtitle("Area vs. Wall Clock Time - Mandomp (Thread Safe)") +
+  ggtitle("Wall Clock Time For Each Schedule vs. Program (AVX)") +
   xlab("Program") +
   ylab("Wall Clock Time") +
   theme_pub() +
   theme(
     text = element_text(family = "Times"), # LaTeX-like font
     plot.title = element_text(size = 20),
-    axis.title.x = element_text(size = 16),
-    axis.title.y = element_text(size = 16),
-    axis.text.x = element_text(size = 14),
-    axis.text.y = element_text(size = 14),
-    strip.text = element_text(size = 16)
+    axis.title.x = element_text(size = 20),
+    axis.title.y = element_text(size = 20),
+    axis.text.x = element_text(size = 18),
+    axis.text.y = element_text(size = 18),
+    strip.text = element_text(size = 20),
+    legend.text = element_text(size = 20), 
+    legend.title = element_text(size = 18) 
   )
+g1
 
-# Save the plot
-ggsave("q2-img.pdf", g1, width = 10, height = 10, units = "in")
-
-kable(omp_results %>% filter(!grepl("collapse", program, fixed = TRUE)),
-      format = "html", row.names = FALSE,
-      caption = "OMP Loop Directives Clock Time and Area", digits = 6) %>%
-  kable_styling(bootstrap_options = c("striped", "hover"),
-                full_width = FALSE,
-                font_size = 12,
-                position = "left") %>%
-  save_kable(file = "q22-table.png", zoom = 2)
-
-g1 <- ggplot(omp_results, aes(x = program, y = wc_time, fill = schedule)) +
+g2 <- ggplot(omp_plot %>% filter(!grepl("avx", program, fixed = TRUE)),
+             aes(x = factor(program, c("omp-ts", "omp-collapse")), y = wc_time, fill = schedule)) +
   geom_bar(position = "dodge", stat = "identity") +
-  facet_wrap(~num_threads, scales = "free_y") +
-  ggtitle("Area vs. Wall Clock Time - Mandomp (Thread Safe)") +
-  xlab("") +
+  facet_wrap(~factor(num_threads,
+                     c("Threads: 2", "Threads: 4",
+                       "Threads: 12", "Threads: 24")), scales = "free_y") +
+  ggtitle("Wall Clock Time For Each Schedule vs. Program (AVX)") +
+  xlab("Program") +
   ylab("Wall Clock Time") +
   theme_pub() +
   theme(
+    text = element_text(family = "Times"), # LaTeX-like font
     plot.title = element_text(size = 20),
-    axis.title.x = element_text(size = 16),
-    axis.title.y = element_text(size = 16),
-    axis.text.x = element_text(size = 14),
-    axis.text.y = element_text(size = 14),
-    strip.text = element_text(size = 16)
+    axis.title.x = element_text(size = 20),
+    axis.title.y = element_text(size = 20),
+    axis.text.x = element_text(size = 18),
+    axis.text.y = element_text(size = 18),
+    strip.text = element_text(size = 20),
+    legend.text = element_text(size = 20), 
+    legend.title = element_text(size = 18) 
   )
-ggsave("q2-img.png", g1, width = 10, height = 10, units = "in", dpi = 300)
+g2
 
-tasks <- tasks %>%
-  filter(num_threads > 1) %>%
+# Save the plot
+ggsave("q2-img-avx.pdf", g1, width = 10, height = 10, units = "in")
+ggsave("q2-img.pdf", g2, width = 10, height = 10, units = "in")
+```
+
+```{r}
+tasks_m <- tasks %>%
   group_by(program, num_threads) %>%
   summarize(wc_time = mean(wc_time),
             area = mean(area))
 
-kable(tasks, format = "html", row.names = FALSE,
+kable(tasks_m %>% filter(program == "per-cell-task"), 
+      format = "latex", row.names = FALSE,
+      caption = "OMP Tasks Clock Time and Area", digits = 6) %>%
+  kable_styling(bootstrap_options = c("striped", "hover"),
+                full_width = TRUE,
+                font_size = 12,
+                position = "left")
+
+kable(tasks_m %>% filter(program == "per-column-task"), 
+      format = "latex", row.names = FALSE,
       caption = "OMP Tasks Clock Time and Area", digits = 6) %>%
   kable_styling(bootstrap_options = c("striped", "hover"),
                 full_width = FALSE,
                 font_size = 12,
                 position = "left")
 
-ggplot(tasks, aes(x = program, y = wc_time)) +
-  geom_bar(position = "dodge", stat = "identity") +
-  geom_text(aes(label = "Area"), nudge_y = 0.45) +
-  geom_text(aes(label = sprintf("%.6f", area)), nudge_y = 0.2) +
-  facet_wrap(~num_threads, scales = "free_y") +
-  ggtitle("Wall Clock Time vs. Program - Tasks") +
-  xlab("Program") +
-  ylab("Wall Clock Time") +
-  theme_pub() +
-  theme(
-    plot.title = element_text(size = 20),
-    axis.title.x = element_text(size = 16),
-    axis.title.y = element_text(size = 16),
-    axis.text.x = element_text(size = 14, angle = 90),
-    axis.text.y = element_text(size = 14),
-    strip.text = element_text(size = 16)
-  )
+kable(tasks_m %>% filter(program == "per-column-task-shared"), 
+      format = "latex", row.names = FALSE,
+      caption = "OMP Tasks Clock Time and Area", digits = 6) %>%
+  kable_styling(bootstrap_options = c("striped", "hover"),
+                full_width = FALSE,
+                font_size = 12,
+                position = "left")
+```
+
+```{r}
+par <- read_csv("a2/out/omp-parallel.csv") %>% 
+  group_by(program, num_threads, schedule) %>%
+    summarize(wc_time = mean(wc_time),
+                area = mean(area)) %>%
+  mutate(program = "omp-avx-parallel-rng")
+
+t <- omp_results_schedules_collapse %>% 
+  arrange(wc_time) %>% slice_head(n = 1) %>%
+  bind_rows(par)
+
+kable(t, 
+      format = "latex", row.names = FALSE,
+      caption = "OMP Tasks Clock Time and Area", digits = 6) %>%
+  kable_styling(bootstrap_options = c("striped", "hover"),
+                full_width = FALSE,
+                font_size = 12,
+                position = "left")
 ```
