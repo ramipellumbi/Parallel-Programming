@@ -1,7 +1,4 @@
 num_cores,num_threads,schedule,seed,program,wc_time,area
-24,24,"guided",12345,omp-avx-ts,1.955245,1.506720
-24,24,"guided",12345,omp-avx-ts,1.971202,1.506720
-24,24,"guided",12345,omp-avx-ts,1.947106,1.506720
-24,24,"guided",12345,omp-avx-ts,1.957365,1.506720
-24,24,"guided",12345,omp-avx-ts,1.945791,1.506720
-24,24,"guided",12345,omp-avx-ts,1.947054,1.506720
+24,24,"dynamic",12345,omp-avx-ts,1.948338,1.506720
+24,24,"dynamic",12345,omp-avx-ts,1.948752,1.506720
+24,24,"dynamic",12345,omp-avx-ts,1.946480,1.506720
