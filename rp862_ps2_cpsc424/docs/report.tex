@@ -273,19 +273,20 @@ be a \MYhref{https://stackoverflow.com/questions/42659668/stdcomplex-multiplicat
 \subsubsection{Results}
 Running the standard implementation 3 times, the following results were obtained:
 \begin{table}[H]
+    \centering
     \caption{Serial Wall Clock Time and Area - Standard Algorithm}
     \fontsize{12}{14}\selectfont
-    \begin{tabu} to \linewidth {>{\raggedleft}X>{\raggedleft}X>{\raggedright}X>{\raggedleft}X>{\raggedleft}X}
+    \begin{tabular}[t]{r|r|l|r|r}
     \hline
     num\_threads & seed & program & wc\_time & area\\
     \hline
-    1 & 12345 & serial & 49.26491 & 1.506648\\
+    1 & 12345 & serial & 49.25816 & 1.506648\\
     \hline
-    1 & 12345 & serial & 49.28202 & 1.506648\\
+    1 & 12345 & serial & 49.25670 & 1.506648\\
     \hline
-    1 & 12345 & serial & 49.25730 & 1.506648\\
+    1 & 12345 & serial & 49.25700 & 1.506648\\
     \hline
-    \end{tabu}
+    \end{tabular}
 \end{table}
 \noindent The wall clock time is roughly 49.2 seconds. 
 Each execution yielded a stable area estimate of 1.506648, 
@@ -436,19 +437,20 @@ find a way around this issue.
 \subsubsection{Results}
 Running the AVX 512 implementation 3 times, the following results were obtained:
 \begin{table}[H]
+    \centering
     \caption{Serial Wall Clock Time and Area - AVX Algorithm}
     \fontsize{12}{14}\selectfont
-    \begin{tabu} to \linewidth {>{\raggedleft}X>{\raggedleft}X>{\raggedright}X>{\raggedleft}X>{\raggedleft}X}
+    \begin{tabular}[t]{r|r|l|r|r}
     \hline
     num\_threads & seed & program & wc\_time & area\\
     \hline
-    1 & 12345 & serial-avx & 17.76870 & 1.506656\\
+    1 & 12345 & serial-avx & 17.75959 & 1.506656\\
     \hline
-    1 & 12345 & serial-avx & 17.76229 & 1.506656\\
+    1 & 12345 & serial-avx & 17.75925 & 1.506656\\
     \hline
-    1 & 12345 & serial-avx & 17.75254 & 1.506656\\
+    1 & 12345 & serial-avx & 17.75885 & 1.506656\\
     \hline
-    \end{tabu}
+    \end{tabular}
 \end{table}
 \noindent The wall clock time for the algorithm leveraging AVX-512 was measured 
 at approximately 17.8 seconds. This represents a speedup of approximately 2.76 times 
@@ -530,26 +532,27 @@ The above algorithm is run using the base \texttt{drand} implementation with the
 \end{itemize}
 This runs the algorithm with two cores (one thread per core) and no scheduling. The results are:
 \begin{table}[H]
+    \centering
     \caption{OMP Wall Clock Time and Area - drand}
     \centering
     \fontsize{12}{14}\selectfont
-    \begin{tabu} to \linewidth {>{\raggedleft}X>{\raggedleft}X>{\raggedright}X>{\raggedleft}X>{\raggedleft}X}
+    \begin{tabular}[t]{r|r|l|r|r}
     \hline
     num\_threads & seed & program & wc\_time & area\\
     \hline
-    2 & 12345 & standard & 42.08266 & 1.506862\\
+    2 & 12345 & standard & 42.09501 & 1.506796\\
     \hline
-    2 & 12345 & standard & 42.08794 & 1.506826\\
+    2 & 12345 & standard & 42.09643 & 1.506670\\
     \hline
-    2 & 12345 & standard & 42.07988 & 1.506716\\
+    2 & 12345 & standard & 42.08855 & 1.506686\\
     \hline
-    2 & 12345 & avx & 14.90467 & 1.506706\\
+    2 & 12345 & avx & 15.16014 & 1.506838\\
     \hline
-    2 & 12345 & avx & 14.90157 & 1.506720\\
+    2 & 12345 & avx & 15.17255 & 1.506796\\
     \hline
-    2 & 12345 & avx & 14.89628 & 1.506770\\
+    2 & 12345 & avx & 15.16531 & 1.506812\\
     \hline
-    \end{tabu}
+    \end{tabular}
 \end{table}
 \noindent Table 3 shows both a performance improvement over the serial implementation and 
 the algorithm computing a different area estimate each run. The performance improvement for 
@@ -585,26 +588,27 @@ A problem with this fix in particular is each thread will use the same sequence 
 This is remedied in section 7. Using \texttt{dsrand\_ts} and \texttt{drand\_ts} instead of \texttt{dsrand} and \texttt{drand} in the 
 2 thread no schedule experiment yields:
 \begin{table}[H]
+    \centering
     \caption{OMP Wall Clock Time and Area - drand-ts}
     \centering
     \fontsize{12}{14}\selectfont
-    \begin{tabu} to \linewidth {>{\raggedleft}X>{\raggedleft}X>{\raggedright}X>{\raggedleft}X>{\raggedleft}X}
+    \begin{tabular}[t]{r|r|l|r|r}
     \hline
     num\_threads & seed & program & wc\_time & area\\
     \hline
-    2 & 12345 & omp-ts & 42.05347 & 1.506622\\
+    2 & 12345 & omp-ts & 41.87915 & 1.506622\\
     \hline
-    2 & 12345 & omp-ts & 42.03060 & 1.506622\\
+    2 & 12345 & omp-ts & 41.86007 & 1.506622\\
     \hline
-    2 & 12345 & omp-ts & 42.03824 & 1.506622\\
+    2 & 12345 & omp-ts & 41.85505 & 1.506622\\
     \hline
-    2 & 12345 & omp-avx-ts & 15.10391 & 1.506716\\
+    2 & 12345 & omp-avx-ts & 15.01974 & 1.506716\\
     \hline
-    2 & 12345 & omp-avx-ts & 15.10479 & 1.506716\\
+    2 & 12345 & omp-avx-ts & 15.02008 & 1.506716\\
     \hline
-    2 & 12345 & omp-avx-ts & 15.10382 & 1.506716\\
+    2 & 12345 & omp-avx-ts & 15.01922 & 1.506716\\
     \hline
-    \end{tabu}
+    \end{tabular}
 \end{table}
 \noindent We observe the same wall clock performance, but this fix now allows for reproducible area values for a fixed number of threads. 
 Moving forward, we run all experiments with the thread safe random number generator.
@@ -613,38 +617,37 @@ Moving forward, we run all experiments with the thread safe random number genera
 The algorithm is now run with \texttt{OMP\_NUM\_THREADS} set to 1, 2, 4, 12, and 24 cores (one thread per core) with no scheduling. 
 The results are: 
 \begin{table}[H]
+    \centering
     \caption{OMP Wall Clock Time and Area Across Threads - No Scheduling}
     \centering
     \fontsize{12}{14}\selectfont
-    \begin{tabu} to \linewidth {>{\raggedright}X>{\raggedleft}X>{\raggedleft}X>{\raggedleft}X}
+    \begin{tabular}[t]{l|r|r|r}
     \hline
     program & num\_threads & wc\_time & area\\
     \hline
-    seq-avx & 1 & 17.76118& 1.506656\\
+    omp-avx-ts & 1 & 17.631131 & 1.506656\\
     \hline
-    omp-avx-ts & 1 & 17.754122 & 1.506656\\
+    omp-avx-ts & 2 & 15.021128 & 1.506716\\
     \hline
-    omp-avx-ts & 2 & 15.104908 & 1.506716\\
+    omp-avx-ts & 4 & 8.000733 & 1.506778\\
     \hline
-    omp-avx-ts & 4 & 8.048316 & 1.506778\\
+    omp-avx-ts & 12 & 3.447970 & 1.506652\\
     \hline
-    omp-avx-ts & 12 & 3.477090 & 1.506652\\
+    omp-avx-ts & 24 & 1.937948 & 1.506664\\
     \hline
-    omp-avx-ts & 24 & 1.953967 & 1.506664\\
+    serial & 1 & 49.25670 & 1.506648 \\
+    \hline 
+    omp-ts & 1 & 49.006569 & 1.506648\\
     \hline
-    seq & 1 & 49.26491 & 1.506648 \\
+    omp-ts & 2 & 41.859844 & 1.506622\\
     \hline
-    omp-ts & 1 & 49.221812 & 1.506648\\
+    omp-ts & 4 & 22.352743 & 1.506532\\
     \hline
-    omp-ts & 2 & 42.034752 & 1.506622\\
+    omp-ts & 12 & 9.674459 & 1.506682\\
     \hline
-    omp-ts & 4 & 22.454806 & 1.506532\\
+    omp-ts & 24 & 5.409102 & 1.506800\\
     \hline
-    omp-ts & 12 & 9.720917 & 1.506682\\
-    \hline
-    omp-ts & 24 & 5.433250 & 1.506800\\
-    \hline
-    \end{tabu}
+    \end{tabular}
 \end{table}
 \noindent We observe that increasing the thread count results in faster execution of both the 
 standard and AVX implementation. The performance improvement factor is the same across both algorithms. 
@@ -654,8 +657,10 @@ instantiated on more threads. The algorithm is also processing a different batch
 the area estimate is bound to change as a different point is chosen in each cell for varying thread counts.
 
 \subsection{Parallel threads using \texttt{omp for} - With Scheduling}
+We add the \texttt{schedule(runtime)} clause to the \texttt{for} directive to allow 
+for setting the scheduling of iterations to threads. 
 Now, for each thread count \texttt{OMP\_NUM\_THREADS} set to 2, 4, 12, and 24 cores, we assess \texttt{OMP\_SCHEDULE} set to: 
-\texttt{schedule(static, 1)}, \texttt{schedule(static, 100)}, \texttt{schedule(dynamic)}, \texttt{schedule(static, 250)}, and \texttt{schedule(guided)}. Respectively, 
+\texttt{schedule(static, 1)}, \texttt{schedule(static, 100)}, \texttt{schedule(dynamic)}, \texttt{schedule(dynamic, 250)}, and \texttt{schedule(guided)}. Respectively, 
 these options perform:
 \begin{itemize}
 
@@ -677,10 +682,10 @@ these options perform:
     \item Pros \& Cons: High overhead but excellent load balancing.
   \end{itemize}
 
-\item \textbf{schedule(static, 250)}:
+\item \textbf{schedule(dynamic, 250)}:
   \begin{itemize}
-    \item Method: Similar to \texttt{static, 100} but with chunk size 250.
-    \item Pros \& Cons: Low overhead and since the number of iterations is divisible by 250 there are no threads left idle.
+    \item Method: Each thread dynamically grabs chunks of 250 iterations from the loop.
+    \item Pros \& Cons: Once the 2500 iterations to schedule have been assigned we expect no performance gain above about 10 threads.
   \end{itemize}
 
 \item \textbf{schedule(guided)}:
@@ -691,113 +696,138 @@ these options perform:
 \end{itemize}
 The average wall clock time and area for the AVX algorithm for each thread and schedule were:
 \begin{table}[H]
-    \caption{OMP Wall Clock Time and Area Across Threads - All Schedules W/ AVX}
+    \centering
+    \caption{OMP Wall Clock Time and Area Across Threads - All Schedules AVX}
     \centering
     \fontsize{12}{14}\selectfont
-    \begin{tabu} to \linewidth {>{\raggedright}X>{\raggedright}X>{\raggedleft}X>{\raggedleft}X>{\raggedleft}X}
+    \begin{tabular}[t]{l|l|r|r|r}
     \hline
     program & schedule & num\_threads & wc\_time & area\\
     \hline
-    omp-avx-ts & dynamic & 2 & 15.104199 & 1.506716\\
+    omp-avx-ts & dynamic & 2 & 8.857233 & 1.506857\\
     \hline
-    omp-avx-ts & dynamic & 4 & 8.048307 & 1.506778\\
+    omp-avx-ts & dynamic & 4 & 4.426543 & 1.506663\\
     \hline
-    omp-avx-ts & dynamic & 12 & 3.472126 & 1.506652\\
+    omp-avx-ts & dynamic & 12 & 1.478229 & 1.506761\\
     \hline
-    omp-avx-ts & dynamic & 24 & 1.949151 & 1.506664\\
+    omp-avx-ts & dynamic & 24 & 0.741666 & 1.506795\\
     \hline
-    omp-avx-ts & dynamic,250 & 2 & 15.102702 & 1.506716\\
+    omp-avx-ts & dynamic,250 & 2 & 9.398375 & 1.506794\\
     \hline
-    omp-avx-ts & dynamic,250 & 4 & 8.051459 & 1.506778\\
+    omp-avx-ts & dynamic,250 & 4 & 5.694130 & 1.506746\\
     \hline
-    omp-avx-ts & dynamic,250 & 12 & 3.468803 & 1.506652\\
+    omp-avx-ts & dynamic,250 & 12 & 4.477652 & 1.506758\\
     \hline
-    omp-avx-ts & dynamic,250 & 24 & 1.949707 & 1.506664\\
+    omp-avx-ts & dynamic,250 & 24 & 4.479328 & 1.506758\\
     \hline
-    omp-avx-ts & guided & 2 & 15.102247 & 1.506716\\
+    omp-avx-ts & guided & 2 & 8.857341 & 1.506644\\
     \hline
-    omp-avx-ts & guided & 4 & 8.047532 & 1.506778\\
+    omp-avx-ts & guided & 4 & 4.500216 & 1.506787\\
     \hline
-    omp-avx-ts & guided & 12 & 3.470663 & 1.506652\\
+    omp-avx-ts & guided & 12 & 1.484397 & 1.506694\\
     \hline
-    omp-avx-ts & guided & 24 & 1.950114 & 1.506664\\
+    omp-avx-ts & guided & 24 & 0.745663 & 1.506713\\
     \hline
-    omp-avx-ts & static,1 & 2 & 15.100223 & 1.506716\\
+    omp-avx-ts & static,1 & 2 & 8.851426 & 1.506732\\
     \hline
-    omp-avx-ts & static,1 & 4 & 8.046551 & 1.506778\\
+    omp-avx-ts & static,1 & 4 & 4.429402 & 1.506760\\
     \hline
-    omp-avx-ts & static,1 & 12 & 3.469631 & 1.506652\\
+    omp-avx-ts & static,1 & 12 & 1.482386 & 1.506800\\
     \hline
-    omp-avx-ts & static,1 & 24 & 1.949490 & 1.506664\\
+    omp-avx-ts & static,1 & 24 & 0.743956 & 1.506802\\
     \hline
-    omp-avx-ts & static,100 & 2 & 15.105248 & 1.506716\\
+    omp-avx-ts & static,100 & 2 & 8.854995 & 1.506648\\
     \hline
-    omp-avx-ts & static,100 & 4 & 8.047205 & 1.506778\\
+    omp-avx-ts & static,100 & 4 & 5.102193 & 1.506622\\
     \hline
-    omp-avx-ts & static,100 & 12 & 3.472282 & 1.506652\\
+    omp-avx-ts & static,100 & 12 & 2.041134 & 1.506880\\
     \hline
-    omp-avx-ts & static,100 & 24 & 1.949591 & 1.506664\\
+    omp-avx-ts & static,100 & 24 & 1.939225 & 1.506736\\
     \hline
-    \end{tabu}
+    \end{tabular}
 \end{table}
-\noindent We notice negligible performance improvements of the algorithm for any 
-of the schedule options compared to when no schedule is set. Moreover, the average area value 
-for each schedule option appears to be the same for the same core count. The next table shows 
-the results for the standard algorithm, where the exact same conclusion is drawn.
+\noindent The area estimate differs amongst different schedules for the same thread count. This 
+indicates that the cells are being traversed in a different order for the different schedules 
+and thus a different point is likely sampled within each cell (which on the boundary matters 
+a lot for determining if we are inside or outside the set). For the wall clock time, we notice:
+\begin{itemize}
+    \item \texttt{dynamic}: There is a consistent decrease in wall clock time as
+    the number of threads increases. We are lead to believe that the load is 
+    being well-distributed for a chunk size of 1 and that all threads are working efficiently.
+    \item \texttt{dynamic, 250} The wall clock time decreases until 12 threads 
+    and then plateaus. A too-large chunk size is leading to less efficient use of 
+    threads as thread count increases. Indeed, we expect 10 threads to grab the 
+    2500 iterations to schedule over and the remaining threads above 10 are left completely idle. This 
+    is precisely what is observed.
+    \item \texttt{guided}: Very similar in performance to \texttt{dynamic}. This 
+    makes sense since the chunk size decreases over time and the threads seem 
+    to work more efficiently in this manner.
+    \item \texttt{static,1}: This has the same time decrease pattern as \texttt{dynamic}. 
+    The chunk size being set to 1 appears to allow for a good work distribution despite the 
+    potential overhead.
+    \item \texttt{static, 100}: The time decrease here is less smooth than that of 
+    \texttt{static, 1}. This indicates some threads are either being left idle or 
+    inefficiently used. There is little performance gain between 12 and 24 threads.
+\end{itemize}
+It is worth noting that wall clock time is significantly impacted by even one slow thread. 
+Since the density of cells inside the Mandelbrot set is non constant as we iterate through the columns, 
+threads that have to handle the center are bound to take more time. Thus, the 
+\texttt{dynamic, guided,} and \texttt{static,1} options handle work distribution better than 
+when we assign threads a large chunk of work as the threads in charge of the center will undoubtedly take more time.
+The next table shows the results for the standard algorithm, where the exact same conclusion is drawn.
 \begin{table}[H]
-    \caption{OMP Wall Clock Time and Area Across Threads - All Schedules W/O AVX}
+    \centering
+    \caption{OMP Wall Clock Time and Area Across Threads - All Schedules Standard}
     \centering
     \fontsize{12}{14}\selectfont
-    \begin{tabu} to \linewidth {>{\raggedright}X>{\raggedright}X>{\raggedleft}X>{\raggedleft}X>{\raggedleft}X}
+    \begin{tabular}[t]{l|l|r|r|r}
     \hline
     program & schedule & num\_threads & wc\_time & area\\
     \hline
-    omp-ts & dynamic & 2 & 42.033625 & 1.506622\\
+    omp-ts & dynamic & 2 & 24.546266 & 1.506733\\
     \hline
-    omp-ts & dynamic & 4 & 22.466848 & 1.506532\\
+    omp-ts & dynamic & 4 & 12.279111 & 1.506719\\
     \hline
-    omp-ts & dynamic & 12 & 9.715564 & 1.506682\\
+    omp-ts & dynamic & 12 & 4.093797 & 1.506722\\
     \hline
-    omp-ts & dynamic & 24 & 5.437160 & 1.506800\\
+    omp-ts & dynamic & 24 & 2.049885 & 1.506824\\
     \hline
-    omp-ts & dynamic,250 & 2 & 42.030016 & 1.506622\\
+    omp-ts & dynamic,250 & 2 & 25.915077 & 1.506752\\
     \hline
-    omp-ts & dynamic,250 & 4 & 22.446521 & 1.506532\\
+    omp-ts & dynamic,250 & 4 & 15.846655 & 1.506792\\
     \hline
-    omp-ts & dynamic,250 & 12 & 9.720649 & 1.506682\\
+    omp-ts & dynamic,250 & 12 & 12.539101 & 1.506682\\
     \hline
-    omp-ts & dynamic,250 & 24 & 5.433849 & 1.506800\\
+    omp-ts & dynamic,250 & 24 & 12.539795 & 1.506682\\
     \hline
-    omp-ts & guided & 2 & 42.019440 & 1.506622\\
+    omp-ts & guided & 2 & 24.598179 & 1.506790\\
     \hline
-    omp-ts & guided & 4 & 22.455807 & 1.506532\\
+    omp-ts & guided & 4 & 12.471653 & 1.506759\\
     \hline
-    omp-ts & guided & 12 & 9.718849 & 1.506682\\
+    omp-ts & guided & 12 & 4.132643 & 1.506768\\
     \hline
-    omp-ts & guided & 24 & 5.434775 & 1.506800\\
+    omp-ts & guided & 24 & 2.055091 & 1.506711\\
     \hline
-    omp-ts & static,1 & 2 & 42.038014 & 1.506622\\
+    omp-ts & static,1 & 2 & 24.550046 & 1.506662\\
     \hline
-    omp-ts & static,1 & 4 & 22.453874 & 1.506532\\
+    omp-ts & static,1 & 4 & 12.277485 & 1.506794\\
     \hline
-    omp-ts & static,1 & 12 & 9.721643 & 1.506682\\
+    omp-ts & static,1 & 12 & 4.103413 & 1.506824\\
     \hline
-    omp-ts & static,1 & 24 & 5.434236 & 1.506800\\
+    omp-ts & static,1 & 24 & 2.055128 & 1.506882\\
     \hline
-    omp-ts & static,100 & 2 & 42.028027 & 1.506622\\
+    omp-ts & static,100 & 2 & 24.671857 & 1.506674\\
     \hline
-    omp-ts & static,100 & 4 & 22.454145 & 1.506532\\
+    omp-ts & static,100 & 4 & 14.196153 & 1.506664\\
     \hline
-    omp-ts & static,100 & 12 & 9.718438 & 1.506682\\
+    omp-ts & static,100 & 12 & 5.696408 & 1.506728\\
     \hline
-    omp-ts & static,100 & 24 & 5.432583 & 1.506800\\
+    omp-ts & static,100 & 24 & 5.445335 & 1.506714\\
     \hline
-    \end{tabu}
+    \end{tabular}
 \end{table}
-\noindent We conclude that the scheduling results do not reduce the load balance amongst 
-threads for loop directives for both the standard and AVX algorithm. Since wall clock 
-time is heavily impacted by just one slow thread, a follow up experiment 
-might investigate if the scheduling options improve the wall clock time on a per thread basis.
+\noindent We conclude that certain types of scheduling improve the load balance amongst 
+threads for loop directives for both the standard and AVX algorithm. 
 
 \subsection{Parallel threads using \texttt{omp for} - With Collapsing \& Scheduling}
 Next, the loop uses the collapse clause; increasing the number of loop chunks that
@@ -809,134 +839,149 @@ The AVX algorithm adjustments are shown to emphasize the changes:
 \newpage
 \begin{lstlisting}
     #pragma omp parallel // insert same shared, private
-    {
-        // insert same setup
-        #pragma omp for collapse(2)
+    { // insert same setup
+        #pragma omp for collapse(2) schedule(runtime)
         for (size_t n = 0; n < NUM_X_ITERATIONS; n++)
         {
             for (size_t m = 0; m < NUM_Y_PS; m += 8)
             {
                 // to support collapse have to compute the current bottom left x for all  y values now
-                double current_bottom_left_x = -2.0 + CELL_SIDE_LENGTH * n;
-                double max_x = current_bottom_left_x + CELL_SIDE_LENGTH;
                 // insert same AVX sequential code
             }
         }
 
         // to support collapsing the cleanup iterations must be their own collapse
-        #pragma omp for collapse(2)
+        #pragma omp for collapse(2) schedule(runtime)
         for (size_t i = 0; i < NUM_X_ITERATIONS; ++i)
         {
             for (size_t j = NUM_Y_PS; j < NUM_Y_ITERATIONS; ++j)
             {
                 // have to compute x for all y values to support collapsing
-                double current_bottom_left_x = -2.0 + i * CELL_SIDE_LENGTH;
-                double cell_max_x = current_bottom_left_x + CELL_SIDE_LENGTH;
                 // insert same standard sequential code
             }
-        }
-        // insert same cleanup
+        } // insert same cleanup
     }
 \end{lstlisting}
 The results were measured for \texttt{OMP\_NUM\_THREADS} set to 2, 4, 12, and 24 cores and \texttt{OMP\_SCHEDULE} set to
-\texttt{schedule(static, 1)}, \texttt{schedule(static, 100)}, \texttt{schedule(dynamic)}, \texttt{schedule(static, 250)}, and \texttt{schedule(guided)}. Below 
-is a table of the results for the AVX algorithm:
+the same options as prior.
+The next table shows the results from collapsing across scheduling options for the AVX algorithm
 \begin{table}[H]
-    \caption{OMP Wall Clock Time and Area Across Threads - All Schedules With Collapse}
+    \centering
+    \caption{OMP Wall Clock Time and Area Across Threads - All Schedules With Collapse AVX}
     \centering
     \fontsize{12}{14}\selectfont
-    \begin{tabu} to \linewidth {>{\raggedright}X>{\raggedright}X>{\raggedleft}X>{\raggedleft}X>{\raggedleft}X}
+    \begin{tabular}[t]{l|l|r|r|r}
     \hline
     program & schedule & num\_threads & wc\_time & area\\
     \hline
-    omp-collapse & dynamic & 2 & 42.094541 & 1.506622\\
+    omp-collapse-avx & dynamic & 2 & 8.924948 & 1.506725\\
     \hline
-    omp-collapse & dynamic & 4 & 22.483391 & 1.506532\\
+    omp-collapse-avx & dynamic & 4 & 4.463100 & 1.506759\\
     \hline
-    omp-collapse & dynamic & 12 & 9.774133 & 1.506622\\
+    omp-collapse-avx & dynamic & 12 & 1.489609 & 1.506655\\
     \hline
-    omp-collapse & dynamic & 24 & 5.474332 & 1.506740\\
+    omp-collapse-avx & dynamic & 24 & 0.748752 & 1.506757\\
     \hline
-    omp-collapse & dynamic,250 & 2 & 42.084935 & 1.506622\\
+    omp-collapse-avx & dynamic,250 & 2 & 8.917002 & 1.506840\\
     \hline
-    omp-collapse & dynamic,250 & 4 & 22.482011 & 1.506532\\
+    omp-collapse-avx & dynamic,250 & 4 & 4.459263 & 1.506713\\
     \hline
-    omp-collapse & dynamic,250 & 12 & 9.776808 & 1.506622\\
+    omp-collapse-avx & dynamic,250 & 12 & 1.487800 & 1.506748\\
     \hline
-    omp-collapse & dynamic,250 & 24 & 5.469587 & 1.506740\\
+    omp-collapse-avx & dynamic,250 & 24 & 0.747705 & 1.506653\\
     \hline
-    omp-collapse & guided & 2 & 42.078677 & 1.506622\\
+    omp-collapse-avx & guided & 2 & 8.948330 & 1.506829\\
     \hline
-    omp-collapse & guided & 4 & 22.478651 & 1.506532\\
+    omp-collapse-avx & guided & 4 & 4.544421 & 1.506701\\
     \hline
-    omp-collapse & guided & 12 & 9.773631 & 1.506622\\
+    omp-collapse-avx & guided & 12 & 1.504375 & 1.506810\\
     \hline
-    omp-collapse & guided & 24 & 5.468470 & 1.506740\\
+    omp-collapse-avx & guided & 24 & 0.751079 & 1.506727\\
     \hline
-    omp-collapse & static,1 & 2 & 42.083037 & 1.506622\\
+    omp-collapse-avx & static,1 & 2 & 8.982337 & 1.506750\\
     \hline
-    omp-collapse & static,1 & 4 & 22.490282 & 1.506532\\
+    omp-collapse-avx & static,1 & 4 & 4.554585 & 1.506808\\
     \hline
-    omp-collapse & static,1 & 12 & 9.777043 & 1.506622\\
+    omp-collapse-avx & static,1 & 12 & 1.599819 & 1.506694\\
     \hline
-    omp-collapse & static,1 & 24 & 5.470768 & 1.506740\\
+    omp-collapse-avx & static,1 & 24 & 0.803146 & 1.506684\\
     \hline
-    omp-collapse & static,100 & 2 & 42.086165 & 1.506622\\
+    omp-collapse-avx & static,100 & 2 & 8.925599 & 1.506888\\
     \hline
-    omp-collapse & static,100 & 4 & 22.479614 & 1.506532\\
+    omp-collapse-avx & static,100 & 4 & 4.460062 & 1.506850\\
     \hline
-    omp-collapse & static,100 & 12 & 9.777202 & 1.506622\\
+    omp-collapse-avx & static,100 & 12 & 1.494543 & 1.506714\\
     \hline
-    omp-collapse & static,100 & 24 & 5.469890 & 1.506740\\
+    omp-collapse-avx & static,100 & 24 & 0.750147 & 1.506734\\
     \hline
-    collapse-avx & dynamic & 2 & 14.968306 & 1.506602\\
-    \hline
-    collapse-avx & dynamic & 4 & 7.979923 & 1.506796\\
-    \hline
-    collapse-avx & dynamic & 12 & 3.453810 & 1.506794\\
-    \hline
-    collapse-avx & dynamic & 24 & 1.941514 & 1.506612\\
-    \hline
-    collapse-avx & dynamic,250 & 2 & 14.966832 & 1.506602\\
-    \hline
-    collapse-avx & dynamic,250 & 4 & 7.977025 & 1.506796\\
-    \hline
-    collapse-avx & dynamic,250 & 12 & 3.453488 & 1.506794\\
-    \hline
-    collapse-avx & dynamic,250 & 24 & 1.943180 & 1.506612\\
-    \hline
-    collapse-avx & guided & 2 & 14.966452 & 1.506602\\
-    \hline
-    collapse-avx & guided & 4 & 7.974139 & 1.506796\\
-    \hline
-    collapse-avx & guided & 12 & 3.457956 & 1.506794\\
-    \hline
-    collapse-avx & guided & 24 & 1.941265 & 1.506612\\
-    \hline
-    collapse-avx & static,1 & 2 & 14.963334 & 1.506602\\
-    \hline
-    collapse-avx & static,1 & 4 & 7.978836 & 1.506796\\
-    \hline
-    collapse-avx & static,1 & 12 & 3.453612 & 1.506794\\
-    \hline
-    collapse-avx & static,1 & 24 & 1.943142 & 1.506612\\
-    \hline
-    collapse-avx & static,100 & 2 & 14.969556 & 1.506602\\
-    \hline
-    collapse-avx & static,100 & 4 & 7.978321 & 1.506796\\
-    \hline
-    collapse-avx & static,100 & 12 & 3.453792 & 1.506794\\
-    \hline
-    collapse-avx & static,100 & 24 & 1.948113 & 1.506612\\
-    \hline
-    \end{tabu}
+    \end{tabular}
 \end{table}
-\noindent The collapse clause offers no enhanced improvements and this makes sense given the source code. 
-It is likely that the non-collapse code, which has 2500 iterations to schedule over, gives a sufficient number of 
-schedulable chunks to achieve good load balance. For the AVX implementation, the collapse clause on the first loop provides 2500*(1248/8 + 2) schedulable 
-chunks and it appears that the overhead of scheduling these chunks outweighs any performance gains. Additionally, we
-no longer make use of caching the x values for each stride of y. The results 
-for the standard implementation have the same conclusion, except there are 2500*1250 schedulable chunks in total.
+\noindent The collapse clause offers no noticeably enhanced improvements to \texttt{static, 1}, \texttt{dynamic}, and \texttt{guided}. 
+However, it significantly improves the prior ill performing \texttt{dynamic, 250} and \texttt{static, 100}.
+This makes sense for the source code. In the non-collapsed code, there are 2500 
+iterations to schedule over and the \texttt{dynamic, 250} cannot make use of more than 10 threads. 
+However, in the collapsed code, there are 2500*1250 iterations to schedule over in the standard 
+algorithm (2500 * 158 in the AVX version) and thus each thread can be kept busy. 
+In a similar fashion, the load is better distributed for chunk sizes of 100 across the 2500*1250 schedulable 
+iterations for \texttt{static, 100}, which no longer has any one thread handle an entire chunk of the center.
+
+The performance being the same for the other scheduling options is likely because the non-collapse code, 
+which has 2500 iterations to schedule over, gives a sufficient number of 
+schedulable chunks to achieve good load balance. In the collapsed version, there 
+are more chunks to schedule and it appears the overhead of scheduling these chunks 
+outweighs any performance gain. Additionally, we no longer make use of caching the x values for each stride of y. 
+Below is the table of values for the standard algorithm, where the exact same conclusions are drawn.
+\begin{table}[H]
+    \centering
+    \caption{OMP Wall Clock Time and Area Across Threads - All Schedules With Collapse Standard}
+    \centering
+    \fontsize{12}{14}\selectfont
+    \begin{tabular}[t]{l|l|r|r|r}
+    \hline
+    program & schedule & num\_threads & wc\_time & area\\
+    \hline
+    omp-collapse & dynamic & 2 & 24.793561 & 1.506799\\
+    \hline
+    omp-collapse & dynamic & 4 & 12.412081 & 1.506779\\
+    \hline
+    omp-collapse & dynamic & 12 & 4.180311 & 1.506715\\
+    \hline
+    omp-collapse & dynamic & 24 & 2.123831 & 1.506677\\
+    \hline
+    omp-collapse & dynamic,250 & 2 & 24.672736 & 1.506713\\
+    \hline
+    omp-collapse & dynamic,250 & 4 & 12.336788 & 1.506789\\
+    \hline
+    omp-collapse & dynamic,250 & 12 & 4.111878 & 1.506702\\
+    \hline
+    omp-collapse & dynamic,250 & 24 & 2.058562 & 1.506671\\
+    \hline
+    omp-collapse & guided & 2 & 24.747149 & 1.506708\\
+    \hline
+    omp-collapse & guided & 4 & 12.602658 & 1.506728\\
+    \hline
+    omp-collapse & guided & 12 & 4.168920 & 1.506780\\
+    \hline
+    omp-collapse & guided & 24 & 2.067399 & 1.506884\\
+    \hline
+    omp-collapse & static,1 & 2 & 24.743476 & 1.506694\\
+    \hline
+    omp-collapse & static,1 & 4 & 12.381558 & 1.506850\\
+    \hline
+    omp-collapse & static,1 & 12 & 4.130896 & 1.506624\\
+    \hline
+    omp-collapse & static,1 & 24 & 2.068478 & 1.506822\\
+    \hline
+    omp-collapse & static,100 & 2 & 24.667321 & 1.506718\\
+    \hline
+    omp-collapse & static,100 & 4 & 12.334259 & 1.506728\\
+    \hline
+    omp-collapse & static,100 & 12 & 4.119450 & 1.506808\\
+    \hline
+    omp-collapse & static,100 & 24 & 2.063424 & 1.506754\\
+    \hline
+    \end{tabular}
+\end{table}
 
 \subsection{Comparing It All}
 Looking at tables of value can make it difficult to compare results. We assess 
@@ -948,7 +993,10 @@ the algorithm in the following figure:
     \subfloat[\centering Standard Algorithm Performance For Each Schedule Across Thread Counts]{{\includegraphics[width=0.48\linewidth]{q2-img.pdf} }}
     \subfloat[\centering AVX Algorithm Performance For Each Schedule Across Thread Counts]{{\includegraphics[width=0.48\linewidth]{q2-img-avx.pdf} }}
 \end{figure}
-\noindent It is visibly observable that the wall clock change is negligible across schedules for each thread count - with or without collapsing. 
+\noindent It is visibly observable that the wall clock change between collapsing and non collapsing 
+is similar for the schedules \texttt{static, 1}, \texttt{dyamic}, and \texttt{guided} while the 
+wall clock time for \texttt{static, 100} and \texttt{dynamic, 250} is signicantly improved as 
+thread count increases for the collapsed program.
 
 \section{OpenMP Tasks}
 The next task takes the serial implementation and uses OpenMP tasks to parallelize it. Only 
@@ -1119,7 +1167,7 @@ invokes the function \texttt{dsrand\_parallel\_ts} to set its seed to the approp
 \texttt{drand\_parallel\_ts} gets the next random number for the thread by leaprogging the seed for that thread 
 by the number of threads. The program is rerun with 24 cores with the best performing result from part 2. 
 Since the results in part 2 were all so close, the absolute minimum wall clock time was chosen. 
-This was when there was 24 cores and the schedule was guided. The average area and wall clock time are:
+This was when there was 24 cores and the schedule was \texttt{dynamic}. The average area and wall clock time are:
 \begin{table}[H]
     \centering
     \caption{Investigating OMP Loop Directives with Parallel RNG}
@@ -1128,9 +1176,9 @@ This was when there was 24 cores and the schedule was guided. The average area a
     \hline
     program & schedule & num\_threads & wc\_time & area\\
     \hline
-    omp-avx-ts & dynamic & 24 & 1.949151 & 1.506664\\
+    omp-avx-ts & dynamic & 24 & 0.741666 & 1.506795\\
     \hline
-    omp-avx-parallel-rng & dynamic & 24 & 1.963116 & 1.506642\\
+    omp-avx-parallel-rng & dynamic & 24 & 0.753090 & 1.506693\\
     \hline
     \end{tabular}
 \end{table}

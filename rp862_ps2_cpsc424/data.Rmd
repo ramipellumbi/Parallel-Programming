@@ -15,9 +15,9 @@ library(tidyverse)
 ```
 
 ```{r}
-serial <- read_csv("a2/out/serial.csv", show_col_types = FALSE)
-omp <- read_csv("a2/out/omp.csv", show_col_types = FALSE)
-tasks <- read_csv("a2/out/tasks.csv", show_col_types = FALSE)
+serial <- read_csv("rp862_ps2_cpsc424/out/serial.csv", show_col_types = FALSE)
+omp <- read_csv("rp862_ps2_cpsc424/out/omp.csv", show_col_types = FALSE)
+tasks <- read_csv("rp862_ps2_cpsc424/out/tasks.csv", show_col_types = FALSE)
 
 serial <- serial %>%
   filter(seed == 12345)
@@ -33,14 +33,14 @@ q1 <- serial %>% dplyr::select(-num_cores, num_threads, -schedule)
 kable(q1 %>% slice_head(n = 3), format = "latex", row.names = FALSE,
       caption = "Serial Wall Clock Time and Area - Standard Algorithm", digits = 8) %>%
   kable_styling(bootstrap_options = c("striped", "hover"),
-                full_width = TRUE,
+                full_width = FALSE,
                 font_size = 12,
                 position = "left")
 
 kable(q1 %>% slice_tail(n = 3), format = "latex", row.names = FALSE,
       caption = "Serial Wall Clock Time and Area - AVX Algorithm", digits = 8) %>%
   kable_styling(bootstrap_options = c("striped", "hover"),
-                full_width = TRUE,
+                full_width = FALSE,
                 font_size = 12,
                 position = "left")
 
@@ -61,13 +61,13 @@ q21b <- omp %>% filter(program == "omp-avx-ts" | program == "omp-ts",
 kable(q21a, format = "latex", row.names = FALSE,
       caption = "OMP Wall Clock Time and Area - drand", digits = 6) %>%
   kable_styling(bootstrap_options = c("striped", "hover"),
-                full_width = TRUE,
+                full_width = FALSE,
                 font_size = 12)
 
 kable(q21b, format = "latex", row.names = FALSE,
       caption = "OMP Wall Clock Time and Area - drand-ts", digits = 6) %>%
   kable_styling(bootstrap_options = c("striped", "hover"),
-                full_width = TRUE,
+                full_width = FALSE,
                 font_size = 12)
 
 ```
@@ -80,14 +80,14 @@ omp_results <- omp %>%
   group_by(program, schedule, num_threads) %>%
   summarize(wc_time = mean(wc_time),
             area = mean(area), .groups = "drop") %>%
-  filter(schedule == "None") %>%
+  filter(schedule == "None", !grepl("collapse", program, fixed = TRUE)) %>%
   dplyr::select(-schedule)
 
 kable(omp_results, format = "latex", row.names = FALSE,
       caption = "OMP Wall Clock Time and Area Across Threads - No Scheduling",
       digits = 6) %>%
   kable_styling(bootstrap_options = c("striped", "hover"),
-                full_width = TRUE,
+                full_width = FALSE,
                 font_size = 12)
 ```
 
@@ -99,13 +99,23 @@ omp_results_schedules <- omp %>%
   group_by(program, schedule, num_threads) %>%
   summarize(wc_time = mean(wc_time),
             area = mean(area), .groups = "drop") %>%
-  filter(schedule != "None", !grepl("collapse", program, fixed = TRUE))
+  filter(schedule != "None", !grepl("collapse", program, fixed = TRUE)) %>%
+  arrange(schedule)
 
-kable(omp_results_schedules, format = "latex", row.names = FALSE,
+kable(omp_results_schedules %>% filter(program == "omp-avx-ts"),
+      format = "latex", row.names = FALSE,
       caption = "OMP Wall Clock Time and Area Across Threads - All Schedules",
       digits = 6) %>%
   kable_styling(bootstrap_options = c("striped", "hover"),
-                full_width = TRUE,
+                full_width = FALSE,
+                font_size = 12)
+
+kable(omp_results_schedules %>% filter(program == "omp-ts"),
+      format = "latex", row.names = FALSE,
+      caption = "OMP Wall Clock Time and Area Across Threads - All Schedules",
+      digits = 6) %>%
+  kable_styling(bootstrap_options = c("striped", "hover"),
+                full_width = FALSE,
                 font_size = 12)
 ```
 
@@ -123,7 +133,7 @@ kable(omp_results_schedules_collapse, format = "latex", row.names = FALSE,
       caption = "OMP Wall Clock Time and Area Across Threads - All Schedules With Collapse",
       digits = 6) %>%
   kable_styling(bootstrap_options = c("striped", "hover"),
-                full_width = TRUE,
+                full_width = FALSE,
                 font_size = 12)
 ```
 
@@ -167,7 +177,7 @@ g2 <- ggplot(omp_plot %>% filter(!grepl("avx", program, fixed = TRUE)),
   facet_wrap(~factor(num_threads,
                      c("Threads: 2", "Threads: 4",
                        "Threads: 12", "Threads: 24")), scales = "free_y") +
-  ggtitle("Wall Clock Time For Each Schedule vs. Program (AVX)") +
+  ggtitle("Wall Clock Time For Each Schedule vs. Program (Standard)") +
   xlab("Program") +
   ylab("Wall Clock Time") +
   theme_pub() +
@@ -221,7 +231,7 @@ kable(tasks_m %>% filter(program == "per-column-task-shared"),
 ```
 
 ```{r}
-par <- read_csv("a2/out/omp-parallel.csv") %>% 
+par <- read_csv("rp862_ps2_cpsc424/out/omp-parallel.csv") %>% 
   group_by(program, num_threads, schedule) %>%
     summarize(wc_time = mean(wc_time),
                 area = mean(area)) %>%
