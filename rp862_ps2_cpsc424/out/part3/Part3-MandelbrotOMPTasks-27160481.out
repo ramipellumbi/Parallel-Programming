@@ -34,59 +34,23 @@ Warning: OMP_SCHEDULE environment variable is not set.
 Seed_ts = 12344. RAND_MAX = 2147483647.
 
 area estimate = 1.506656
-elapsed wall clock time = 17.794750
-elapsed cpu time = 17.761765
+elapsed wall clock time = 17.854931
+elapsed cpu time = 17.822566
 
-real	0m17.817s
-user	0m17.762s
-sys	0m0.004s
-
-Per column
-Warning: OMP_SCHEDULE environment variable is not set.
-Seed_ts = 12344. RAND_MAX = 2147483647.
-
-area estimate = 1.506656
-elapsed wall clock time = 17.582036
-elapsed cpu time = 17.557186
-
-real	0m17.611s
-user	0m17.558s
-sys	0m0.005s
-
-Shared Task Creation
-Warning: OMP_SCHEDULE environment variable is not set.
-Seed_ts = 12344. RAND_MAX = 2147483647.
-
-area estimate = 1.506656
-elapsed wall clock time = 17.654842
-elapsed cpu time = 17.630151
-
-real	0m17.687s
-user	0m17.631s
-sys	0m0.003s
-
-Per cell
-Warning: OMP_SCHEDULE environment variable is not set.
-Seed_ts = 12344. RAND_MAX = 2147483647.
-
-area estimate = 1.506656
-elapsed wall clock time = 17.762979
-elapsed cpu time = 17.740865
-
-real	0m17.784s
-user	0m17.742s
-sys	0m0.001s
+real	0m17.887s
+user	0m17.823s
+sys	0m0.002s
 
 Per column
 Warning: OMP_SCHEDULE environment variable is not set.
 Seed_ts = 12344. RAND_MAX = 2147483647.
 
 area estimate = 1.506656
-elapsed wall clock time = 17.586441
-elapsed cpu time = 17.563734
+elapsed wall clock time = 17.846874
+elapsed cpu time = 17.813145
 
-real	0m17.660s
-user	0m17.564s
+real	0m17.867s
+user	0m17.814s
 sys	0m0.003s
 
 Shared Task Creation
@@ -94,11 +58,11 @@ Warning: OMP_SCHEDULE environment variable is not set.
 Seed_ts = 12344. RAND_MAX = 2147483647.
 
 area estimate = 1.506656
-elapsed wall clock time = 17.653222
-elapsed cpu time = 17.630880
+elapsed wall clock time = 17.687784
+elapsed cpu time = 17.654138
 
-real	0m17.684s
-user	0m17.631s
+real	0m17.717s
+user	0m17.655s
 sys	0m0.002s
 
 Per cell
@@ -106,11 +70,11 @@ Warning: OMP_SCHEDULE environment variable is not set.
 Seed_ts = 12344. RAND_MAX = 2147483647.
 
 area estimate = 1.506656
-elapsed wall clock time = 17.757526
-elapsed cpu time = 17.733571
+elapsed wall clock time = 17.853369
+elapsed cpu time = 17.818469
 
-real	0m17.781s
-user	0m17.734s
+real	0m17.875s
+user	0m17.820s
 sys	0m0.003s
 
 Per column
@@ -118,24 +82,60 @@ Warning: OMP_SCHEDULE environment variable is not set.
 Seed_ts = 12344. RAND_MAX = 2147483647.
 
 area estimate = 1.506656
-elapsed wall clock time = 17.586156
-elapsed cpu time = 17.563077
+elapsed wall clock time = 17.848698
+elapsed cpu time = 17.811890
 
-real	0m17.616s
-user	0m17.563s
-sys	0m0.003s
+real	0m17.927s
+user	0m17.813s
+sys	0m0.004s
 
 Shared Task Creation
 Warning: OMP_SCHEDULE environment variable is not set.
 Seed_ts = 12344. RAND_MAX = 2147483647.
 
 area estimate = 1.506656
-elapsed wall clock time = 17.657656
-elapsed cpu time = 17.633140
+elapsed wall clock time = 17.680130
+elapsed cpu time = 17.647645
 
-real	0m17.702s
-user	0m17.633s
-sys	0m0.003s
+real	0m17.694s
+user	0m17.648s
+sys	0m0.002s
+
+Per cell
+Warning: OMP_SCHEDULE environment variable is not set.
+Seed_ts = 12344. RAND_MAX = 2147483647.
+
+area estimate = 1.506656
+elapsed wall clock time = 17.857427
+elapsed cpu time = 17.824054
+
+real	0m17.876s
+user	0m17.825s
+sys	0m0.002s
+
+Per column
+Warning: OMP_SCHEDULE environment variable is not set.
+Seed_ts = 12344. RAND_MAX = 2147483647.
+
+area estimate = 1.506656
+elapsed wall clock time = 17.847785
+elapsed cpu time = 17.814372
+
+real	0m17.865s
+user	0m17.815s
+sys	0m0.002s
+
+Shared Task Creation
+Warning: OMP_SCHEDULE environment variable is not set.
+Seed_ts = 12344. RAND_MAX = 2147483647.
+
+area estimate = 1.506656
+elapsed wall clock time = 17.680039
+elapsed cpu time = 17.648155
+
+real	0m17.720s
+user	0m17.649s
+sys	0m0.002s
 
 
 Number of threads =  2
@@ -146,37 +146,37 @@ Seed_ts = 12344. RAND_MAX = 2147483647.
 Seed_ts = 12344. RAND_MAX = 2147483647.
 
 area estimate = 1.506656
-elapsed wall clock time = 8.953838
-elapsed cpu time = 17.854301
+elapsed wall clock time = 8.964475
+elapsed cpu time = 17.855093
 
-real	0m8.983s
-user	0m17.870s
-sys	0m0.029s
+real	0m8.977s
+user	0m17.858s
+sys	0m0.042s
 
 Per column
 Warning: OMP_SCHEDULE environment variable is not set.
 Seed_ts = 12344. RAND_MAX = 2147483647.
 Seed_ts = 12344. RAND_MAX = 2147483647.
 
-area estimate = 1.506600
-elapsed wall clock time = 8.807484
-elapsed cpu time = 17.588567
+area estimate = 1.506862
+elapsed wall clock time = 8.946336
+elapsed cpu time = 17.847129
 
-real	0m8.831s
-user	0m17.596s
-sys	0m0.003s
+real	0m8.974s
+user	0m17.855s
+sys	0m0.004s
 
 Shared Task Creation
 Warning: OMP_SCHEDULE environment variable is not set.
 Seed_ts = 12344. RAND_MAX = 2147483647.
 Seed_ts = 12344. RAND_MAX = 2147483647.
 
-area estimate = 1.506774
-elapsed wall clock time = 8.842766
-elapsed cpu time = 17.657175
+area estimate = 1.506728
+elapsed wall clock time = 8.867962
+elapsed cpu time = 17.690976
 
-real	0m8.865s
-user	0m17.666s
+real	0m8.895s
+user	0m17.702s
 sys	0m0.004s
 
 Per cell
@@ -185,11 +185,11 @@ Seed_ts = 12344. RAND_MAX = 2147483647.
 Seed_ts = 12344. RAND_MAX = 2147483647.
 
 area estimate = 1.506656
-elapsed wall clock time = 8.946309
-elapsed cpu time = 17.842498
+elapsed wall clock time = 8.959232
+elapsed cpu time = 17.851925
 
-real	0m8.994s
-user	0m17.862s
+real	0m8.976s
+user	0m17.858s
 sys	0m0.027s
 
 Per column
@@ -197,12 +197,12 @@ Warning: OMP_SCHEDULE environment variable is not set.
 Seed_ts = 12344. RAND_MAX = 2147483647.
 Seed_ts = 12344. RAND_MAX = 2147483647.
 
-area estimate = 1.506626
-elapsed wall clock time = 8.816625
-elapsed cpu time = 17.591048
+area estimate = 1.506830
+elapsed wall clock time = 8.944562
+elapsed cpu time = 17.844289
 
-real	0m8.846s
-user	0m17.597s
+real	0m8.956s
+user	0m17.850s
 sys	0m0.006s
 
 Shared Task Creation
@@ -210,13 +210,13 @@ Warning: OMP_SCHEDULE environment variable is not set.
 Seed_ts = 12344. RAND_MAX = 2147483647.
 Seed_ts = 12344. RAND_MAX = 2147483647.
 
-area estimate = 1.506750
-elapsed wall clock time = 8.838552
-elapsed cpu time = 17.650498
+area estimate = 1.506730
+elapsed wall clock time = 8.867657
+elapsed cpu time = 17.687132
 
-real	0m8.882s
-user	0m17.657s
-sys	0m0.004s
+real	0m8.898s
+user	0m17.695s
+sys	0m0.008s
 
 Per cell
 Warning: OMP_SCHEDULE environment variable is not set.
@@ -224,24 +224,24 @@ Seed_ts = 12344. RAND_MAX = 2147483647.
 Seed_ts = 12344. RAND_MAX = 2147483647.
 
 area estimate = 1.506656
-elapsed wall clock time = 8.951362
-elapsed cpu time = 17.859240
+elapsed wall clock time = 8.966836
+elapsed cpu time = 17.861793
 
-real	0m8.982s
-user	0m17.874s
-sys	0m0.020s
+real	0m8.983s
+user	0m17.869s
+sys	0m0.031s
 
 Per column
 Warning: OMP_SCHEDULE environment variable is not set.
 Seed_ts = 12344. RAND_MAX = 2147483647.
 Seed_ts = 12344. RAND_MAX = 2147483647.
 
-area estimate = 1.506710
-elapsed wall clock time = 8.813362
-elapsed cpu time = 17.597341
+area estimate = 1.506842
+elapsed wall clock time = 8.947340
+elapsed cpu time = 17.849178
 
-real	0m8.839s
-user	0m17.611s
+real	0m8.962s
+user	0m17.851s
 sys	0m0.005s
 
 Shared Task Creation
@@ -249,13 +249,13 @@ Warning: OMP_SCHEDULE environment variable is not set.
 Seed_ts = 12344. RAND_MAX = 2147483647.
 Seed_ts = 12344. RAND_MAX = 2147483647.
 
-area estimate = 1.506788
-elapsed wall clock time = 8.843486
-elapsed cpu time = 17.660581
+area estimate = 1.506784
+elapsed wall clock time = 8.867668
+elapsed cpu time = 17.687111
 
-real	0m8.866s
-user	0m17.670s
-sys	0m0.003s
+real	0m8.891s
+user	0m17.694s
+sys	0m0.006s
 
 
 Number of threads =  4
@@ -268,12 +268,12 @@ Seed_ts = 12344. RAND_MAX = 2147483647.
 Seed_ts = 12344. RAND_MAX = 2147483647.
 
 area estimate = 1.506656
-elapsed wall clock time = 4.532615
-elapsed cpu time = 18.062490
+elapsed wall clock time = 4.549669
+elapsed cpu time = 18.105176
 
-real	0m4.556s
-user	0m18.074s
-sys	0m0.042s
+real	0m4.569s
+user	0m18.126s
+sys	0m0.052s
 
 Per column
 Warning: OMP_SCHEDULE environment variable is not set.
@@ -282,29 +282,29 @@ Seed_ts = 12344. RAND_MAX = 2147483647.
 Seed_ts = 12344. RAND_MAX = 2147483647.
 Seed_ts = 12344. RAND_MAX = 2147483647.
 
-area estimate = 1.506768
-elapsed wall clock time = 4.433417
-elapsed cpu time = 17.705054
+area estimate = 1.506796
+elapsed wall clock time = 4.500227
+elapsed cpu time = 17.953646
 
-real	0m4.439s
-user	0m17.710s
+real	0m4.508s
+user	0m17.961s
+sys	0m0.002s
+
+Shared Task Creation
+Warning: OMP_SCHEDULE environment variable is not set.
+Seed_ts = 12344. RAND_MAX = 2147483647.
+Seed_ts = 12344. RAND_MAX = 2147483647.
+Seed_ts = 12344. RAND_MAX = 2147483647.
+Seed_ts = 12344. RAND_MAX = 2147483647.
+
+area estimate = 1.506582
+elapsed wall clock time = 4.435200
+elapsed cpu time = 17.696595
+
+real	0m4.442s
+user	0m17.701s
 sys	0m0.003s
 
-Shared Task Creation
-Warning: OMP_SCHEDULE environment variable is not set.
-Seed_ts = 12344. RAND_MAX = 2147483647.
-Seed_ts = 12344. RAND_MAX = 2147483647.
-Seed_ts = 12344. RAND_MAX = 2147483647.
-Seed_ts = 12344. RAND_MAX = 2147483647.
-
-area estimate = 1.506572
-elapsed wall clock time = 4.420656
-elapsed cpu time = 17.652937
-
-real	0m4.427s
-user	0m17.657s
-sys	0m0.004s
-
 Per cell
 Warning: OMP_SCHEDULE environment variable is not set.
 Seed_ts = 12344. RAND_MAX = 2147483647.
@@ -313,57 +313,12 @@ Seed_ts = 12344. RAND_MAX = 2147483647.
 Seed_ts = 12344. RAND_MAX = 2147483647.
 
 area estimate = 1.506656
-elapsed wall clock time = 4.536042
-elapsed cpu time = 18.072282
-
-real	0m4.542s
-user	0m18.078s
-sys	0m0.046s
-
-Per column
-Warning: OMP_SCHEDULE environment variable is not set.
-Seed_ts = 12344. RAND_MAX = 2147483647.
-Seed_ts = 12344. RAND_MAX = 2147483647.
-Seed_ts = 12344. RAND_MAX = 2147483647.
-Seed_ts = 12344. RAND_MAX = 2147483647.
-
-area estimate = 1.506620
-elapsed wall clock time = 4.433983
-elapsed cpu time = 17.700598
-
-real	0m4.444s
-user	0m17.705s
-sys	0m0.006s
-
-Shared Task Creation
-Warning: OMP_SCHEDULE environment variable is not set.
-Seed_ts = 12344. RAND_MAX = 2147483647.
-Seed_ts = 12344. RAND_MAX = 2147483647.
-Seed_ts = 12344. RAND_MAX = 2147483647.
-Seed_ts = 12344. RAND_MAX = 2147483647.
-
-area estimate = 1.506600
-elapsed wall clock time = 4.423948
-elapsed cpu time = 17.662373
-
-real	0m4.430s
-user	0m17.668s
-sys	0m0.005s
-
-Per cell
-Warning: OMP_SCHEDULE environment variable is not set.
-Seed_ts = 12344. RAND_MAX = 2147483647.
-Seed_ts = 12344. RAND_MAX = 2147483647.
-Seed_ts = 12344. RAND_MAX = 2147483647.
-Seed_ts = 12344. RAND_MAX = 2147483647.
-
-area estimate = 1.506656
-elapsed wall clock time = 4.535430
-elapsed cpu time = 18.078428
+elapsed wall clock time = 4.553080
+elapsed cpu time = 18.105195
 
 real	0m4.561s
-user	0m18.088s
-sys	0m0.033s
+user	0m18.112s
+sys	0m0.065s
 
 Per column
 Warning: OMP_SCHEDULE environment variable is not set.
@@ -372,12 +327,12 @@ Seed_ts = 12344. RAND_MAX = 2147483647.
 Seed_ts = 12344. RAND_MAX = 2147483647.
 Seed_ts = 12344. RAND_MAX = 2147483647.
 
-area estimate = 1.506688
-elapsed wall clock time = 4.430340
-elapsed cpu time = 17.690306
+area estimate = 1.506812
+elapsed wall clock time = 4.501053
+elapsed cpu time = 17.955692
 
-real	0m4.435s
-user	0m17.695s
+real	0m4.507s
+user	0m17.961s
 sys	0m0.004s
 
 Shared Task Creation
@@ -387,12 +342,57 @@ Seed_ts = 12344. RAND_MAX = 2147483647.
 Seed_ts = 12344. RAND_MAX = 2147483647.
 Seed_ts = 12344. RAND_MAX = 2147483647.
 
-area estimate = 1.506564
-elapsed wall clock time = 4.424198
-elapsed cpu time = 17.659004
+area estimate = 1.506560
+elapsed wall clock time = 4.434497
+elapsed cpu time = 17.691184
 
-real	0m4.431s
-user	0m17.664s
+real	0m4.440s
+user	0m17.697s
+sys	0m0.004s
+
+Per cell
+Warning: OMP_SCHEDULE environment variable is not set.
+Seed_ts = 12344. RAND_MAX = 2147483647.
+Seed_ts = 12344. RAND_MAX = 2147483647.
+Seed_ts = 12344. RAND_MAX = 2147483647.
+Seed_ts = 12344. RAND_MAX = 2147483647.
+
+area estimate = 1.506656
+elapsed wall clock time = 4.553674
+elapsed cpu time = 18.108104
+
+real	0m4.575s
+user	0m18.114s
+sys	0m0.066s
+
+Per column
+Warning: OMP_SCHEDULE environment variable is not set.
+Seed_ts = 12344. RAND_MAX = 2147483647.
+Seed_ts = 12344. RAND_MAX = 2147483647.
+Seed_ts = 12344. RAND_MAX = 2147483647.
+Seed_ts = 12344. RAND_MAX = 2147483647.
+
+area estimate = 1.506852
+elapsed wall clock time = 4.502963
+elapsed cpu time = 17.962625
+
+real	0m4.515s
+user	0m17.977s
+sys	0m0.002s
+
+Shared Task Creation
+Warning: OMP_SCHEDULE environment variable is not set.
+Seed_ts = 12344. RAND_MAX = 2147483647.
+Seed_ts = 12344. RAND_MAX = 2147483647.
+Seed_ts = 12344. RAND_MAX = 2147483647.
+Seed_ts = 12344. RAND_MAX = 2147483647.
+
+area estimate = 1.506546
+elapsed wall clock time = 4.438721
+elapsed cpu time = 17.700352
+
+real	0m4.448s
+user	0m17.707s
 sys	0m0.003s
 
 
@@ -414,12 +414,12 @@ Seed_ts = 12344. RAND_MAX = 2147483647.
 Seed_ts = 12344. RAND_MAX = 2147483647.
 
 area estimate = 1.506656
-elapsed wall clock time = 1.640685
-elapsed cpu time = 19.574057
+elapsed wall clock time = 1.674457
+elapsed cpu time = 19.932812
 
-real	0m1.646s
-user	0m19.597s
-sys	0m0.065s
+real	0m1.681s
+user	0m19.955s
+sys	0m0.098s
 
 Per column
 Warning: OMP_SCHEDULE environment variable is not set.
@@ -436,13 +436,13 @@ Seed_ts = 12344. RAND_MAX = 2147483647.
 Seed_ts = 12344. RAND_MAX = 2147483647.
 Seed_ts = 12344. RAND_MAX = 2147483647.
 
-area estimate = 1.506696
-elapsed wall clock time = 1.511383
-elapsed cpu time = 18.076313
+area estimate = 1.506770
+elapsed wall clock time = 1.530083
+elapsed cpu time = 18.291688
 
-real	0m1.521s
-user	0m18.094s
-sys	0m0.007s
+real	0m1.536s
+user	0m18.308s
+sys	0m0.004s
 
 Shared Task Creation
 Warning: OMP_SCHEDULE environment variable is not set.
@@ -459,12 +459,12 @@ Seed_ts = 12344. RAND_MAX = 2147483647.
 Seed_ts = 12344. RAND_MAX = 2147483647.
 Seed_ts = 12344. RAND_MAX = 2147483647.
 
-area estimate = 1.506760
-elapsed wall clock time = 1.487011
-elapsed cpu time = 17.790793
+area estimate = 1.506712
+elapsed wall clock time = 1.490277
+elapsed cpu time = 17.806192
 
-real	0m1.493s
-user	0m17.802s
+real	0m1.497s
+user	0m17.820s
 sys	0m0.008s
 
 Per cell
@@ -483,12 +483,12 @@ Seed_ts = 12344. RAND_MAX = 2147483647.
 Seed_ts = 12344. RAND_MAX = 2147483647.
 
 area estimate = 1.506656
-elapsed wall clock time = 1.665953
-elapsed cpu time = 19.887385
+elapsed wall clock time = 1.672510
+elapsed cpu time = 19.890114
 
-real	0m1.671s
-user	0m19.900s
-sys	0m0.051s
+real	0m1.681s
+user	0m19.907s
+sys	0m0.091s
 
 Per column
 Warning: OMP_SCHEDULE environment variable is not set.
@@ -505,13 +505,13 @@ Seed_ts = 12344. RAND_MAX = 2147483647.
 Seed_ts = 12344. RAND_MAX = 2147483647.
 Seed_ts = 12344. RAND_MAX = 2147483647.
 
-area estimate = 1.506796
-elapsed wall clock time = 1.510359
-elapsed cpu time = 18.074166
+area estimate = 1.506690
+elapsed wall clock time = 1.534420
+elapsed cpu time = 18.337387
 
-real	0m1.516s
-user	0m18.091s
-sys	0m0.004s
+real	0m1.539s
+user	0m18.351s
+sys	0m0.007s
 
 Shared Task Creation
 Warning: OMP_SCHEDULE environment variable is not set.
@@ -528,13 +528,13 @@ Seed_ts = 12344. RAND_MAX = 2147483647.
 Seed_ts = 12344. RAND_MAX = 2147483647.
 Seed_ts = 12344. RAND_MAX = 2147483647.
 
-area estimate = 1.506700
-elapsed wall clock time = 1.486539
-elapsed cpu time = 17.785629
+area estimate = 1.506696
+elapsed wall clock time = 1.487723
+elapsed cpu time = 17.782073
 
-real	0m1.492s
-user	0m17.806s
-sys	0m0.004s
+real	0m1.495s
+user	0m17.796s
+sys	0m0.006s
 
 Per cell
 Warning: OMP_SCHEDULE environment variable is not set.
@@ -552,12 +552,12 @@ Seed_ts = 12344. RAND_MAX = 2147483647.
 Seed_ts = 12344. RAND_MAX = 2147483647.
 
 area estimate = 1.506656
-elapsed wall clock time = 1.664495
-elapsed cpu time = 19.868356
+elapsed wall clock time = 1.672757
+elapsed cpu time = 19.912129
 
-real	0m1.670s
-user	0m19.883s
-sys	0m0.057s
+real	0m1.680s
+user	0m19.933s
+sys	0m0.098s
 
 Per column
 Warning: OMP_SCHEDULE environment variable is not set.
@@ -574,13 +574,13 @@ Seed_ts = 12344. RAND_MAX = 2147483647.
 Seed_ts = 12344. RAND_MAX = 2147483647.
 Seed_ts = 12344. RAND_MAX = 2147483647.
 
-area estimate = 1.506748
-elapsed wall clock time = 1.509612
-elapsed cpu time = 18.065447
+area estimate = 1.506942
+elapsed wall clock time = 1.532431
+elapsed cpu time = 18.320390
 
-real	0m1.518s
-user	0m18.086s
-sys	0m0.004s
+real	0m1.539s
+user	0m18.339s
+sys	0m0.006s
 
 Shared Task Creation
 Warning: OMP_SCHEDULE environment variable is not set.
@@ -597,13 +597,13 @@ Seed_ts = 12344. RAND_MAX = 2147483647.
 Seed_ts = 12344. RAND_MAX = 2147483647.
 Seed_ts = 12344. RAND_MAX = 2147483647.
 
-area estimate = 1.506746
-elapsed wall clock time = 1.486632
-elapsed cpu time = 17.772791
+area estimate = 1.506734
+elapsed wall clock time = 1.491437
+elapsed cpu time = 17.793041
 
-real	0m1.493s
-user	0m17.792s
-sys	0m0.013s
+real	0m1.499s
+user	0m17.829s
+sys	0m0.009s
 
 
 Number of threads =  24
@@ -636,12 +636,12 @@ Seed_ts = 12344. RAND_MAX = 2147483647.
 Seed_ts = 12344. RAND_MAX = 2147483647.
 
 area estimate = 1.506656
-elapsed wall clock time = 0.936563
-elapsed cpu time = 22.282529
+elapsed wall clock time = 0.946906
+elapsed cpu time = 22.467758
 
-real	0m0.942s
-user	0m22.313s
-sys	0m0.077s
+real	0m0.954s
+user	0m22.517s
+sys	0m0.135s
 
 Per column
 Warning: OMP_SCHEDULE environment variable is not set.
@@ -670,12 +670,12 @@ Seed_ts = 12344. RAND_MAX = 2147483647.
 Seed_ts = 12344. RAND_MAX = 2147483647.
 Seed_ts = 12344. RAND_MAX = 2147483647.
 
-area estimate = 1.506572
-elapsed wall clock time = 0.778005
-elapsed cpu time = 18.543893
+area estimate = 1.506626
+elapsed wall clock time = 0.790013
+elapsed cpu time = 18.825100
 
-real	0m0.785s
-user	0m18.592s
+real	0m0.799s
+user	0m18.890s
 sys	0m0.006s
 
 Shared Task Creation
@@ -705,13 +705,13 @@ Seed_ts = 12344. RAND_MAX = 2147483647.
 Seed_ts = 12344. RAND_MAX = 2147483647.
 Seed_ts = 12344. RAND_MAX = 2147483647.
 
-area estimate = 1.506688
-elapsed wall clock time = 0.754303
-elapsed cpu time = 17.860353
+area estimate = 1.506658
+elapsed wall clock time = 0.751932
+elapsed cpu time = 17.919246
 
-real	0m0.760s
-user	0m17.891s
-sys	0m0.011s
+real	0m0.759s
+user	0m17.964s
+sys	0m0.024s
 
 Per cell
 Warning: OMP_SCHEDULE environment variable is not set.
@@ -741,12 +741,12 @@ Seed_ts = 12344. RAND_MAX = 2147483647.
 Seed_ts = 12344. RAND_MAX = 2147483647.
 
 area estimate = 1.506656
-elapsed wall clock time = 0.950066
-elapsed cpu time = 22.079153
+elapsed wall clock time = 0.940580
+elapsed cpu time = 22.324501
 
-real	0m0.955s
-user	0m22.107s
-sys	0m0.061s
+real	0m0.946s
+user	0m22.355s
+sys	0m0.105s
 
 Per column
 Warning: OMP_SCHEDULE environment variable is not set.
@@ -775,13 +775,13 @@ Seed_ts = 12344. RAND_MAX = 2147483647.
 Seed_ts = 12344. RAND_MAX = 2147483647.
 Seed_ts = 12344. RAND_MAX = 2147483647.
 
-area estimate = 1.506718
-elapsed wall clock time = 0.777742
-elapsed cpu time = 18.553998
+area estimate = 1.506680
+elapsed wall clock time = 0.788680
+elapsed cpu time = 18.812598
 
-real	0m0.784s
-user	0m18.595s
-sys	0m0.007s
+real	0m0.795s
+user	0m18.844s
+sys	0m0.009s
 
 Shared Task Creation
 Warning: OMP_SCHEDULE environment variable is not set.
@@ -810,13 +810,13 @@ Seed_ts = 12344. RAND_MAX = 2147483647.
 Seed_ts = 12344. RAND_MAX = 2147483647.
 Seed_ts = 12344. RAND_MAX = 2147483647.
 
-area estimate = 1.506658
-elapsed wall clock time = 0.750712
-elapsed cpu time = 17.885641
+area estimate = 1.506660
+elapsed wall clock time = 0.753225
+elapsed cpu time = 17.953803
 
-real	0m0.757s
-user	0m17.922s
-sys	0m0.018s
+real	0m0.759s
+user	0m17.968s
+sys	0m0.035s
 
 Per cell
 Warning: OMP_SCHEDULE environment variable is not set.
@@ -846,12 +846,12 @@ Seed_ts = 12344. RAND_MAX = 2147483647.
 Seed_ts = 12344. RAND_MAX = 2147483647.
 
 area estimate = 1.506656
-elapsed wall clock time = 1.004088
-elapsed cpu time = 23.896976
+elapsed wall clock time = 0.945928
+elapsed cpu time = 22.443491
 
-real	0m1.012s
-user	0m23.930s
-sys	0m0.093s
+real	0m0.951s
+user	0m22.476s
+sys	0m0.142s
 
 Per column
 Warning: OMP_SCHEDULE environment variable is not set.
@@ -880,12 +880,12 @@ Seed_ts = 12344. RAND_MAX = 2147483647.
 Seed_ts = 12344. RAND_MAX = 2147483647.
 Seed_ts = 12344. RAND_MAX = 2147483647.
 
-area estimate = 1.506658
-elapsed wall clock time = 0.777097
-elapsed cpu time = 18.541032
+area estimate = 1.506600
+elapsed wall clock time = 0.788817
+elapsed cpu time = 18.813756
 
-real	0m0.784s
-user	0m18.580s
+real	0m0.796s
+user	0m18.860s
 sys	0m0.008s
 
 Shared Task Creation
@@ -915,10 +915,10 @@ Seed_ts = 12344. RAND_MAX = 2147483647.
 Seed_ts = 12344. RAND_MAX = 2147483647.
 Seed_ts = 12344. RAND_MAX = 2147483647.
 
-area estimate = 1.506668
-elapsed wall clock time = 0.750501
-elapsed cpu time = 17.896519
+area estimate = 1.506644
+elapsed wall clock time = 0.753052
+elapsed cpu time = 17.940548
 
-real	0m0.758s
-user	0m17.934s
-sys	0m0.013s
+real	0m0.759s
+user	0m17.987s
+sys	0m0.005s

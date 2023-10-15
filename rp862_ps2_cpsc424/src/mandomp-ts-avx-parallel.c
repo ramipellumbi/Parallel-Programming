@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
         number_of_cells_inside_mandelbrot_set_th = 0;
         total_iterations_th = 0;
 
-#pragma omp for
+#pragma omp for schedule(runtime)
         // for each x value
         for (size_t n = 0; n < NUM_X_ITERATIONS; n++)
         {

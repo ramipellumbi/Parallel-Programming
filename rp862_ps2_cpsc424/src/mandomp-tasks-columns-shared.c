@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
         random_y = (double *)malloc(PACKING_SIZE * sizeof(double));
 
         // for each x value
-#pragma omp for
+#pragma omp for schedule(runtime)
         for (size_t n = 0; n < NUM_X_ITERATIONS; n++)
         {
             double current_bottom_left_x = -2.0 + CELL_SIDE_LENGTH * n;

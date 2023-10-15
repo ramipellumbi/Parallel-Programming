@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
         number_of_cells_inside_mandelbrot_set_th = 0;
         total_iterations_th = 0;
 
-#pragma omp for
+#pragma omp for schedule(runtime)
         for (size_t n = 0; n < NUM_X_ITERATIONS; n++)
         {
             double current_bottom_left_x = -2.0 + CELL_SIDE_LENGTH * n;

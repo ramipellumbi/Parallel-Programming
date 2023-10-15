@@ -32,6 +32,7 @@ echo "MANDOMP TASKS SINGLE CELL"
 for k in 1 2 4 12 24
 do
     export OMP_NUM_THREADS=$k
+    unset OMP_SCHEDULE
 
     echo ""
     echo ""

@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
         total_iterations_th = 0;
         number_of_cells_inside_mandelbrot_set_th = 0;
 
-#pragma omp for collapse(2)
+#pragma omp for schedule(runtime) collapse(2)
         for (size_t n = 0; n < NUM_X_ITERATIONS; n++)
         {
             for (size_t m = 0; m < NUM_Y_PS; m += PACKING_SIZE)
