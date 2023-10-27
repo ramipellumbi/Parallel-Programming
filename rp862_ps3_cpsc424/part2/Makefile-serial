@@ -1,0 +1,18 @@
+# NOTE: This Makefile presumes that one of the following commands has been executed:
+#             module load intel
+#             module load iomkl
+
+TIMING = /gpfs/gibbs/project/cpsc424/shared/utils/timing
+
+# Use for serial builds (not for MPI)
+CC = icc
+
+CFLAGS = -g -O3 -xHost -fno-alias -std=c99 -I$(TIMING)
+
+serial:	serial.o matmul.o $(TIMING)/timing.o
+	$(CC) -o $@ $(CFLAGS) $^ -lm
+.c.o:
+	$(CC) $(CFLAGS) -c $<
+
+clean:
+	rm -f serial *.o
