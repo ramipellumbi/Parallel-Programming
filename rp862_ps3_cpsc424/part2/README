@@ -1,0 +1,14 @@
+Information about Assignment 3 (Part 2) for Fall 2023
+
+There are several source files:
+
+serial.c     Serial version
+matmul.c     Auxiliary function required for serial version 
+
+There are separate Makefiles for the serial and MPI codes.
+
+There are two sbatch scripts: build-run-serial.sh for the serial code; build-run-mpi.sh for the MPI codes.
+The time limit is set to 30 minutes, which ought to be enough time.
+
+There is one sample output file.
+
