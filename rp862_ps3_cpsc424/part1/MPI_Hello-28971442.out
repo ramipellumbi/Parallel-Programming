@@ -1,0 +1,73 @@
+
+Currently Loaded Modules:
+  1) StdEnv                        (S)   9) libpciaccess/0.16-GCCcore-10.2.0
+  2) GCCcore/10.2.0                     10) hwloc/2.2.0-GCCcore-10.2.0
+  3) zlib/1.2.11-GCCcore-10.2.0         11) UCX/1.9.0-GCCcore-10.2.0
+  4) binutils/2.35-GCCcore-10.2.0       12) libfabric/1.11.0-GCCcore-10.2.0
+  5) iccifort/2020.4.304                13) OpenMPI/4.0.5-iccifort-2020.4.304
+  6) numactl/2.0.13-GCCcore-10.2.0      14) iompi/2020b
+  7) XZ/5.2.5-GCCcore-10.2.0            15) imkl/2020.4.304-iompi-2020b
+  8) libxml2/2.9.10-GCCcore-10.2.0      16) iomkl/2020b
+
+  Where:
+   S:  Module is Sticky, requires --force to unload or purge
+
+ 
+
+ 
+ 
+Working Directory:
+/home/cpsc424_rp862/Desktop/cpsc-524-parallel-programming/rp862_ps3_cpsc424/part1
+ 
+ 
+Making task1
+rm -f task1 task1.o
+mpicc -g -O3 -xHost -fno-alias -std=c99 -I/gpfs/gibbs/project/cpsc424/shared/utils/timing -c task1.c
+mpicc -o task1 -g -O3 -xHost -fno-alias -std=c99 -I/gpfs/gibbs/project/cpsc424/shared/utils/timing task1.o /gpfs/gibbs/project/cpsc424/shared/utils/timing/timing.o rwork.o
+ 
+ 
+Node List:
+r918u05n[01-02]
+ntasks-per-node =  2
+ 
+ 
+Run 1
+Message printed by manager: Total elapsed time is 0.007130 seconds.
+From process 3: I worked for 5 seconds after receiving the following message:
+	 Hello, from process 0.
+From process 2: I worked for 10 seconds after receiving the following message:
+	 Hello, from process 0.
+From process 1: I worked for 15 seconds after receiving the following message:
+	 Hello, from process 0.
+
+real	0m16.026s
+user	0m0.165s
+sys	0m0.291s
+ 
+ 
+Run 2
+Message printed by manager: Total elapsed time is 0.002869 seconds.
+From process 3: I worked for 5 seconds after receiving the following message:
+	 Hello, from process 0.
+From process 1: I worked for 10 seconds after receiving the following message:
+	 Hello, from process 0.
+From process 2: I worked for 15 seconds after receiving the following message:
+	 Hello, from process 0.
+
+real	0m15.578s
+user	0m0.200s
+sys	0m0.316s
+ 
+ 
+Run 3
+Message printed by manager: Total elapsed time is 0.007988 seconds.
+From process 3: I worked for 5 seconds after receiving the following message:
+	 Hello, from process 0.
+From process 2: I worked for 10 seconds after receiving the following message:
+	 Hello, from process 0.
+From process 1: I worked for 15 seconds after receiving the following message:
+	 Hello, from process 0.
+
+real	0m15.596s
+user	0m0.154s
+sys	0m0.291s

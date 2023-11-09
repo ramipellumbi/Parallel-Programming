@@ -19,6 +19,9 @@ all: step1
 task1: task1.o $(TIMING)/timing.o rwork.o
 	$(CC) -o $@ $(CFLAGS) $^
 
+task2: task2.o $(TIMING)/timing.o rwork.o
+	$(CC) -o $@ $(CFLAGS) $^
+
 .c.o:
 	$(CC) $(CFLAGS) -c $<
 
