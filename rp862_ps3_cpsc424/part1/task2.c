@@ -56,6 +56,14 @@ main(int argc, char **argv)
         timing(&wct1, &cput); // get the end time using the original timing routine
         total_time = wct1 - wct0;
         printf("Message printed by manager: Total elapsed time is %f seconds.\n", total_time);
+
+        /* Receive messages from the workers */
+        for (size_t i = 0; i < size; i++)
+        {
+            MPI_Recv(message, 100, MPI_CHAR, i, type, MPI_COMM_WORLD, &status);
+            sleep(3);
+            printf("Message from process %d: %s", i, message);
+        }
     }
 
     /* Otherwise, if I am a worker ... */
@@ -68,9 +76,11 @@ main(int argc, char **argv)
         MPI_Recv(&sparm, 1, MPI_INT, 0, type, MPI_COMM_WORLD, &status);
 
         worktime = rwork(rank, sparm); // Simulate some work
-
         sprintf(message, "Hello manager, from process %d after working %d seconds.",
                 rank, worktime);
+
+        /* Send message back to manager */
+        MPI_Send(message, strlen(message) + 1, MPI_CHAR, 0, type, MPI_COMM_WORLD);
     }
 
     MPI_Finalize(); // Required MPI termination call
