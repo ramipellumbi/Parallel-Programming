@@ -7,7 +7,7 @@
 #SBATCH --ntasks-per-node=2
 #SBATCH --mem-per-cpu=7G
 #SBATCH --time=20:00
-#SBATCH --job-name=T2-MPI-Manager-Printouts
+#SBATCH --job-name=T3-MPI-Manager-Printouts-Optimized
 #SBATCH --output=%x-%j.out
 
 # Load necessary module files
@@ -22,9 +22,9 @@ pwd
 
 echo " "
 echo " "
-echo "Making task2"
+echo "Making task3"
 make clean
-make task2
+make task3
 
 # Print the node list
 echo " "
@@ -37,12 +37,12 @@ echo "ntasks-per-node = " $SLURM_NTASKS_PER_NODE
 echo " "
 echo " "
 echo "Run 1"
-time mpirun -n 4 task2
+time mpirun -n 4 task3
 echo " "
 echo " "
 echo "Run 2"
-time mpirun -n 4 task2
+time mpirun -n 4 task3
 echo " "
 echo " "
 echo "Run 3"
-time mpirun -n 4 task2
+time mpirun -n 4 task3

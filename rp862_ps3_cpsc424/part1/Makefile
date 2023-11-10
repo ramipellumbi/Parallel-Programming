@@ -22,6 +22,9 @@ task1: task1.o $(TIMING)/timing.o rwork.o
 task2: task2.o $(TIMING)/timing.o rwork.o
 	$(CC) -o $@ $(CFLAGS) $^
 
+task3: task3.o $(TIMING)/timing.o rwork.o
+	$(CC) -o $@ $(CFLAGS) $^
+
 .c.o:
 	$(CC) $(CFLAGS) -c $<
 
