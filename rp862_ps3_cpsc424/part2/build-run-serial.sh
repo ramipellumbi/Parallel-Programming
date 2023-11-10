@@ -6,7 +6,7 @@
 #SBATCH --cpus-per-task=1
 #SBATCH --mem-per-cpu=7G
 #SBATCH --job-name=Serial
-#SBATCH --output=%x-%j.out
+#SBATCH --output=out/%x-%j.out
 #SBATCH --time=30:00
 
 module purge
@@ -16,8 +16,8 @@ pwd
 
 echo $SLURM_JOB_NODELIST
 echo $SLURM_NTASKS_PER_NODE
-make -f Makefile-serial clean
-make -f Makefile-serial serial
-time ./serial
-time ./serial
-time ./serial
+make clean
+make serial
+time ./bin/serial
+time ./bin/serial
+time ./bin/serial

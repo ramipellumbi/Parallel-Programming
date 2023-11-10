@@ -1,5 +1,4 @@
 #include "timing.h"
-#define MIN(a, b) (((a) < (b)) ? (a) : (b))
 
 double matmul(int N, double *A, double *B, double *C)
 {

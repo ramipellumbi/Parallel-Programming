@@ -1,9 +1,8 @@
+#include <math.h>
+#include <matmul.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <math.h>
-
-double matmul(int, double *, double *, double *);
 
 int main(int argc, char **argv)
 {
