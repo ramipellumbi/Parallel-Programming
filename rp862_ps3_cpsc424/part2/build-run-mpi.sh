@@ -53,4 +53,14 @@ do
     done
 done
 
+echo " "
+echo "Task 7"
+for ntasks in 2 4 8
+do 
+    for k in 1 2 3 
+    do 
+        time mpirun --report-bindings -np ${ntasks} ./bin/task7 ${ntasks}
+    done
+done
+
 echo "All Done!"
