@@ -63,6 +63,6 @@ void write_data_to_file(const char *filename,
     }
 
     // add data to row
-    fprintf(fp, "\"%s\",%d,%d,%d,,%d,%d,%f,%.12f\n", program, num_cores, np, num_tasks_per_node, num_tasks_per_socket, N, exe_time, f_norm);
+    fprintf(fp, "\"%s\",%d,%d,%d,%d,%d,%f,%.12f\n", program, num_cores, np, num_tasks_per_node, num_tasks_per_socket, N, exe_time, f_norm);
     fclose(fp);
 }

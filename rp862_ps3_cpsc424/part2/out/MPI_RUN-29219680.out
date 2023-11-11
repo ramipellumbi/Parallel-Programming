@@ -42,3 +42,137 @@ Matrix multiplication times:
    1000       0.2142     0.000000000033
    2000       1.6134     0.000000000134
    4000      21.0900     0.000000000504
+   8000     168.0004     0.000000001930
+
+real	3m12.028s
+user	6m19.695s
+sys	0m1.765s
+[r918u05n01.grace.ycrc.yale.edu:1033024] MCW rank 0 bound to socket 0[core 0[hwt 0]]: [B/.][./.]
+[r918u05n01.grace.ycrc.yale.edu:1033024] MCW rank 1 bound to socket 0[core 1[hwt 0]]: [./B][./.]
+Matrix multiplication times:
+   N      TIME (secs)    F-norm of Error
+ -----   -------------  -----------------
+   1000       0.2143     0.000000000033
+   2000       1.6238     0.000000000134
+   4000      21.0837     0.000000000504
+   8000     168.0280     0.000000001930
+
+real	3m11.994s
+user	6m19.689s
+sys	0m1.824s
+[r918u05n01.grace.ycrc.yale.edu:1033444] MCW rank 0 bound to socket 0[core 0[hwt 0]]: [B/.][./.]
+[r918u05n01.grace.ycrc.yale.edu:1033444] MCW rank 1 bound to socket 0[core 1[hwt 0]]: [./B][./.]
+Matrix multiplication times:
+   N      TIME (secs)    F-norm of Error
+ -----   -------------  -----------------
+   1000       0.2143     0.000000000033
+   2000       1.6417     0.000000000134
+   4000      21.0862     0.000000000504
+   8000     168.1057     0.000000001930
+
+real	3m12.171s
+user	6m19.869s
+sys	0m1.854s
+[r918u05n01.grace.ycrc.yale.edu:1033729] MCW rank 0 bound to socket 0[core 0[hwt 0]], socket 0[core 1[hwt 0]]: [B/B][./.]
+[r918u05n01.grace.ycrc.yale.edu:1033729] MCW rank 1 bound to socket 1[core 2[hwt 0]], socket 1[core 3[hwt 0]]: [./.][B/B]
+[r918u05n01.grace.ycrc.yale.edu:1033729] MCW rank 2 bound to socket 0[core 0[hwt 0]], socket 0[core 1[hwt 0]]: [B/B][./.]
+[r918u05n01.grace.ycrc.yale.edu:1033729] MCW rank 3 bound to socket 1[core 2[hwt 0]], socket 1[core 3[hwt 0]]: [./.][B/B]
+Matrix multiplication times:
+   N      TIME (secs)    F-norm of Error
+ -----   -------------  -----------------
+   1000       0.1387     0.000000000033
+   2000       0.8503     0.000000000132
+   4000       9.9002     0.000000000504
+   8000      85.3693     0.000000001930
+
+real	1m37.451s
+user	6m22.541s
+sys	0m2.494s
+[r918u05n01.grace.ycrc.yale.edu:1033822] MCW rank 0 bound to socket 0[core 0[hwt 0]], socket 0[core 1[hwt 0]]: [B/B][./.]
+[r918u05n01.grace.ycrc.yale.edu:1033822] MCW rank 1 bound to socket 1[core 2[hwt 0]], socket 1[core 3[hwt 0]]: [./.][B/B]
+[r918u05n01.grace.ycrc.yale.edu:1033822] MCW rank 2 bound to socket 0[core 0[hwt 0]], socket 0[core 1[hwt 0]]: [B/B][./.]
+[r918u05n01.grace.ycrc.yale.edu:1033822] MCW rank 3 bound to socket 1[core 2[hwt 0]], socket 1[core 3[hwt 0]]: [./.][B/B]
+Matrix multiplication times:
+   N      TIME (secs)    F-norm of Error
+ -----   -------------  -----------------
+   1000       0.1380     0.000000000033
+   2000       0.8527     0.000000000132
+   4000       9.8229     0.000000000504
+   8000      85.3614     0.000000001930
+
+real	1m37.307s
+user	6m22.213s
+sys	0m2.463s
+[r918u05n01.grace.ycrc.yale.edu:1033963] MCW rank 0 bound to socket 0[core 0[hwt 0]], socket 0[core 1[hwt 0]]: [B/B][./.]
+[r918u05n01.grace.ycrc.yale.edu:1033963] MCW rank 1 bound to socket 1[core 2[hwt 0]], socket 1[core 3[hwt 0]]: [./.][B/B]
+[r918u05n01.grace.ycrc.yale.edu:1033963] MCW rank 2 bound to socket 0[core 0[hwt 0]], socket 0[core 1[hwt 0]]: [B/B][./.]
+[r918u05n01.grace.ycrc.yale.edu:1033963] MCW rank 3 bound to socket 1[core 2[hwt 0]], socket 1[core 3[hwt 0]]: [./.][B/B]
+Matrix multiplication times:
+   N      TIME (secs)    F-norm of Error
+ -----   -------------  -----------------
+   1000       0.1375     0.000000000033
+   2000       0.8547     0.000000000132
+   4000       9.9835     0.000000000500
+   8000      85.2224     0.000000001930
+
+real	1m37.292s
+user	6m22.287s
+sys	0m2.471s
+[r918u05n01.grace.ycrc.yale.edu:1034084] MCW rank 0 bound to socket 0[core 0[hwt 0]], socket 0[core 1[hwt 0]]: [B/B][./.]
+[r918u05n01.grace.ycrc.yale.edu:1034084] MCW rank 1 bound to socket 1[core 2[hwt 0]], socket 1[core 3[hwt 0]]: [./.][B/B]
+[r918u05n01.grace.ycrc.yale.edu:1034084] MCW rank 2 bound to socket 0[core 0[hwt 0]], socket 0[core 1[hwt 0]]: [B/B][./.]
+[r918u05n01.grace.ycrc.yale.edu:1034084] MCW rank 3 bound to socket 1[core 2[hwt 0]], socket 1[core 3[hwt 0]]: [./.][B/B]
+[r918u05n02.grace.ycrc.yale.edu:81416] MCW rank 4 bound to socket 0[core 0[hwt 0]], socket 0[core 1[hwt 0]]: [B/B][./.]
+[r918u05n02.grace.ycrc.yale.edu:81416] MCW rank 5 bound to socket 1[core 2[hwt 0]], socket 1[core 3[hwt 0]]: [./.][B/B]
+[r918u05n02.grace.ycrc.yale.edu:81416] MCW rank 6 bound to socket 0[core 0[hwt 0]], socket 0[core 1[hwt 0]]: [B/B][./.]
+[r918u05n02.grace.ycrc.yale.edu:81416] MCW rank 7 bound to socket 1[core 2[hwt 0]], socket 1[core 3[hwt 0]]: [./.][B/B]
+Matrix multiplication times:
+   N      TIME (secs)    F-norm of Error
+ -----   -------------  -----------------
+   1000       0.0904     0.000000000033
+   2000       0.5224     0.000000000132
+   4000       4.1516     0.000000000504
+   8000      43.7327     0.000000001930
+
+real	0m49.619s
+user	3m12.715s
+sys	0m1.825s
+[r918u05n01.grace.ycrc.yale.edu:1034276] MCW rank 0 bound to socket 0[core 0[hwt 0]], socket 0[core 1[hwt 0]]: [B/B][./.]
+[r918u05n01.grace.ycrc.yale.edu:1034276] MCW rank 1 bound to socket 1[core 2[hwt 0]], socket 1[core 3[hwt 0]]: [./.][B/B]
+[r918u05n01.grace.ycrc.yale.edu:1034276] MCW rank 2 bound to socket 0[core 0[hwt 0]], socket 0[core 1[hwt 0]]: [B/B][./.]
+[r918u05n01.grace.ycrc.yale.edu:1034276] MCW rank 3 bound to socket 1[core 2[hwt 0]], socket 1[core 3[hwt 0]]: [./.][B/B]
+[r918u05n02.grace.ycrc.yale.edu:81503] MCW rank 4 bound to socket 0[core 0[hwt 0]], socket 0[core 1[hwt 0]]: [B/B][./.]
+[r918u05n02.grace.ycrc.yale.edu:81503] MCW rank 5 bound to socket 1[core 2[hwt 0]], socket 1[core 3[hwt 0]]: [./.][B/B]
+[r918u05n02.grace.ycrc.yale.edu:81503] MCW rank 6 bound to socket 0[core 0[hwt 0]], socket 0[core 1[hwt 0]]: [B/B][./.]
+[r918u05n02.grace.ycrc.yale.edu:81503] MCW rank 7 bound to socket 1[core 2[hwt 0]], socket 1[core 3[hwt 0]]: [./.][B/B]
+Matrix multiplication times:
+   N      TIME (secs)    F-norm of Error
+ -----   -------------  -----------------
+   1000       0.0939     0.000000000033
+   2000       0.5245     0.000000000130
+   4000       3.8353     0.000000000504
+   8000      43.6552     0.000000001930
+
+real	0m49.135s
+user	3m11.143s
+sys	0m1.822s
+[r918u05n01.grace.ycrc.yale.edu:1034459] MCW rank 0 bound to socket 0[core 0[hwt 0]], socket 0[core 1[hwt 0]]: [B/B][./.]
+[r918u05n01.grace.ycrc.yale.edu:1034459] MCW rank 1 bound to socket 1[core 2[hwt 0]], socket 1[core 3[hwt 0]]: [./.][B/B]
+[r918u05n01.grace.ycrc.yale.edu:1034459] MCW rank 2 bound to socket 0[core 0[hwt 0]], socket 0[core 1[hwt 0]]: [B/B][./.]
+[r918u05n01.grace.ycrc.yale.edu:1034459] MCW rank 3 bound to socket 1[core 2[hwt 0]], socket 1[core 3[hwt 0]]: [./.][B/B]
+[r918u05n02.grace.ycrc.yale.edu:81615] MCW rank 4 bound to socket 0[core 0[hwt 0]], socket 0[core 1[hwt 0]]: [B/B][./.]
+[r918u05n02.grace.ycrc.yale.edu:81615] MCW rank 5 bound to socket 1[core 2[hwt 0]], socket 1[core 3[hwt 0]]: [./.][B/B]
+[r918u05n02.grace.ycrc.yale.edu:81615] MCW rank 6 bound to socket 0[core 0[hwt 0]], socket 0[core 1[hwt 0]]: [B/B][./.]
+[r918u05n02.grace.ycrc.yale.edu:81615] MCW rank 7 bound to socket 1[core 2[hwt 0]], socket 1[core 3[hwt 0]]: [./.][B/B]
+Matrix multiplication times:
+   N      TIME (secs)    F-norm of Error
+ -----   -------------  -----------------
+   1000       0.0882     0.000000000033
+   2000       0.5213     0.000000000131
+   4000       4.0687     0.000000000504
+   8000      43.7269     0.000000001930
+
+real	0m49.483s
+user	3m12.375s
+sys	0m1.848s
+All Done!
