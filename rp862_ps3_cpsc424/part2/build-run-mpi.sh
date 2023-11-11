@@ -31,14 +31,25 @@ echo $SLURM_NTASKS_PER_SOCKET
 
 make clean
 make task5
+make task6
+
+# echo " "
+# echo "Task 5"
+# for ntasks in 2 4 8
+# do 
+#     for k in 1 2 3 
+#     do 
+#         time mpirun --report-bindings -np ${ntasks} ./bin/task5 ${ntasks}
+#     done
+# done
 
 echo " "
-echo "Task 5"
+echo "Task 6"
 for ntasks in 2 4 8
 do 
     for k in 1 2 3 
     do 
-        time mpirun --report-bindings -np ${ntasks} ./bin/task5 ${ntasks}
+        time mpirun --report-bindings -np ${ntasks} ./bin/task6 ${ntasks}
     done
 done
 

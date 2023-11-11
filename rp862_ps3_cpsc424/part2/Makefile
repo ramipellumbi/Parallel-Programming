@@ -43,5 +43,10 @@ $(BIN_DIR)/task5: $(OBJ_DIR)/task5.o $(MODULES)
 	@mkdir -p $(BIN_DIR)
 	$(CC_MPI) $(CFLAGS) $^ -o $@
 
+task6: $(BIN_DIR)/task6
+$(BIN_DIR)/task6: $(OBJ_DIR)/task6.o $(MODULES)
+	@mkdir -p $(BIN_DIR)
+	$(CC_MPI) $(CFLAGS) $^ -o $@
+
 clean:
 	rm -rf $(OBJ_DIR) $(BIN_DIR)
