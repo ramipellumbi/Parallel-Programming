@@ -31,3 +31,36 @@ icc -g -O3 -xHost -fno-alias -std=c99 -I include -c src/matmul.c -o obj/matmul.o
 icc -g -O3 -xHost -fno-alias -std=c99 -I include -c src/timing.c -o obj/timing.o
 icc -g -O3 -xHost -fno-alias -std=c99 -I include -c src/utilities.c -o obj/utilities.o
 icc -g -O3 -xHost -fno-alias -std=c99 -I include obj/serial.o obj/matmul.o obj/timing.o obj/utilities.o -o bin/serial
+Matrix multiplication times:
+   N      TIME (secs)    F-norm of Error
+ -----   -------------  -----------------
+   1000       0.3170     0.000000000032
+   2000       2.8031     0.000000000134
+   4000      38.8179     0.000000000504
+   8000     327.7275     0.000000001930
+
+real	6m11.462s
+user	6m9.899s
+sys	0m0.545s
+Matrix multiplication times:
+   N      TIME (secs)    F-norm of Error
+ -----   -------------  -----------------
+   1000       0.3171     0.000000000032
+   2000       2.8128     0.000000000134
+   4000      38.7932     0.000000000504
+   8000     327.9908     0.000000001930
+
+real	6m11.773s
+user	6m10.149s
+sys	0m0.552s
+Matrix multiplication times:
+   N      TIME (secs)    F-norm of Error
+ -----   -------------  -----------------
+   1000       0.3177     0.000000000032
+   2000       2.6595     0.000000000134
+   4000      38.8194     0.000000000504
+   8000     327.4879     0.000000001930
+
+real	6m11.108s
+user	6m9.511s
+sys	0m0.549s

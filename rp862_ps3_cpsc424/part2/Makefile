@@ -26,7 +26,7 @@ all: $(addprefix $(BIN_DIR)/, $(EXECUTABLES))
 # general file rule
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	@mkdir -p $(@D)
-	$(CC_SERIAL) $(CFLAGS) -c $< -o $@
+	$(CC_MPI) $(CFLAGS) -c $< -o $@
 
 # Specific rule for serial
 $(OBJ_DIR)/serial.o: $(SRC_DIR)/serial.c
@@ -37,6 +37,11 @@ serial: $(BIN_DIR)/serial
 $(BIN_DIR)/serial: $(OBJ_DIR)/serial.o $(MODULES)
 	@mkdir -p $(BIN_DIR)
 	$(CC_SERIAL) $(CFLAGS) $^ -o $@
+
+task5: $(BIN_DIR)/task5
+$(BIN_DIR)/task5: $(OBJ_DIR)/task5.o $(MODULES)
+	@mkdir -p $(BIN_DIR)
+	$(CC_MPI) $(CFLAGS) $^ -o $@
 
 clean:
 	rm -rf $(OBJ_DIR) $(BIN_DIR)

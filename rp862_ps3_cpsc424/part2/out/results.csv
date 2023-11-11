@@ -1,0 +1,4 @@
+program,num_cores,np,num_tasks_per_node,num_tasks_per_socket,N,exe_time,f_norm
+"task5",1,2,4,,2,1000,0.214190,0.000000000033
+"task5",1,2,4,,2,2000,1.613440,0.000000000134
+"task5",1,2,4,,2,4000,21.089990,0.000000000504
