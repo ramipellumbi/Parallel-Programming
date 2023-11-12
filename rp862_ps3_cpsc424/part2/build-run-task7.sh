@@ -15,7 +15,7 @@
 
 # set memory per cpu
 #SBATCH --mem-per-cpu=7G
-#SBATCH --job-name=MPI_RUN
+#SBATCH --job-name=T7-MPI_RUN
 #SBATCH --output=out/%x-%j.out
 #SBATCH --time=30:00
 
@@ -38,7 +38,7 @@ for ntasks in 2 4 8
 do 
     for k in 1 2 3 
     do 
-        time mpirun --report-bindings -np ${ntasks} ./bin/task7 ${ntasks}
+        time mpirun --report-bindings -np ${ntasks} ./bin/task7
     done
 done
 

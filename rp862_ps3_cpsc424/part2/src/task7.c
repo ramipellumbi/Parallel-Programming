@@ -7,19 +7,6 @@
 
 int main(int argc, char **argv)
 {
-    if (argc < 2)
-    {
-        fprintf(stderr, "Usage %s <nt-value\n", argv[0]);
-        return 1;
-    }
-
-    int np = atoi(argv[1]);
-    if (np <= 0)
-    {
-        fprintf(stderr, "Using %d which is not a positive integer", np);
-        return 1;
-    }
-
     double start_time, end_time, exe_time;
     int sizes[4] = {1000, 2000, 4000, 8000};
     char files[4][75] = {"/gpfs/gibbs/project/cpsc424/shared/assignments/assignment3/data/C-1000.dat",
@@ -160,7 +147,7 @@ int main(int argc, char **argv)
 
             // print a table row
             printf("  %5d    %9.4f  %17.12f\n", N, exe_time, Fnorm);
-            write_data_to_file("out/results.csv", "task7", N, np, exe_time, Fnorm);
+            write_data_to_file("out/results.csv", "task7", N, size, exe_time, Fnorm);
 
             // manager frees memory of manager only arrays
             free(A);
