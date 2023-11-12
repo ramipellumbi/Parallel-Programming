@@ -57,14 +57,15 @@ double matmul(int N, double *A, double *B, double *C)
 }
 
 /**
- * General matrix matrix multiply
+ * Multiply M x N matrix A with N x M matrix B
+ *
  * @param M number of rows of A (or columns of B)
  * @param N number of columns of A (or rows of B)
  * @param A M x N matrix stored row-wise in double[M*N]
  * @param B N x M matrix stored column-wise in double[M*N]
  * @param C M x M matrix space for the result - will be stored row-wise in double[M*M]
  */
-double gemm(int M, int N, double *A, double *B, double *C)
+void gemm(int M, int N, double *A, double *B, double *C)
 {
     int i, j, k;
     int iA; // iA is a pointer into the A matrix (stored by rows)
@@ -94,6 +95,55 @@ double gemm(int M, int N, double *A, double *B, double *C)
             for (k = 0; k < N; k++)
                 C[iC] += A[iA + k] * B[jB + k]; // Each iteration on k adds in the product
                                                 // of A[i,k] times B[k,j].
+        }
+    }
+}
+
+/**
+ * Multiply M x N matrix A with N x K matrix B
+ *
+ * @param M number of rows of A
+ * @param N number of columns of A (and rows of B)
+ * @param K number of columns of B
+ * @param A M x N matrix stored row-wise in double[M*N]
+ * @param B N x K matrix stored column-wise in double[N*K]
+ * @param C M x K matrix space for the result - will be stored row-wise in double[M*K]
+ *
+ * Note: C may be a larger buffer than M*K and that is ok. The result is stored
+ * densely in the first M*K entries
+ */
+void gemm_k(int M, int N, int K, double *A, double *B, double *C)
+{
+    int i, j, k;
+    int iA; // iA is a pointer into the A matrix (stored by rows)
+    int jB; // jB is a pointer into the B matrix (stored by columns)
+    int iC; // iC is a pointer into the C matrix (stored by rows)
+
+    // This loop computes the matrix-matrix product assuming that the matrices
+    // A and C are stored row-by-row, while the matrix B is stored column-by-column
+    iC = 0;
+    for (i = 0; i < M; i++)
+    {
+        iA = i * N; // Initializes row pointer for row i of A to skip over all previous rows of A.
+                    // Note: if we're working on row i, then the total number of double entries for
+                    // rows 0 through i-1 is i*N. Thus, iA points to the first entry of row i.
+
+        for (j = 0; j < K; j++, iC++)
+        {
+            // We're going to compute the dot product of row i of A and column j of B.
+            // iC points to the entries of row i of C. (We compute C[i,j] as the dot
+            // product of row i of A with column j of B.)
+
+            jB = j * N; // Initializes column pointer for col j of B to skip over all previous cols of B.
+                        // Note: if we're working on col j, then the total number of double entries for
+                        // cols 0 through j-1 is j*N. Thus, jB points to the first entry of col j.
+
+            C[iC] = 0.;
+            for (k = 0; k < N; k++)
+            {
+                C[iC] += A[iA + k] * B[jB + k]; // Each iteration on k adds in the product
+                                                // of A[i,k] times B[k,j].
+            }
         }
     }
 }

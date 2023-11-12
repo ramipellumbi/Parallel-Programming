@@ -24,19 +24,19 @@ void write_data_to_file(const char *filename,
     int num_cores = get_environment_value("SLURM_CPUS_PER_TASK");
     if (num_cores == -1)
     {
-        fprintf(stderr, "SLURM_CPUS_PER_TASK not set");
+        fprintf(stderr, "\nSLURM_CPUS_PER_TASK not set");
     }
 
     int num_tasks_per_node = get_environment_value("SLURM_NTASKS_PER_NODE");
     if (num_tasks_per_node == -1)
     {
-        fprintf(stderr, "SLURM_NTASKS_PER_NODE not set");
+        fprintf(stderr, "\nSLURM_NTASKS_PER_NODE not set");
     }
 
     int num_tasks_per_socket = get_environment_value("SLURM_NTASKS_PER_SOCKET");
     if (num_tasks_per_socket == -1)
     {
-        fprintf(stderr, "SLURM_NTASKS_PER_SOCKET not set");
+        fprintf(stderr, "\nSLURM_NTASKS_PER_SOCKET not set");
     }
 
     // check if the file exists
