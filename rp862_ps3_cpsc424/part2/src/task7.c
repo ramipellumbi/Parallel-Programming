@@ -101,14 +101,20 @@ int main(int argc, char **argv)
         // send blocks of C to all other processes in a communicator
         MPI_Iscatter(C, size_BLOCKxN, MPI_DOUBLE, blockC, size_BLOCKxN, MPI_DOUBLE, 0, MPI_COMM_WORLD, &scatter_requests[2]);
 
-        // wait for all blocks to scatter
-        MPI_Waitall(3, scatter_requests, MPI_STATUSES_IGNORE);
+        // wait for matrices A and B to scatter
+        MPI_Wait(&scatter_requests[0], MPI_STATUS_IGNORE);
+        MPI_Wait(&scatter_requests[1], MPI_STATUS_IGNORE);
 
         // Ring Passing B - MPI processes pass their block columns of B to the next higher-ranked process for processing
         for (int step = 0; step < size; step++)
         {
+            MPI_Irecv(tempB, size_BLOCKxN, MPI_DOUBLE, prev_rank, 0, MPI_COMM_WORLD, &ring_pass_requests[0]);
+            MPI_Isend(blockB, size_BLOCKxN, MPI_DOUBLE, next_rank, 0, MPI_COMM_WORLD, &ring_pass_requests[1]);
+
             // perform multiply of permanant block of A on this process with current block of B on this process
             gemm(block_size, N, blockA, blockB, multiply_result);
+            // at this point we need to C is scattered
+            MPI_Wait(&scatter_requests[2], MPI_STATUS_IGNORE);
             // place the (N/size) x (N/size) multiply_result into the right place in the block of C on this process
             for (int i = 0; i < block_size; i++)
             {
@@ -119,26 +125,13 @@ int main(int argc, char **argv)
                 }
             }
 
-            // each process now hands its blockB to the next process in the ring
-            if (rank % 2 == 0)
-            {
-                // to avoid deadlock, even ranks send first and then receive
-                MPI_Isend(blockB, size_BLOCKxN, MPI_DOUBLE, next_rank, 0, MPI_COMM_WORLD, &ring_pass_requests[0]);
-                MPI_Irecv(tempB, size_BLOCKxN, MPI_DOUBLE, prev_rank, 0, MPI_COMM_WORLD, &ring_pass_requests[1]);
-            }
-            else
-            {
-                // odd ranks receive first and then send
-                MPI_Irecv(tempB, size_BLOCKxN, MPI_DOUBLE, prev_rank, 0, MPI_COMM_WORLD, &ring_pass_requests[0]);
-                MPI_Isend(blockB, size_BLOCKxN, MPI_DOUBLE, next_rank, 0, MPI_COMM_WORLD, &ring_pass_requests[1]);
-            }
+            MPI_Wait(&ring_pass_requests[0], MPI_STATUS_IGNORE);
 
-            MPI_Waitall(2, ring_pass_requests, MPI_STATUSES_IGNORE);
-
-            // ensure the received tempB is moved to blockB for the next iterations multiply
             double *swap = blockB;
             blockB = tempB;
             tempB = swap;
+
+            MPI_Wait(&ring_pass_requests[1], MPI_STATUS_IGNORE);
         }
 
         // Gather the p blockC into C from the processes
@@ -167,7 +160,7 @@ int main(int argc, char **argv)
 
             // print a table row
             printf("  %5d    %9.4f  %17.12f\n", N, exe_time, Fnorm);
-            write_data_to_file("out/results.csv", "task6", N, np, exe_time, Fnorm);
+            write_data_to_file("out/results.csv", "task7", N, np, exe_time, Fnorm);
 
             // manager frees memory of manager only arrays
             free(A);
