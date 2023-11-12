@@ -109,8 +109,8 @@ void gemm(int M, int N, double *A, double *B, double *C)
  * @param B N x K matrix stored column-wise in double[N*K]
  * @param C M x K matrix space for the result - will be stored row-wise in double[M*K]
  *
- * Note: C may be a larger buffer than M*K and that is ok. The result is stored
- * densely in the first M*K entries
+ * Note: A, B, or C may be a larger buffer than M*N, N*K, or M*K, respectively, and that is ok. 
+ * The result is stored densely in C in the first M*K entries
  */
 void gemm_k(int M, int N, int K, double *A, double *B, double *C)
 {
