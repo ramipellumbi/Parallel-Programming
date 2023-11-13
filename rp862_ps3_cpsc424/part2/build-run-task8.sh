@@ -6,15 +6,13 @@
 #SBATCH --time=30:00
 
 # Request 4 nodes in total
-#SBATCH --ntasks-per-node=4 --ntasks-per-socket=2
+#SBATCH --nodes=4
 # Request 7 tasks in total, which will include 1 manager and 6 workers
 #SBATCH --ntasks=7
 # Request 1 CPU per task
 #SBATCH --cpus-per-task=1
 # Request 7 GB of memory per CPU
 #SBATCH --mem-per-cpu=7G
-# Use exclusive mode to prevent sharing of nodes between jobs
-#SBATCH --exclusive
 
 module purge
 module load iomkl
@@ -51,11 +49,11 @@ for NODE in $WORKER_NODES; do
 done
 
 # Run the application with the manager task alone on the first node and two tasks per node on the other nodes
-for k in 1 
+for k in 1 2 3
 do 
     # Run the MPI program with the custom hostfile
-    time mpirun --report-bindings -np 7 ./bin/task8
-    # time mpirun --report-bindings --hostfile my_hostfile -np 7 --map-by ppr:2:node ./bin/task8
+    # time mpirun --report-bindings -np 7 ./bin/task8
+    time mpirun --report-bindings --hostfile my_hostfile -np 7 ./bin/task8
 done
 
 echo "All Done!"
