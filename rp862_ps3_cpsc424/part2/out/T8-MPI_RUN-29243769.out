@@ -1,0 +1,139 @@
+The following modules were not unloaded:
+  (Use "module --force purge" to unload all):
+
+  1) StdEnv
+
+Currently Loaded Modules:
+  1) StdEnv                        (S)   9) libpciaccess/0.16-GCCcore-10.2.0
+  2) GCCcore/10.2.0                     10) hwloc/2.2.0-GCCcore-10.2.0
+  3) zlib/1.2.11-GCCcore-10.2.0         11) UCX/1.9.0-GCCcore-10.2.0
+  4) binutils/2.35-GCCcore-10.2.0       12) libfabric/1.11.0-GCCcore-10.2.0
+  5) iccifort/2020.4.304                13) OpenMPI/4.0.5-iccifort-2020.4.304
+  6) numactl/2.0.13-GCCcore-10.2.0      14) iompi/2020b
+  7) XZ/5.2.5-GCCcore-10.2.0            15) imkl/2020.4.304-iompi-2020b
+  8) libxml2/2.9.10-GCCcore-10.2.0      16) iomkl/2020b
+
+  Where:
+   S:  Module is Sticky, requires --force to unload or purge
+
+ 
+
+/home/cpsc424_rp862/Desktop/cpsc-524-parallel-programming/rp862_ps3_cpsc424/part2
+Nodes allocated:
+r918u05n[01-04]
+Number of tasks per node:
+
+Number of tasks per socket:
+
+SRC_FILES = src/matmul.c src/serial.c src/task5.c src/task6.c src/task7.c src/task8.c src/timing.c src/utilities.c
+OBJ_FILES =  obj/matmul.o  obj/serial.o  obj/task5.o  obj/task6.o  obj/task7.o  obj/task8.o  obj/timing.o  obj/utilities.o
+rm -rf obj bin
+SRC_FILES = src/matmul.c src/serial.c src/task5.c src/task6.c src/task7.c src/task8.c src/timing.c src/utilities.c
+OBJ_FILES =  obj/matmul.o  obj/serial.o  obj/task5.o  obj/task6.o  obj/task7.o  obj/task8.o  obj/timing.o  obj/utilities.o
+mpicc -g -O3 -xHost -fno-alias -std=c99 -I include -c src/task8.c -o obj/task8.o
+mpicc -g -O3 -xHost -fno-alias -std=c99 -I include -c src/matmul.c -o obj/matmul.o
+mpicc -g -O3 -xHost -fno-alias -std=c99 -I include -c src/timing.c -o obj/timing.o
+mpicc -g -O3 -xHost -fno-alias -std=c99 -I include -c src/utilities.c -o obj/utilities.o
+mpicc -g -O3 -xHost -fno-alias -std=c99 -I include obj/task8.o obj/matmul.o obj/timing.o obj/utilities.o -o bin/task8
+ 
+Task 8
+--------------------------------------------------------------------------
+There are not enough slots available in the system to satisfy the 7
+slots that were requested by the application:
+
+  ./bin/task8
+
+Either request fewer slots for your application, or make more slots
+available for use.
+
+A "slot" is the Open MPI term for an allocatable unit where we can
+launch a process.  The number of slots available are defined by the
+environment in which Open MPI processes are run:
+
+  1. Hostfile, via "slots=N" clauses (N defaults to number of
+     processor cores if not provided)
+  2. The --host command line parameter, via a ":N" suffix on the
+     hostname (N defaults to 1 if not provided)
+  3. Resource manager (e.g., SLURM, PBS/Torque, LSF, etc.)
+  4. If none of a hostfile, the --host command line parameter, or an
+     RM is present, Open MPI defaults to the number of processor cores
+
+In all the above cases, if you want Open MPI to default to the number
+of hardware threads instead of the number of processor cores, use the
+--use-hwthread-cpus option.
+
+Alternatively, you can use the --oversubscribe option to ignore the
+number of available slots when deciding the number of processes to
+launch.
+--------------------------------------------------------------------------
+
+real	0m0.429s
+user	0m0.031s
+sys	0m0.027s
+--------------------------------------------------------------------------
+There are not enough slots available in the system to satisfy the 7
+slots that were requested by the application:
+
+  ./bin/task8
+
+Either request fewer slots for your application, or make more slots
+available for use.
+
+A "slot" is the Open MPI term for an allocatable unit where we can
+launch a process.  The number of slots available are defined by the
+environment in which Open MPI processes are run:
+
+  1. Hostfile, via "slots=N" clauses (N defaults to number of
+     processor cores if not provided)
+  2. The --host command line parameter, via a ":N" suffix on the
+     hostname (N defaults to 1 if not provided)
+  3. Resource manager (e.g., SLURM, PBS/Torque, LSF, etc.)
+  4. If none of a hostfile, the --host command line parameter, or an
+     RM is present, Open MPI defaults to the number of processor cores
+
+In all the above cases, if you want Open MPI to default to the number
+of hardware threads instead of the number of processor cores, use the
+--use-hwthread-cpus option.
+
+Alternatively, you can use the --oversubscribe option to ignore the
+number of available slots when deciding the number of processes to
+launch.
+--------------------------------------------------------------------------
+
+real	0m0.226s
+user	0m0.033s
+sys	0m0.024s
+--------------------------------------------------------------------------
+There are not enough slots available in the system to satisfy the 7
+slots that were requested by the application:
+
+  ./bin/task8
+
+Either request fewer slots for your application, or make more slots
+available for use.
+
+A "slot" is the Open MPI term for an allocatable unit where we can
+launch a process.  The number of slots available are defined by the
+environment in which Open MPI processes are run:
+
+  1. Hostfile, via "slots=N" clauses (N defaults to number of
+     processor cores if not provided)
+  2. The --host command line parameter, via a ":N" suffix on the
+     hostname (N defaults to 1 if not provided)
+  3. Resource manager (e.g., SLURM, PBS/Torque, LSF, etc.)
+  4. If none of a hostfile, the --host command line parameter, or an
+     RM is present, Open MPI defaults to the number of processor cores
+
+In all the above cases, if you want Open MPI to default to the number
+of hardware threads instead of the number of processor cores, use the
+--use-hwthread-cpus option.
+
+Alternatively, you can use the --oversubscribe option to ignore the
+number of available slots when deciding the number of processes to
+launch.
+--------------------------------------------------------------------------
+
+real	0m0.217s
+user	0m0.031s
+sys	0m0.025s
+All Done!

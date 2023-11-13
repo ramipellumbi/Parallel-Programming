@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <utilities.h>
 
 int main(int argc, char **argv)
 {
@@ -88,6 +89,7 @@ int main(int argc, char **argv)
 
         // Print a table row
         printf("  %5d    %9.4f  %17.12f\n", N, wctime, Fnorm);
+        write_data_to_file("out/results.csv", "task4", N, 1, wctime, Fnorm);
 
         free(Ctrue);
 
