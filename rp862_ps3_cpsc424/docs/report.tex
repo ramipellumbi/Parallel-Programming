@@ -175,7 +175,7 @@ For part 1, the output files generated from running the code by submitting the r
 in the \texttt{part1} directory. 
 For part 2, the output files generated from running the code by submitting the relevant Bash script via \texttt{sbatch} will be 
 stored in the \texttt{out} directory. 
-
+\newpage
 \section{MPI Basics}
 \subsection{Task 1: Basic Communication Between Processes}
 In task 1, we simply run the provided \texttt{task1.c} code. We observe that 
@@ -226,6 +226,7 @@ the print statements and appear in first-come-first-served order.
 Here, we modify the provided \texttt{task1.c} remove prints from the non-manager 
 processes and instead have the manager print out the messages in rank order. To 
 handle this, each worker now sends its message back to the manager:
+\newpage
 \begin{lstlisting}
     sprintf(message, "Hello manager, from process %d after working %d seconds.",
              rank, worktime);
@@ -335,6 +336,7 @@ place into the array. Concretely, the manager now does the following.
     }
 \end{lstlisting}
 The printout from this execution observed consistent, optimal runtime:
+\newpage
 \begin{verbatim}
     Node List:
     r918u05n[01-02]
@@ -432,7 +434,7 @@ The results of this approach are in Table 1 and Figure 1.
 \end{table}
 \begin{figure}[H]
    \centering
-   \includegraphics[scale=0.4]{../part2/out/np.pdf} 
+   \includegraphics[scale=0.7]{../part2/out/np.pdf} 
    \caption{Blocking Communication: Log2 Performance vs. Number of Processes}
 \end{figure}
 \noindent The dashed line represents a doubling in performance (halving the runtime) 
@@ -473,7 +475,7 @@ The performance is seen in Table 2 and Figure 2.
 \end{table}
 \begin{figure}[H]
    \centering
-   \includegraphics[scale=0.4]{../part2/out/np-6.pdf} 
+   \includegraphics[scale=0.7]{../part2/out/np-6.pdf} 
    \caption{Non Blocking Communication: Log2 Performance vs. Number of Processes}
 \end{figure}
 \noindent The performance assessment here is precisely that of the blocking collectives. Since 
@@ -497,15 +499,15 @@ The following is the updated ring-loop algorithm:
         MPI_Irecv(tempB, size_BLOCKxN, MPI_DOUBLE, prev_rank, 0, MPI_COMM_WORLD, &ring_pass_requests[0]);
         MPI_Isend(blockB, size_BLOCKxN, MPI_DOUBLE, next_rank, 0, MPI_COMM_WORLD, &ring_pass_requests[1]);
 
+        // perform multiply of permanant block of A on this process with current block of B on this process
         gemm(block_size, N, blockA, blockB, blockC, ((rank - step + size) % size) * block_size);
 
         MPI_Wait(&ring_pass_requests[0], MPI_STATUS_IGNORE);
+        MPI_Wait(&ring_pass_requests[1], MPI_STATUS_IGNORE);
 
         double *swap = blockB;
         blockB = tempB;
         tempB = swap;
-
-        MPI_Wait(&ring_pass_requests[1], MPI_STATUS_IGNORE);
     }
 \end{lstlisting}
 Table 3 and Figure 3 show the performance of these changes:
@@ -526,11 +528,14 @@ Table 3 and Figure 3 show the performance of these changes:
 \end{table}
 \begin{figure}[H]
     \centering
-    \includegraphics[scale=0.6]{../part2/out/np-7.pdf} 
+    \includegraphics[scale=0.7]{../part2/out/np-7.pdf} 
     \caption{Non Blocking Communication Optimized: Log2 Performance vs. Number of Processes}
  \end{figure}
-\noindent We observe roughly the same performance as in task 6. Since each multiply takes the same 
-time we are well load balanced and there is minimal idle time by any one process. Moreover, 
+\noindent We observe roughly the same performance as in task 6. Since average timings are reported 
+and each has roughly the same variability, there is not enough of a difference to make a concrete statement 
+about improvement. 
+
+Since each multiply takes the same time we are well load balanced and there is minimal idle time by any one process. Moreover, 
 we do not overly communicate and we overlap the communication with computation as described. 
 Since the communication is such a small amount of the total processing time, we do not expect 
 much improvement in performance for this load balanced problem (since any optimizations 
@@ -539,6 +544,7 @@ would really come from the multiplication being optimized).
 \subsection*{Task 8: Dealing with Non Uniform Buffer Sizes}
 Lastly, we modify the blocking collectives code to handle the case where $N$ 
 is not divisible by $p$. The following had to be considered (in continuation from task 5):
+\newpage
 \begin{itemize}
     \item $N/p$ will have a remainder, i.e., $N \% p$. This remainder 
     will be less than the total number of processes and so all ranks less than 
