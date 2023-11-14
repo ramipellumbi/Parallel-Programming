@@ -32,33 +32,33 @@ ntasks-per-node =  2
  
  
 Run 1
-Message from process 1: Hello manager, from process 1 after working 5 seconds.
-Message from process 2: Hello manager, from process 2 after working 10 seconds.
-Message from process 3: Hello manager, from process 3 after working 15 seconds.
-Message printed by manager: Total elapsed time is 24.003912 seconds.
+Message from process 1: Hello manager, from process 1 after working 15 seconds.
+Message from process 2: Hello manager, from process 2 after working 5 seconds.
+Message from process 3: Hello manager, from process 3 after working 10 seconds.
+Message printed by manager: Total elapsed time is 18.001310 seconds.
 
-real	0m24.687s
-user	0m15.201s
-sys	0m0.268s
+real	0m18.730s
+user	0m9.118s
+sys	0m0.201s
  
  
 Run 2
-Message from process 1: Hello manager, from process 1 after working 10 seconds.
-Message from process 2: Hello manager, from process 2 after working 5 seconds.
-Message from process 3: Hello manager, from process 3 after working 15 seconds.
-Message printed by manager: Total elapsed time is 24.003732 seconds.
+Message from process 1: Hello manager, from process 1 after working 5 seconds.
+Message from process 2: Hello manager, from process 2 after working 15 seconds.
+Message from process 3: Hello manager, from process 3 after working 10 seconds.
+Message printed by manager: Total elapsed time is 18.000172 seconds.
 
-real	0m24.598s
-user	0m15.148s
-sys	0m0.286s
+real	0m18.589s
+user	0m9.130s
+sys	0m0.300s
  
  
 Run 3
-Message from process 1: Hello manager, from process 1 after working 15 seconds.
-Message from process 2: Hello manager, from process 2 after working 10 seconds.
-Message from process 3: Hello manager, from process 3 after working 5 seconds.
-Message printed by manager: Total elapsed time is 24.000230 seconds.
+Message from process 1: Hello manager, from process 1 after working 10 seconds.
+Message from process 2: Hello manager, from process 2 after working 5 seconds.
+Message from process 3: Hello manager, from process 3 after working 15 seconds.
+Message printed by manager: Total elapsed time is 18.000061 seconds.
 
-real	0m25.996s
-user	0m15.147s
-sys	0m0.224s
+real	0m18.584s
+user	0m9.107s
+sys	0m0.267s

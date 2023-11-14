@@ -60,14 +60,14 @@ main(int argc, char **argv)
         for (int i = 1; i < size; i++)
         {
             MPI_Recv(message, 100, MPI_CHAR, MPI_ANY_SOURCE, type, MPI_COMM_WORLD, &status);
+            sleep(3); // simulate post processing
             strcpy(messages[status.MPI_SOURCE - 1], message);
         }
 
-        /* Simulate post processing + print messages */
+        /* print messages */
         for (size_t i = 1; i < size; i++)
         {
             printf("Message from process %d: %s\n", i, messages[i - 1]);
-            sleep(3);
         }
 
         wct1 = MPI_Wtime();
@@ -75,6 +75,10 @@ main(int argc, char **argv)
         total_time = wct1 - wct0;
         printf("Message printed by manager: Total elapsed time is %f seconds.\n", total_time);
 
+        for (int i = 0; i < size - 1; i++)
+        {
+            free(messages[i]);
+        }
         free(messages);
     }
 

@@ -32,42 +32,42 @@ ntasks-per-node =  2
  
  
 Run 1
-Message printed by manager: Total elapsed time is 0.007130 seconds.
-From process 3: I worked for 5 seconds after receiving the following message:
+Message printed by manager: Total elapsed time is 0.005460 seconds.
+From process 2: I worked for 5 seconds after receiving the following message:
 	 Hello, from process 0.
-From process 2: I worked for 10 seconds after receiving the following message:
+From process 3: I worked for 10 seconds after receiving the following message:
 	 Hello, from process 0.
 From process 1: I worked for 15 seconds after receiving the following message:
 	 Hello, from process 0.
 
-real	0m16.026s
-user	0m0.165s
-sys	0m0.291s
- 
- 
-Run 2
-Message printed by manager: Total elapsed time is 0.002869 seconds.
-From process 3: I worked for 5 seconds after receiving the following message:
-	 Hello, from process 0.
-From process 1: I worked for 10 seconds after receiving the following message:
-	 Hello, from process 0.
-From process 2: I worked for 15 seconds after receiving the following message:
-	 Hello, from process 0.
-
-real	0m15.578s
-user	0m0.200s
+real	0m15.668s
+user	0m0.143s
 sys	0m0.316s
  
  
-Run 3
-Message printed by manager: Total elapsed time is 0.007988 seconds.
-From process 3: I worked for 5 seconds after receiving the following message:
+Run 2
+Message printed by manager: Total elapsed time is 0.006188 seconds.
+From process 2: I worked for 5 seconds after receiving the following message:
 	 Hello, from process 0.
-From process 2: I worked for 10 seconds after receiving the following message:
+From process 3: I worked for 10 seconds after receiving the following message:
 	 Hello, from process 0.
 From process 1: I worked for 15 seconds after receiving the following message:
 	 Hello, from process 0.
 
-real	0m15.596s
-user	0m0.154s
-sys	0m0.291s
+real	0m15.779s
+user	0m0.146s
+sys	0m0.318s
+ 
+ 
+Run 3
+Message printed by manager: Total elapsed time is 0.007760 seconds.
+From process 2: I worked for 5 seconds after receiving the following message:
+	 Hello, from process 0.
+From process 3: I worked for 10 seconds after receiving the following message:
+	 Hello, from process 0.
+From process 1: I worked for 15 seconds after receiving the following message:
+	 Hello, from process 0.
+
+real	0m15.614s
+user	0m0.142s
+sys	0m0.301s
