@@ -57,13 +57,17 @@ double matmul(int N, double *A, double *B, double *C)
 }
 
 /**
- * Multiply M x N matrix A with N x M matrix B
+ * Multiply M x N matrix A with N x M matrix B (M < N)
+ *
+ * The matrix C is larger in size than MxM. It is MxN.
+ * The result of the multiply is placed into the appropriate MxM sublock of C
  *
  * @param M number of rows of A (or columns of B)
  * @param N number of columns of A (or rows of B)
  * @param A M x N matrix stored row-wise in double[M*N]
  * @param B N x M matrix stored column-wise in double[M*N]
- * @param C M x M matrix space for the result - will be stored row-wise in double[M*M]
+ * @param C M x N matrix space for the result (row-wise) - sublock is stored according to offset
+ * @param offset The offset to start storing the MxM sublock into the MxN C
  */
 void gemm(int M, int N, double *A, double *B, double *C, int offset)
 {
@@ -102,15 +106,19 @@ void gemm(int M, int N, double *A, double *B, double *C, int offset)
 /**
  * Multiply M x N matrix A with N x K matrix B
  *
+ * The matrix C is larger in size than MxM. It is MxN.
+ * The result of the multiply is placed into the appropriate MxK sublock of C
+ *
  * @param M number of rows of A
  * @param N number of columns of A (and rows of B)
  * @param K number of columns of B
  * @param A M x N matrix stored row-wise in double[M*N]
  * @param B N x K matrix stored column-wise in double[N*K]
- * @param C M x K matrix space for the result - will be stored row-wise in double[M*K]
+ * @param C M x N matrix space for the result (row-wise) - MxK sublock is stored according to offset
+ * @param offset The offset to start storing the MxK sublock into the MxN C
  *
- *  * Note: A, B, or C may be a larger buffer than M*N, N*K, or M*K, respectively, and that is ok.
- * The result is stored densely in C in the first M*K entries
+ * Note: A, B, or C may be a larger buffer than M*N, N*K, or M*K, respectively, and that is ok.
+ * The result is stored densely in C in the M*K entries according to offset
  */
 void gemm_k(int M, int N, int K, double *A, double *B, double *C, int offset)
 {
