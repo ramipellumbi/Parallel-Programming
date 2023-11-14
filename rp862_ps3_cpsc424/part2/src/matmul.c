@@ -65,7 +65,7 @@ double matmul(int N, double *A, double *B, double *C)
  * @param B N x M matrix stored column-wise in double[M*N]
  * @param C M x M matrix space for the result - will be stored row-wise in double[M*M]
  */
-void gemm(int M, int N, double *A, double *B, double *C)
+void gemm(int M, int N, double *A, double *B, double *C, int offset)
 {
     int i, j, k;
     int iA; // iA is a pointer into the A matrix (stored by rows)
@@ -74,18 +74,18 @@ void gemm(int M, int N, double *A, double *B, double *C)
 
     // This loop computes the matrix-matrix product assuming that the matrices
     // A and C are stored row-by-row, while the matrix B is stored column-by-column
-    iC = 0;
     for (i = 0; i < M; i++)
     {
         iA = i * N; // Initializes row pointer for row i of A to skip over all previous rows of A.
                     // Note: if we're working on row i, then the total number of double entries for
                     // rows 0 through i-1 is i*N. Thus, iA points to the first entry of row i.
 
-        for (j = 0; j < M; j++, iC++)
+        for (j = 0; j < M; j++)
         {
             // We're going to compute the dot product of row i of A and column j of B.
             // iC points to the entries of row i of C. (We compute C[i,j] as the dot
             // product of row i of A with column j of B.)
+            iC = i * N + j + offset;
 
             jB = j * N; // Initializes column pointer for col j of B to skip over all previous cols of B.
                         // Note: if we're working on col j, then the total number of double entries for
@@ -109,7 +109,7 @@ void gemm(int M, int N, double *A, double *B, double *C)
  * @param B N x K matrix stored column-wise in double[N*K]
  * @param C M x K matrix space for the result - will be stored row-wise in double[M*K]
  *
- * Note: A, B, or C may be a larger buffer than M*N, N*K, or M*K, respectively, and that is ok. 
+ *  * Note: A, B, or C may be a larger buffer than M*N, N*K, or M*K, respectively, and that is ok.
  * The result is stored densely in C in the first M*K entries
  */
 void gemm_k(int M, int N, int K, double *A, double *B, double *C)
