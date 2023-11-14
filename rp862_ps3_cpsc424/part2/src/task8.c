@@ -158,6 +158,7 @@ int main(int argc, char **argv)
             MPI_Send(blockB, sending_BLOCKxN, MPI_DOUBLE, next_rank, 0, MPI_COMM_WORLD);
         }
 
+        // ensure the received tempB is moved to blockB for the next iterations multiply
         double *swap = blockB;
         blockB = tempB;
         tempB = swap;
