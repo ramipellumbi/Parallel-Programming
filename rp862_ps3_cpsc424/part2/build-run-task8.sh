@@ -31,17 +31,36 @@ echo $SLURM_NTASKS_PER_NODE
 echo "Number of tasks per socket:"
 echo $SLURM_NTASKS_PER_SOCKET
 
-make clean
+# make clean
 make task8
 
 echo " "
 echo "Task 8"
 
+# This hostfile approach was a recommendation from GPT to control allocations. This is NOT original work.
+node_prefix=$(echo $SLURM_JOB_NODELIST | sed 's/\[.*$//')  # Extracts the prefix part (e.g., 'r918u05n')
+node_indices=$(echo $SLURM_JOB_NODELIST | grep -oP '\[\K[^\]]+')  # Extracts the indices part (e.g., '01-04')
+
+IFS=',' read -ra ADDR <<< $(echo $node_indices | sed 's/-/../')  # Converts indices to a Bash range
+
+nodes=()  # Array to hold the expanded node names
+for i in $(eval echo {${ADDR[0]}}); do
+    nodes+=("$node_prefix$i")  # Constructs full node names and adds them to the array
+done
+
+
+# Create the hostfile
+echo "${nodes[0]} slots=1" > myhostfile
+for i in {1..3}; do
+    echo "${nodes[i]} slots=2" >> myhostfile
+done
+
+
 # Run the application with the manager task alone on the first node and two tasks per node on the other nodes
 for k in 1 2 3
 do 
     # Run the MPI program with the custom hostfile
-    time mpirun --report-bindings -np 7 ./bin/task8
+    time mpirun --report-bindings -hostfile myhostfile -np 7 ./bin/task8
 done
 
 echo "All Done!"
