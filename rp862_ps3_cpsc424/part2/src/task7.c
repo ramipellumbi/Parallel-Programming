@@ -98,12 +98,11 @@ int main(int argc, char **argv)
             gemm(block_size, N, blockA, blockB, blockC, ((rank - step + size) % size) * block_size);
 
             MPI_Wait(&ring_pass_requests[0], MPI_STATUS_IGNORE);
+            MPI_Wait(&ring_pass_requests[1], MPI_STATUS_IGNORE);
 
             double *swap = blockB;
             blockB = tempB;
             tempB = swap;
-
-            MPI_Wait(&ring_pass_requests[1], MPI_STATUS_IGNORE);
         }
 
         // Gather the p blockC into C from the processes
