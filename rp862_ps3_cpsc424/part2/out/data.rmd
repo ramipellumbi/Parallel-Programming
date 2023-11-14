@@ -26,15 +26,6 @@ df <- results %>%
   summarise(time = mean(exe_time), .groups = "drop")
 
 df$time <- round(df$time, 3)
-df
-wide_df <- spread(df, key = N, value = time)
-
-kable(wide_df, format = "latex", booktabs = TRUE,
-      caption = "Blocking Collectives - Average Performance") %>%
-  kable_styling(bootstrap_options = c("striped", "hover"),
-                full_width = FALSE,
-                font_size = 12,
-                position = "left")
 ```
 
 ```{r}
@@ -140,6 +131,56 @@ g6
 
 # Save the plot
 ggsave("./part2/out/np-6.pdf", plot = g6, dpi = 300, width = 6, height = 8)
+```
+
+```{r}
+t7 <- df %>%
+  filter(program == "task7" | program == "task4")
+
+wide_df <- spread(t7, key = N, value = time) %>%
+  select(-program)
+
+kable(wide_df, format = "latex", booktabs = TRUE,
+      caption = "Non Blocking Collectives Optimized - Average Performance (s)") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"),
+                full_width = FALSE,
+                font_size = 12,
+                position = "left")
+
+# Create reference data frame
+ref_df <- t7 %>%
+  select(np, N) %>%
+  distinct() %>%
+  arrange(N, np) %>%
+  left_join(baseline_times, by = "N") %>%
+  mutate(ref_time = time / np, time) %>%
+  mutate(l_time = log2(ref_time))
+
+# Plotting with ggplot
+g7 <- ggplot(t7, aes(x = np, y = log2(time), color = as.factor(N))) +
+  geom_point(size = 3) +
+  geom_line(data = ref_df,
+            aes(x = np,
+                y = log2(ref_time),
+                color = as.factor(N)),
+            linetype = "dashed") +
+  labs(x = "Number of Processes (p)",
+       y = "Average Performance (log2 s)",
+       color = "Problem Size (N)",
+       title = "Log2 Performance vs. Number of Processes") +
+  theme_pub() + # Assuming you have a theme_pub() defined elsewhere
+  theme(
+    legend.position = "bottom",
+    legend.title = element_text(size = 12),
+    legend.text = element_text(size = 10),
+    plot.title = element_text(size = 16, face = "bold"),
+    axis.title = element_text(size = 14),
+    axis.text = element_text(size = 12)
+  )
+g7
+
+# Save the plot
+ggsave("./part2/out/np-7.pdf", plot = g7, dpi = 300, width = 6, height = 8)
 ```
 
 ```{r}

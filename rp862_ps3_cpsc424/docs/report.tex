@@ -177,6 +177,198 @@ For part 2, the output files generated from running the code by submitting the r
 stored in the \texttt{out} directory. 
 
 \section{MPI Basics}
+\subsection{Task 1: Basic Communication Between Processes}
+In task 1, we simply run the provided \texttt{task1.c} code. We observe that 
+the print statements and appear in first-come-first-served order.
+\begin{verbatim}
+    Node List:
+    r918u05n[01-02]
+    ntasks-per-node =  2
+    
+    Run 1
+    Message printed by manager: Total elapsed time is 0.005460 seconds.
+    From process 2: I worked for 5 seconds after receiving the following message:
+        Hello, from process 0.
+    From process 3: I worked for 10 seconds after receiving the following message:
+        Hello, from process 0.
+    From process 1: I worked for 15 seconds after receiving the following message:
+        Hello, from process 0.
+    real	0m15.668s
+    user	0m0.143s
+    sys	0m0.316s
+    
+    Run 2
+    Message printed by manager: Total elapsed time is 0.006188 seconds.
+    From process 2: I worked for 5 seconds after receiving the following message:
+        Hello, from process 0.
+    From process 3: I worked for 10 seconds after receiving the following message:
+        Hello, from process 0.
+    From process 1: I worked for 15 seconds after receiving the following message:
+        Hello, from process 0.
+    real	0m15.779s
+    user	0m0.146s
+    sys	0m0.318s
+    
+    Run 3
+    Message printed by manager: Total elapsed time is 0.007760 seconds.
+    From process 2: I worked for 5 seconds after receiving the following message:
+        Hello, from process 0.
+    From process 3: I worked for 10 seconds after receiving the following message:
+        Hello, from process 0.
+    From process 1: I worked for 15 seconds after receiving the following message:
+        Hello, from process 0.
+    real	0m15.614s
+    user	0m0.142s
+    sys	0m0.301s
+\end{verbatim}
+
+\subsection{Task 2: Handling Prints in the Manager}
+Here, we modify the provided \texttt{task1.c} remove prints from the non-manager 
+processes and instead have the manager print out the messages in rank order. To 
+handle this, each worker now sends its message back to the manager:
+\begin{lstlisting}
+    sprintf(message, "Hello manager, from process %d after working %d seconds.",
+             rank, worktime);
+    /* Send message back to manager */
+    MPI_Send(message, strlen(message) + 1, MPI_CHAR, 0, type, MPI_COMM_WORLD);
+\end{lstlisting}
+which waits for them like so
+\begin{lstlisting}
+    /* Receive messages from the workers */
+    for (size_t i = 1; i < size; i++)
+    {
+        MPI_Recv(message, 100, MPI_CHAR, i, type, MPI_COMM_WORLD, &status);
+        sleep(3);
+        printf("Message from process %d: %s\n", i, message);
+    }
+\end{lstlisting}
+The print out of this program correctly shows the messages printing out in rank order:
+\begin{verbatim}
+    Node List:
+    r918u05n[01-02]
+    ntasks-per-node =  2
+
+    Run 1
+    Message from process 1: Hello manager, from process 1 after working 15 seconds.
+    Message from process 2: Hello manager, from process 2 after working 5 seconds.
+    Message from process 3: Hello manager, from process 3 after working 10 seconds.
+    Message printed by manager: Total elapsed time is 24.021217 seconds.
+    real	0m24.974s
+    user	0m15.186s
+    sys	0m0.231s
+    
+    Run 2
+    Message from process 1: Hello manager, from process 1 after working 5 seconds.
+    Message from process 2: Hello manager, from process 2 after working 10 seconds.
+    Message from process 3: Hello manager, from process 3 after working 15 seconds.
+    Message printed by manager: Total elapsed time is 18.012530 seconds.
+    real	0m18.572s
+    user	0m9.184s
+    sys	0m0.281s
+    
+    Run 3
+    Message from process 1: Hello manager, from process 1 after working 15 seconds.
+    Message from process 2: Hello manager, from process 2 after working 10 seconds.
+    Message from process 3: Hello manager, from process 3 after working 5 seconds.
+    Message printed by manager: Total elapsed time is 24.000228 seconds.
+    real	0m24.574s
+    user	0m15.176s
+    sys	0m0.219s
+\end{verbatim}
+
+\subsection{Task 3: Consistent Performance}
+In \texttt{task2.c}, we observe a different elapsed time based on the work 
+done by each process. Since the receive is waiting on the ranks in rank order, 
+there are scenarios where there is not an efficient overlap between simulated work and 
+communication. To remedy this, the manager's receive is changed to any source 
+and the messages are stored in a new array of messages instantiated by the manager. 
+We use the \texttt{status.MPI\_SOURCE} from the status of the receive to appropriately 
+place into the array. Concretely, the manager now does the following.
+\begin{lstlisting}
+    if (rank == 0)
+    {
+        char **messages = (char **)malloc((size - 1) * sizeof(char *));
+        for (int i = 0; i < size - 1; ++i)
+        {
+            messages[i] = (char *)malloc(100 * sizeof(char));
+        }
+
+        sparm = rwork(0, 0); // initialize the workers' work times
+
+        /* Create the message using sprintf */
+        sprintf(message, "Hello, from process %d.", rank);
+
+        MPI_Barrier(MPI_COMM_WORLD);
+        wct0 = MPI_Wtime();
+
+        /* Send the message to all the workers, which is where the work happens */
+        for (i = 1; i < size; i++)
+        {
+            MPI_Send(message, strlen(message) + 1, MPI_CHAR, i, type, MPI_COMM_WORLD);
+            MPI_Send(&sparm, 1, MPI_INT, i, type, MPI_COMM_WORLD);
+        }
+
+        // Receive messages from workers as they complete
+        for (int i = 1; i < size; i++)
+        {
+            MPI_Recv(message, 100, MPI_CHAR, MPI_ANY_SOURCE, type, MPI_COMM_WORLD, &status);
+            sleep(3); // Simulate post processing
+            strcpy(messages[status.MPI_SOURCE - 1], message);
+        }
+
+        /* print messages */
+        for (size_t i = 1; i < size; i++)
+        {
+            printf("Message from process %d: %s\n", i, messages[i - 1]);
+        }
+
+        wct1 = MPI_Wtime();
+        // timing(&wct1, &cput); // get the end time using the original timing routine
+        total_time = wct1 - wct0;
+        printf("Message printed by manager: Total elapsed time is %f seconds.\n", total_time);
+
+        for (int i = 0; i < size - 1; i++)
+        {
+            free(messages[i]);
+        }
+        free(messages);
+    }
+\end{lstlisting}
+The printout from this execution observed consistent, optimal runtime:
+\begin{verbatim}
+    Node List:
+    r918u05n[01-02]
+    ntasks-per-node =  2
+    
+    Run 1
+    Message from process 1: Hello manager, from process 1 after working 15 seconds.
+    Message from process 2: Hello manager, from process 2 after working 5 seconds.
+    Message from process 3: Hello manager, from process 3 after working 10 seconds.
+    Message printed by manager: Total elapsed time is 18.001310 seconds.
+    real	0m18.730s
+    user	0m9.118s
+    sys	0m0.201s
+    
+    Run 2
+    Message from process 1: Hello manager, from process 1 after working 5 seconds.
+    Message from process 2: Hello manager, from process 2 after working 15 seconds.
+    Message from process 3: Hello manager, from process 3 after working 10 seconds.
+    Message printed by manager: Total elapsed time is 18.000172 seconds.
+    real	0m18.589s
+    user	0m9.130s
+    sys	0m0.300s
+    
+    Run 3
+    Message from process 1: Hello manager, from process 1 after working 10 seconds.
+    Message from process 2: Hello manager, from process 2 after working 5 seconds.
+    Message from process 3: Hello manager, from process 3 after working 15 seconds.
+    Message printed by manager: Total elapsed time is 18.000061 seconds.
+    real	0m18.584s
+    user	0m9.107s
+    sys	0m0.267s
+\end{verbatim}
+It is evident that the post processing time is better overlapped with the communication by communicating 
+in this way, thus leading to a faster runtime.
 
 \section{Parallel Matrix Multiplication}
 At a high level, we have input $N \times N$ matrices $A$ and $B$, and an output $N \times N$ matrix $C$..
@@ -211,7 +403,7 @@ The first attempt at this algorithm was utilizing MPI's blocking collectives. Na
     \item The manager process initializes matrices $A$ and $B$ with random double
     precision values and creates an empty matrix $C$ to store the result.
     \item \texttt{MPI\_Scatter} is used to distribute the blockes of $A$, $B$, and $C$ across all processes.
-    \item Each process computes a partial result by multiplying its block of A with the corresponding block of B and stores it in \texttt{multiply\_result}.
+    \item Each process computes a partial result by multiplying its block of A with the corresponding block of B and stores it in the appropriate sub-block of \texttt{blockC}.
     \item The partial results are stored in the local block of matrix C, \texttt{blockC}.
     \item Processes then pass their block of $B$ to the next process using \texttt{MPI\_Send} and \texttt{MPI\_Recv}.
     \begin{itemize}
@@ -221,7 +413,7 @@ The first attempt at this algorithm was utilizing MPI's blocking collectives. Na
     \end{itemize}
     \item After all computations complete, the processes gather their computed blocks into $C$ using \texttt{MPI\_Gather}.
 \end{enumerate}
-The results of this approach are in Table 1. 
+The results of this approach are in Table 1 and Figure 1. 
 \begin{table}[H]
     \centering
     \caption{Blocking Collectives - Average Performance (s)}
@@ -230,18 +422,17 @@ The results of this approach are in Table 1.
     \toprule
     p/N  & 1000 & 2000 & 4000 & 8000\\
     \midrule
-    1 & 0.313 & 2.806 & 39.271 & 327.932\\
-    2 & 0.210 & 1.697 & 21.191 & 169.081\\
-    4 & 0.141 & 0.836 & 10.058 & 85.685\\
-    8 & 0.093 & 0.517 & 4.083 & 43.770\\
+    1 & 0.320 & 3.315 & 40.153 & 328.265\\
+    2 & 0.213 & 1.828 & 21.412 & 168.646\\
+    4 & 0.138 & 0.852 & 10.187 & 86.116\\
+    8 & 0.099 & 0.517 & 4.048 & 43.899\\
     \bottomrule
     \end{tabular}
     \caption*{Comparing MPI blocking collectives to serial performance as process count increases.}
 \end{table}
-\noindent Graphically:
 \begin{figure}[H]
    \centering
-   \includegraphics[scale=0.7]{../part2/out/np.pdf} 
+   \includegraphics[scale=0.4]{../part2/out/np.pdf} 
    \caption{Blocking Communication: Log2 Performance vs. Number of Processes}
 \end{figure}
 \noindent The dashed line represents a doubling in performance (halving the runtime) 
@@ -272,17 +463,17 @@ The performance is seen in Table 2 and Figure 2.
     \toprule
     p/N & 1000 & 2000 & 4000 & 8000\\
     \midrule
-    1 & 0.313 & 2.806 & 39.271 & 327.932\\
-    2 & 0.206 & 1.653 & 21.036 & 168.987\\
-    4 & 0.128 & 0.809 & 9.908 & 85.196\\
-    8 & 0.079 & 0.480 & 4.050 & 43.294\\
+    1 & 0.320 & 3.315 & 40.153 & 328.265\\
+    2 & 0.207 & 1.689 & 20.964 & 168.317\\
+    4 & 0.126 & 0.816 & 9.993 & 85.030\\
+    8 & 0.081 & 0.483 & 3.772 & 43.284\\
     \bottomrule
     \end{tabular}
     \caption*{Comparing MPI non blocking collectives to serial performance as process count increases.}
 \end{table}
 \begin{figure}[H]
    \centering
-   \includegraphics[scale=0.7]{../part2/out/np-6.pdf} 
+   \includegraphics[scale=0.4]{../part2/out/np-6.pdf} 
    \caption{Non Blocking Communication: Log2 Performance vs. Number of Processes}
 \end{figure}
 \noindent The performance assessment here is precisely that of the blocking collectives. Since 
@@ -290,6 +481,60 @@ very little was changed in terms of computation and communication, we expect per
 to be about similar, as observed.
 
 \subsection*{Task 7: Overlapping Computation and Communication}
+Next, we aim to overlap communication and computation. The following items were considered:
+\begin{enumerate}
+    \item Load Balancing: ideally, the work is evenly distributed among all 
+    processes. If some processes finish their work too early, they will be idle while 
+    waiting for the others to finish. This is not ideal.
+    \item Communication Minimization: We should communicate as little as needed for complete computation.
+    \item Overlap: since the \texttt{gemm} function for multiplication does not modify the \texttt{blockB} buffer, 
+    we can overlap the send + receive and computation.
+\end{enumerate}
+The following is the updated ring-loop algorithm:
+\begin{lstlisting}
+    for (int step = 0; step < size; step++)
+    {
+        MPI_Irecv(tempB, size_BLOCKxN, MPI_DOUBLE, prev_rank, 0, MPI_COMM_WORLD, &ring_pass_requests[0]);
+        MPI_Isend(blockB, size_BLOCKxN, MPI_DOUBLE, next_rank, 0, MPI_COMM_WORLD, &ring_pass_requests[1]);
+
+        gemm(block_size, N, blockA, blockB, blockC, ((rank - step + size) % size) * block_size);
+
+        MPI_Wait(&ring_pass_requests[0], MPI_STATUS_IGNORE);
+
+        double *swap = blockB;
+        blockB = tempB;
+        tempB = swap;
+
+        MPI_Wait(&ring_pass_requests[1], MPI_STATUS_IGNORE);
+    }
+\end{lstlisting}
+Table 3 and Figure 3 show the performance of these changes:
+\begin{table}[H]
+    \centering
+    \caption{Non Blocking Collectives - Average Performance (s)}
+    \fontsize{12}{14}\selectfont
+    \begin{tabular}[t]{rrrrr}
+    \toprule
+    np & 1000 & 2000 & 4000 & 8000\\
+    \midrule
+    1 & 0.320 & 3.315 & 40.153 & 328.265\\
+    2 & 0.206 & 1.647 & 21.035 & 168.214\\
+    4 & 0.135 & 0.816 & 9.970 & 85.009\\
+    8 & 0.076 & 0.481 & 4.034 & 43.118\\
+    \bottomrule
+    \end{tabular}
+\end{table}
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.6]{../part2/out/np-7.pdf} 
+    \caption{Non Blocking Communication Optimized: Log2 Performance vs. Number of Processes}
+ \end{figure}
+\noindent We observe roughly the same performance as in task 6. Since each multiply takes the same 
+time we are well load balanced and there is minimal idle time by any one process. Moreover, 
+we do not overly communicate and we overlap the communication with computation as described. 
+Since the communication is such a small amount of the total processing time, we do not expect 
+much improvement in performance for this load balanced problem (since any optimizations 
+would really come from the multiplication being optimized).
 
 \subsection*{Task 8: Dealing with Non Uniform Buffer Sizes}
 Lastly, we modify the blocking collectives code to handle the case where $N$ 
@@ -317,30 +562,52 @@ is not divisible by $p$. The following had to be considered (in continuation fro
             \item An $\texttt{floor}(N/p) \times N$ \texttt{blockA} and an $N \times (\texttt{floor}(N/p) + 1)$ \texttt{blockB}.
             \item An $\texttt{floor}(N/p) \times N$ \texttt{blockA} and an $N \times \texttt{floor}(N/p)$ \texttt{blockB}.
         \end{enumerate}
-        To handle this multiply, each process has an array \texttt{multiply\_result} of the maximum possible multiply result size that it allocates,
-        i.e., $(\texttt{floor}(N/p) + 1) \times (\texttt{floor}(N/p) + 1)$.
     \end{itemize}
     \item At step $i$ in the ring swap, process $p$ is working on the \texttt{blockB} initially allocated to rank \texttt{(rank - i + p) \% p}.
     The size of each ranks initial allocation is kept track of to appropriately index the \texttt{blockB} array for multiplication 
-    (since it is allocated to the maximum possible size it may have data in it we do not want). The computed \texttt{multiply\_result} is appropriately placed in \texttt{blockC}, offset 
-    by the appropriate index relative to the initial allocations. 
+    (since it is allocated to the maximum possible size it may have data in it we do not want). The result of the multiply is placed in the correct sub-block of \texttt{blockC}.
+
 \end{itemize}
-The resulting code is an algorithm that produces 
-    the following performance and $F$-norm on an $N = 7633$, $p = 7$ program:
-    \begin{table}[H]
-        \centering
-        \caption{Non Uniform Size Allocation with Blocking Collectives}
-        \fontsize{12}{14}\selectfont
-        \begin{tabular}[t]{rrrr}
-        \toprule
-        p & N & time & F-norm\\
-        \midrule
-        7 & 7633 & 43.22639 & 1.535e-09\\
-        \bottomrule
-        \end{tabular}
+The resulting code is an algorithm that produces the following performance and 
+$F$-norm on an $N = 7633$, $p = 7$ program run on 4 nodes (the manager alone 
+on one node and the other 3 nodes having two processes):\footnote{
+    The distribution of the processes is done with a hostfile and was done via 
+    a back and forth consultation with ChatGPT. The resource allocation with the 
+    hostfile is NOT original work. The script is in \texttt{build-run-task8.sh}.
+}
+\begin{table}[H]
+    \centering
+    \caption{Non Uniform Size Allocation with Blocking Collectives}
+    \fontsize{12}{14}\selectfont
+    \begin{tabular}[t]{rrrr}
+    \toprule
+    p & N & time & F-norm\\
+    \midrule
+    7 & 7633 & 41.70652 & 1.535e-09\\
+    \bottomrule
+    \end{tabular}
 \end{table}
+\noindent Here is a sample of reported bindings
+\begin{verbatim}
+Task 8
+[r918u05n01.grace.ycrc.yale.edu:1515798] MCW rank 0 bound to socket 0[core 0[hwt 0]]: [B][.]
+[r918u05n03.grace.ycrc.yale.edu:636934] MCW rank 3 bound to socket 0[core 0[hwt 0]]: [B][.]
+[r918u05n03.grace.ycrc.yale.edu:636934] MCW rank 4 bound to socket 1[core 1[hwt 0]]: [.][B]
+[r918u05n02.grace.ycrc.yale.edu:380664] MCW rank 1 bound to socket 0[core 0[hwt 0]]: [B][.]
+[r918u05n02.grace.ycrc.yale.edu:380664] MCW rank 2 bound to socket 1[core 1[hwt 0]]: [.][B]
+[r918u05n04.grace.ycrc.yale.edu:1996065] MCW rank 5 bound to socket 0[core 0[hwt 0]]: [B][.]
+[r918u05n04.grace.ycrc.yale.edu:1996065] MCW rank 6 bound to socket 1[core 1[hwt 0]]: [.][B]
+\end{verbatim}
+We see that the algorithm runs in a reasonably expected time and produces near 
+0 $F$-norm.
 
 \section{Conclusion}
+In conclusion, we have demonstrated the effectiveness of OpenMPI for parallel matrix multiplication.
+Key insights include the significance of balancing computational load and communication overhead, 
+particularly in larger matrix computations. The analysis revealed that while increasing the 
+number of processors generally enhances performance, the impact varies with the problem size, 
+indicating the necessity for a parallelization strategy that is based on the problems
+specific computational requirements. 
 
 \end{document}
 
