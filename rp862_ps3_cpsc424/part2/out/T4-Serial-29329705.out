@@ -1,0 +1,73 @@
+The following modules were not unloaded:
+  (Use "module --force purge" to unload all):
+
+  1) StdEnv
+
+Currently Loaded Modules:
+  1) StdEnv                        (S)   9) libpciaccess/0.16-GCCcore-10.2.0
+  2) GCCcore/10.2.0                     10) hwloc/2.2.0-GCCcore-10.2.0
+  3) zlib/1.2.11-GCCcore-10.2.0         11) UCX/1.9.0-GCCcore-10.2.0
+  4) binutils/2.35-GCCcore-10.2.0       12) libfabric/1.11.0-GCCcore-10.2.0
+  5) iccifort/2020.4.304                13) OpenMPI/4.0.5-iccifort-2020.4.304
+  6) numactl/2.0.13-GCCcore-10.2.0      14) iompi/2020b
+  7) XZ/5.2.5-GCCcore-10.2.0            15) imkl/2020.4.304-iompi-2020b
+  8) libxml2/2.9.10-GCCcore-10.2.0      16) iomkl/2020b
+
+  Where:
+   S:  Module is Sticky, requires --force to unload or purge
+
+ 
+
+/home/cpsc424_rp862/Desktop/cpsc-524-parallel-programming/rp862_ps3_cpsc424/part2
+r918u05n01
+1
+SRC_FILES = src/matmul.c src/serial.c src/task5.c src/task6.c src/task7.c src/task8.c src/timing.c src/utilities.c
+OBJ_FILES =  obj/matmul.o  obj/serial.o  obj/task5.o  obj/task6.o  obj/task7.o  obj/task8.o  obj/timing.o  obj/utilities.o
+icc -g -O3 -xHost -fno-alias -std=c99 -I include -c src/serial.c -o obj/serial.o	
+mpicc -g -O3 -xHost -fno-alias -std=c99 -I include -c src/matmul.c -o obj/matmul.o
+icc -g -O3 -xHost -fno-alias -std=c99 -I include obj/serial.o obj/matmul.o obj/timing.o obj/utilities.o -o bin/serial
+
+SLURM_NTASKS_PER_SOCKET not set
+SLURM_NTASKS_PER_SOCKET not set
+SLURM_NTASKS_PER_SOCKET not set
+SLURM_NTASKS_PER_SOCKET not setMatrix multiplication times:
+   N      TIME (secs)    F-norm of Error
+ -----   -------------  -----------------
+   1000       0.3253     0.000000000032
+   2000       3.7239     0.000000000134
+   4000      40.9798     0.000000000504
+   8000     328.7877     0.000000001930
+
+real	6m15.672s
+user	6m13.987s
+sys	0m0.543s
+
+SLURM_NTASKS_PER_SOCKET not set
+SLURM_NTASKS_PER_SOCKET not set
+SLURM_NTASKS_PER_SOCKET not set
+SLURM_NTASKS_PER_SOCKET not setMatrix multiplication times:
+   N      TIME (secs)    F-norm of Error
+ -----   -------------  -----------------
+   1000       0.3169     0.000000000032
+   2000       2.8485     0.000000000134
+   4000      39.7974     0.000000000504
+   8000     328.0279     0.000000001930
+
+real	6m12.841s
+user	6m11.208s
+sys	0m0.547s
+
+SLURM_NTASKS_PER_SOCKET not set
+SLURM_NTASKS_PER_SOCKET not set
+SLURM_NTASKS_PER_SOCKET not set
+SLURM_NTASKS_PER_SOCKET not setMatrix multiplication times:
+   N      TIME (secs)    F-norm of Error
+ -----   -------------  -----------------
+   1000       0.3176     0.000000000032
+   2000       3.3726     0.000000000134
+   4000      39.6827     0.000000000504
+   8000     327.9790     0.000000001930
+
+real	6m13.210s
+user	6m11.566s
+sys	0m0.562s
