@@ -145,13 +145,12 @@ you are in the root of the project directory.
     The commands \texttt{sbatch runtask1.sh}, \texttt{sbatch runtask2.sh}, 
     and \texttt{sbatch runtask3.sh} will compile and run the files 
     \texttt{task1.c}, \texttt{task2.c}, and \texttt{task3.c}, respectively.
-    The output of the experiments will be in \texttt{out/serial.csv}.
     
     \item \textbf{Part 2: Parallel Matrix Multiplication}
     All part 2 related code is in the \texttt{part2/} directory.
     There are multiple programs run in Part 2: 
     \begin{itemize}
-        \item \texttt{serial.c} Simple, serial, matrix multiplication.
+        \item \texttt{serial.c} Simple, serial, matrix multiplication. Use \texttt{build-run-serial.sh} script to run.
         \item \texttt{task5.c}: Parallel matrix multiplication of square matrices with blocking collectives. 
         Assumes that the number of rows is evenly divisible by the number of processes.
         \item \texttt{task6.c}: Parallel matrix multiplication of square matrices with non blocking collectives. 
@@ -161,8 +160,9 @@ you are in the root of the project directory.
         \item \texttt{taks8.c} Parallel matrix multiplication of square matrices with blocking collectives. 
         Appropriately handles when the number of rows is not evenly divisible by the number of processes.
     \end{itemize}
-    To run all the MPI experiments, execute \texttt{sbatch build-run-mpi.sh}. The results are stored in 
-    \texttt{out/omp.csv}.
+    To run all the MPI experiments, execute \texttt{sbatch build-run-mpi.sh} from the \texttt{part2} directory. Additionally, 
+    each task has its own individual run script: \texttt{build-run-taskX.c}, where \texttt{X} is one of $5,6,7$, or $8$.
+    The results will be stored in \texttt{part2/out/results.csv}.
 \end{itemize}
 
 \subsection{Post-Build Objects and Executables}
