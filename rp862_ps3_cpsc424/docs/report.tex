@@ -499,7 +499,7 @@ The following is the updated ring-loop algorithm:
         MPI_Irecv(tempB, size_BLOCKxN, MPI_DOUBLE, prev_rank, 0, MPI_COMM_WORLD, &ring_pass_requests[0]);
         MPI_Isend(blockB, size_BLOCKxN, MPI_DOUBLE, next_rank, 0, MPI_COMM_WORLD, &ring_pass_requests[1]);
 
-        // perform multiply of permanant block of A on this process with current block of B on this process
+        // multiply permanant block of A on this process with current block of B on this process
         gemm(block_size, N, blockA, blockB, blockC, ((rank - step + size) % size) * block_size);
 
         MPI_Wait(&ring_pass_requests[0], MPI_STATUS_IGNORE);
@@ -593,7 +593,8 @@ on one node and the other 3 nodes having two processes):\footnote{
     \bottomrule
     \end{tabular}
 \end{table}
-\noindent Here is a sample of reported bindings
+\noindent We see that the algorithm runs in a reasonably expected time and produces near 0 $F$-norm.
+Here is a sample of reported bindings
 \begin{verbatim}
 Task 8
 [r918u05n01.grace.ycrc.yale.edu:1515798] MCW rank 0 bound to socket 0[core 0[hwt 0]]: [B][.]
@@ -604,8 +605,6 @@ Task 8
 [r918u05n04.grace.ycrc.yale.edu:1996065] MCW rank 5 bound to socket 0[core 0[hwt 0]]: [B][.]
 [r918u05n04.grace.ycrc.yale.edu:1996065] MCW rank 6 bound to socket 1[core 1[hwt 0]]: [.][B]
 \end{verbatim}
-We see that the algorithm runs in a reasonably expected time and produces near 
-0 $F$-norm.
 
 \section{Conclusion}
 In conclusion, we have demonstrated the effectiveness of OpenMPI for parallel matrix multiplication.
