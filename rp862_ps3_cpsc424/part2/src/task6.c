@@ -52,15 +52,12 @@ int main(int argc, char **argv)
         int size_BLOCKxN = block_size * N;              // total number of doubles in a block
         int size_BLOCKxBLOCK = block_size * block_size; // total number of doubles in the multiplication of blockA and blockB
 
-        // all processes allocate memory of their blocks, secondary B buffer, and multiply_result
+        // all processes allocate memory of their blocks and secondary B buffer
         double *blockA = (double *)calloc(size_BLOCKxN, sizeof(double));
         double *blockB = (double *)calloc(size_BLOCKxN, sizeof(double));
         double *blockC = (double *)calloc(size_BLOCKxN, sizeof(double));
-
         // tempB is used for each process to receive data from prior process
         double *tempB = (double *)calloc(size_BLOCKxN, sizeof(double));
-        // multiply_result is used to store the result of blockA * blockB
-        double *multiply_result = (double *)calloc(size_BLOCKxBLOCK, sizeof(double));
 
         // only the manager initializes A, B, C only
         if (rank == 0)
@@ -95,16 +92,7 @@ int main(int argc, char **argv)
         for (int step = 0; step < size; step++)
         {
             // perform multiply of permanant block of A on this process with current block of B on this process
-            gemm(block_size, N, blockA, blockB, multiply_result);
-            // place the (N/size) x (N/size) multiply_result into the right place in the block of C on this process
-            for (int i = 0; i < block_size; i++)
-            {
-                for (int j = 0; j < block_size; j++)
-                {
-                    int column_offset = j + ((prev_rank - step + 1 + size) % size) * block_size;
-                    blockC[i * N + column_offset] = multiply_result[i * block_size + j];
-                }
-            }
+            gemm(block_size, N, blockA, blockB, blockC, ((rank - step + size) % size) * block_size);
 
             // each process now hands its blockB to the next process in the ring
             if (rank % 2 == 0)
@@ -167,7 +155,6 @@ int main(int argc, char **argv)
         free(blockA);
         free(blockB);
         free(blockC);
-        free(multiply_result);
         free(tempB);
     }
 

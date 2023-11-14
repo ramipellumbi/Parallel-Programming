@@ -5,7 +5,7 @@
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=1
 #SBATCH --mem-per-cpu=7G
-#SBATCH --job-name=Serial
+#SBATCH --job-name=T4-Serial
 #SBATCH --output=out/%x-%j.out
 #SBATCH --time=30:00
 

@@ -52,15 +52,12 @@ int main(int argc, char **argv)
         int size_BLOCKxN = block_size * N;              // total number of doubles in a block
         int size_BLOCKxBLOCK = block_size * block_size; // total number of doubles in the multiplication of blockA and blockB
 
-        // all processes allocate memory of their blocks, secondary B buffer, and multiply_result
+        // all processes allocate memory of their blocks and secondary B buffer
         double *blockA = (double *)calloc(size_BLOCKxN, sizeof(double));
         double *blockB = (double *)calloc(size_BLOCKxN, sizeof(double));
         double *blockC = (double *)calloc(size_BLOCKxN, sizeof(double));
-
         // tempB is used for each process to receive data from prior process
         double *tempB = (double *)calloc(size_BLOCKxN, sizeof(double));
-        // multiply_result is used to store the result of blockA * blockB
-        double *multiply_result = (double *)calloc(size_BLOCKxBLOCK, sizeof(double));
 
         // only the manager initializes A, B, C only
         if (rank == 0)
@@ -89,8 +86,7 @@ int main(int argc, char **argv)
         MPI_Iscatter(C, size_BLOCKxN, MPI_DOUBLE, blockC, size_BLOCKxN, MPI_DOUBLE, 0, MPI_COMM_WORLD, &scatter_requests[2]);
 
         // wait for matrices A and B to scatter
-        MPI_Wait(&scatter_requests[0], MPI_STATUS_IGNORE);
-        MPI_Wait(&scatter_requests[1], MPI_STATUS_IGNORE);
+        MPI_Waitall(3, scatter_requests, MPI_STATUS_IGNORE);
 
         // Ring Passing B - MPI processes pass their block columns of B to the next higher-ranked process for processing
         for (int step = 0; step < size; step++)
@@ -99,18 +95,7 @@ int main(int argc, char **argv)
             MPI_Isend(blockB, size_BLOCKxN, MPI_DOUBLE, next_rank, 0, MPI_COMM_WORLD, &ring_pass_requests[1]);
 
             // perform multiply of permanant block of A on this process with current block of B on this process
-            gemm(block_size, N, blockA, blockB, multiply_result);
-            // at this point we need to C is scattered
-            MPI_Wait(&scatter_requests[2], MPI_STATUS_IGNORE);
-            // place the (N/size) x (N/size) multiply_result into the right place in the block of C on this process
-            for (int i = 0; i < block_size; i++)
-            {
-                for (int j = 0; j < block_size; j++)
-                {
-                    int column_offset = j + ((prev_rank - step + 1 + size) % size) * block_size;
-                    blockC[i * N + column_offset] = multiply_result[i * block_size + j];
-                }
-            }
+            gemm(block_size, N, blockA, blockB, blockC, ((rank - step + size) % size) * block_size);
 
             MPI_Wait(&ring_pass_requests[0], MPI_STATUS_IGNORE);
 
@@ -160,7 +145,6 @@ int main(int argc, char **argv)
         free(blockA);
         free(blockB);
         free(blockC);
-        free(multiply_result);
         free(tempB);
     }
 

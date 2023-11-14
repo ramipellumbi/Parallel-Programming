@@ -85,11 +85,8 @@ int main(int argc, char **argv)
     // every blockB is allocated to max possible size to make receiving from ranks more simple
     double *blockB = (double *)calloc(max_size_BLOCKxN, sizeof(double));
     double *blockC = (double *)calloc(sizes_BLOCKxN[rank], sizeof(double));
-
     // initialized to handle receiving the prior processes blockB - initialized to max possible size to make swapping simple
     double *tempB = (double *)calloc(max_size_BLOCKxN, sizeof(double));
-    // initialized to handle initial A with initial B - initialized to max possible size to make multiplying variable lengths simple
-    double *multiply_result = (double *)calloc(max_block_size * max_block_size, sizeof(double));
 
     // only the manager initializes A, B, C only
     if (rank == 0)
@@ -136,11 +133,7 @@ int main(int argc, char **argv)
         int previous_block_size = block_sizes[rank_receiving_from]; // this is the block_size from the receiving rank
         int current_block = block_sizes[rank_sending];              // this is the block_size this rank is currently handling
 
-        // perform multiply of the static block of A on this process with current block of B on this process
-        gemm_k(block_sizes[rank], N, current_block, blockA, blockB, multiply_result);
-
-        // The computed col_offset is where we offset to for placing multiply_result
-        // within blockC to account for variable block lengths
+        // The computed col_offset is where we offset to for placing the result in blockC to account for variable block lengths
         int cumulative_col_size = 0;
         for (int i = 0; i < rank_sending; ++i)
         {
@@ -148,15 +141,8 @@ int main(int argc, char **argv)
         }
         int col_offset = cumulative_col_size % N;
 
-        // place the multiply_result into the right place in the block of C on this process
-        for (int i = 0; i < block_sizes[rank]; i++)
-        {
-            for (int j = 0; j < current_block; j++)
-            {
-                int column_offset = j + col_offset;
-                blockC[i * N + column_offset] = multiply_result[i * current_block + j];
-            }
-        }
+        // perform multiply of the static block of A on this process with current block of B on this process
+        gemm_k(block_sizes[rank], N, current_block, blockA, blockB, blockC, col_offset);
 
         // each process now hands its blockB to the next process in the ring
         if (rank % 2 == 0)
@@ -219,7 +205,6 @@ int main(int argc, char **argv)
     free(blockA);
     free(blockB);
     free(blockC);
-    free(multiply_result);
     free(tempB);
 
     MPI_Finalize();
