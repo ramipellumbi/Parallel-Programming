@@ -1,0 +1,162 @@
+---
+title: "Data Exploration MPI"
+author: "Rami Pellumbi"
+date: "October 6, 2023"
+output:
+  pdf_document: default
+---
+
+```{r}
+library(knitr)
+library(scales)
+library(kableExtra)
+library(ggplot2)
+library(pubtheme)
+library(tidyverse)
+```
+
+```{r}
+results <- read_csv("./part2/out/results.csv", show_col_types = FALSE)
+```
+
+```{r}
+df <- results %>%
+  filter(np != 7) %>%
+  group_by(program, np, N) %>%
+  summarise(time = mean(exe_time), .groups = "drop")
+
+df$time <- round(df$time, 3)
+df
+wide_df <- spread(df, key = N, value = time)
+
+kable(wide_df, format = "latex", booktabs = TRUE,
+      caption = "Blocking Collectives - Average Performance") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"),
+                full_width = FALSE,
+                font_size = 12,
+                position = "left")
+```
+
+```{r}
+# Obtain a baseline time for np=2 for each N
+baseline_times <- df %>%
+  filter(np == 1) %>%
+  select(N, time)
+
+
+t5 <- df %>%
+  filter(program == "task5" | program == "task4")
+
+wide_df <- spread(t5, key = N, value = time) %>%
+  select(-program)
+
+kable(wide_df, format = "latex", booktabs = TRUE,
+      caption = "Blocking Collectives - Average Performance (s)") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"),
+                full_width = FALSE,
+                font_size = 12,
+                position = "left")
+
+# Create reference data frame
+ref_df <- t5 %>%
+  select(np, N) %>%
+  distinct() %>%
+  arrange(N, np) %>%
+  left_join(baseline_times, by = "N") %>%
+  mutate(ref_time = time / np, time) %>%
+  mutate(l_time = log2(ref_time))
+
+# Plotting with ggplot
+g <- ggplot(t5, aes(x = np, y = log2(time), color = as.factor(N))) +
+  geom_point(size = 3) +
+  geom_line(data = ref_df,
+            aes(x = np,
+                y = log2(ref_time),
+                color = as.factor(N)),
+            linetype = "dashed") +
+  labs(x = "Number of Processes (p)",
+       y = "Average Performance (log2 s)",
+       color = "Problem Size (N)",
+       title = "Log2 Performance vs. Number of Processes") +
+  theme_pub() + # Assuming you have a theme_pub() defined elsewhere
+  theme(
+    legend.position = "bottom",
+    legend.title = element_text(size = 12),
+    legend.text = element_text(size = 10),
+    plot.title = element_text(size = 16, face = "bold"),
+    axis.title = element_text(size = 14),
+    axis.text = element_text(size = 12)
+  )
+
+# Save the plot
+ggsave("./part2/out/np.pdf", plot = g, dpi = 300, width = 6, height = 8)
+```
+
+```{r}
+t6 <- df %>%
+  filter(program == "task6" | program == "task4")
+
+wide_df <- spread(t6, key = N, value = time) %>%
+  select(-program)
+
+kable(wide_df, format = "latex", booktabs = TRUE,
+      caption = "Non Blocking Collectives - Average Performance (s)") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"),
+                full_width = FALSE,
+                font_size = 12,
+                position = "left")
+
+# Create reference data frame
+ref_df <- t6 %>%
+  select(np, N) %>%
+  distinct() %>%
+  arrange(N, np) %>%
+  left_join(baseline_times, by = "N") %>%
+  mutate(ref_time = time / np, time) %>%
+  mutate(l_time = log2(ref_time))
+
+# Plotting with ggplot
+g6 <- ggplot(t6, aes(x = np, y = log2(time), color = as.factor(N))) +
+  geom_point(size = 3) +
+  geom_line(data = ref_df,
+            aes(x = np,
+                y = log2(ref_time),
+                color = as.factor(N)),
+            linetype = "dashed") +
+  labs(x = "Number of Processes (p)",
+       y = "Average Performance (log2 s)",
+       color = "Problem Size (N)",
+       title = "Log2 Performance vs. Number of Processes") +
+  theme_pub() + # Assuming you have a theme_pub() defined elsewhere
+  theme(
+    legend.position = "bottom",
+    legend.title = element_text(size = 12),
+    legend.text = element_text(size = 10),
+    plot.title = element_text(size = 16, face = "bold"),
+    axis.title = element_text(size = 14),
+    axis.text = element_text(size = 12)
+  )
+g6
+
+# Save the plot
+ggsave("./part2/out/np-6.pdf", plot = g6, dpi = 300, width = 6, height = 8)
+```
+
+```{r}
+t8 <- results %>%
+  filter(program == "task8") %>%
+  group_by(np, N) %>%
+  summarise(time = mean(exe_time), `F-norm` = mean(f_norm), .groups = "drop")
+
+t8
+
+wide_df <- spread(t8, key = N, value = time)
+
+kable(t8, format = "latex", booktabs = TRUE,
+      digits = 12,
+      caption = "Non Blocking Collectives - Average Performance (s)") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"),
+                full_width = FALSE,
+                font_size = 12,
+                position = "left")
+```
