@@ -44,6 +44,7 @@ double matrix_multiply_avx(double *A, double *B, double *C, int M, int N, int K,
         {
             int jB = j * N;
             int iC = i * N + j + offset;
+            C[iC] = 0;
 
             for (int k = 0; k < AVX_ITERS; k += PACKING_SIZE)
             {
@@ -54,10 +55,9 @@ double matrix_multiply_avx(double *A, double *B, double *C, int M, int N, int K,
                     B_for_multiply,
                     __m512_set1_pd(0.0));
 
-                // place the result into iC:iC+PACKING_SIZE
+                C[iC] += _mm512_reduce_add_pd(C_partial_result);
             }
 
-            C[iC] = 0;
             // cleanup loop
             for (int k = AVX_ITERS; k < N; k++)
             {

@@ -13,14 +13,6 @@ typedef struct Size
 int main(int argc, char **argv)
 {
     double *A, *B, *C;
-
-    Size f = {
-        M : 1000,
-        N : 1000,
-        K : 1000,
-    };
-
-    // TODO: generate non square matrix ground truths
     Size sizes[4] = {{
                          M : 1000,
                          N : 1000,
