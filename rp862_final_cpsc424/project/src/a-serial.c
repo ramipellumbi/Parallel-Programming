@@ -72,7 +72,7 @@ int main(int argc, char **argv)
 
         // Print a table row
         printf("  %5d    %9.4f  %17.12f\n", N, wctime, Fnorm);
-        write_data_to_file("out/results.csv", "1-serial", N, 1, wctime, Fnorm);
+        write_data_to_file("out/results.csv", "a-serial", N, 1, wctime, Fnorm);
 
         free(C);
     }

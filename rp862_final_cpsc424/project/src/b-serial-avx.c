@@ -1,4 +1,5 @@
 #include <matmul.h>
+#include <immintrin.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -56,8 +57,9 @@ int main(int argc, char **argv)
         int size_B = N * K;
         int size_C = M * K;
 
-        A = (double *)calloc(size_A, sizeof(double));
-        B = (double *)calloc(size_B, sizeof(double));
+        // Allocate size bytes of memory, aligned to the alignment specified in align, and return a pointer to the allocated memory.
+        double *A = (double *)_mm_malloc(M * K * sizeof(double), 64);
+        double *B = (double *)_mm_malloc(K * N * sizeof(double), 64);
         C = (double *)calloc(size_C, sizeof(double));
 
         fill_matrix(A, size_A);
@@ -65,14 +67,14 @@ int main(int argc, char **argv)
 
         double wctime = matrix_multiply_avx(A, B, C, M, N, K, 0);
 
-        free(A);
-        free(B);
+        _mm_free(A);
+        _mm_free(B);
 
         double Fnorm = compute_fnorm(files[run], C, size_C);
 
         // Print a table row
         printf("  %5d    %9.4f  %17.12f\n", N, wctime, Fnorm);
-        write_data_to_file("out/results.csv", "1-serial", N, 1, wctime, Fnorm);
+        write_data_to_file("out/results.csv", "b-serial-avx", N, 1, wctime, Fnorm);
 
         free(C);
     }
