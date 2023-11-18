@@ -14,4 +14,6 @@
  */
 double matrix_multiply_naive(double *A, double *B, double *C, int M, int N, int K, int offset);
 
+double matrix_multiply_avx(double *A, double *B, double *C, int M, int N, int K, int offset);
+
 #endif

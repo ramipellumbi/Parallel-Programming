@@ -18,6 +18,8 @@ double compute_fnorm(const char *filename, double *computed, int size_computed)
     f_norm = sqrt(f_norm);
 
     free(real);
+
+    return f_norm;
 }
 
 void fill_matrix(double *M, int size)

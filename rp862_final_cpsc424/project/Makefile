@@ -30,12 +30,12 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	$(CC_MPI) $(CFLAGS) -c $< -o $@
 
 # Specific rule for serial
-$(OBJ_DIR)/serial.o: $(SRC_DIR)/serial.c
+$(OBJ_DIR)/1-serial.o: $(SRC_DIR)/1-serial.c
 	@mkdir -p $(@D)
 	$(CC_SERIAL) $(CFLAGS) -c $< -o $@	
 
-1-serial: $(BIN_DIR)/serial
-$(BIN_DIR)/serial: $(OBJ_DIR)/serial.o $(MODULES)
+1-serial: $(BIN_DIR)/1-serial
+$(BIN_DIR)/1-serial: $(OBJ_DIR)/1-serial.o $(MODULES)
 	@mkdir -p $(BIN_DIR)
 	$(CC_SERIAL) $(CFLAGS) $^ -o $@
 

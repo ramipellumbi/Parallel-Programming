@@ -1,6 +1,8 @@
 #include <matmul.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
 #include <utilities.h>
 
 typedef struct Size
@@ -61,7 +63,7 @@ int main(int argc, char **argv)
         fill_matrix(A, size_A);
         fill_matrix(B, size_B);
 
-        double wctime = matrix_multiply_naive(A, B, C, M, N, K, 0);
+        double wctime = matrix_multiply_avx(A, B, C, M, N, K, 0);
 
         free(A);
         free(B);
