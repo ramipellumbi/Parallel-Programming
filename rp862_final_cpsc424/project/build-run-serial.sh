@@ -20,5 +20,5 @@ make -f Makefile-serial clean
 make -f Makefile-serial
 
 time ./bin/a-serial
-time ./bin/b-serial-avx
+time ./bin/b-serial-blocking
 

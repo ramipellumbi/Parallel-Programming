@@ -21,29 +21,6 @@ double matrix_multiply_naive(double *A, double *B, double *C, int M, int N, int 
     double cpu_start, cpu_end;
 
     timing(&wc_start, &cpu_start);
-    printf("Matrix A\n[");
-    for (int i = 0; i < M; i++)
-    {
-        printf("[");
-        for (int j = 0; j < N; j++)
-        {
-            printf("%f ,", A[i * N + j]);
-        }
-        printf("],\n");
-    }
-    printf("]\n");
-
-    printf("Matrix B\n[");
-    for (int j = 0; j < K; j++)
-    {
-        printf("[");
-        for (int i = 0; i < N; i++)
-        {
-            printf("%f ,", B[i * N + j]);
-        }
-        printf("],\n");
-    }
-    printf("]\n");
     for (int i = 0; i < M; i++)
     {
         int iA = i * N;
@@ -52,25 +29,12 @@ double matrix_multiply_naive(double *A, double *B, double *C, int M, int N, int 
             int jB = j * N;
             int iC = i * N + j;
 
-            C[iC] = 0;
             for (int k = 0; k < N; k++)
             {
                 C[iC] += A[iA + k] * B[jB + k];
             }
         }
     }
-
-    printf("Matrix C\n[");
-    for (int i = 0; i < M; i++)
-    {
-        printf("[");
-        for (int j = 0; j < K; j++)
-        {
-            printf("%f ,", C[i * N + j]);
-        }
-        printf("],\n");
-    }
-    printf("]\n");
     timing(&wc_end, &cpu_end);
     double elapsed_time = wc_end - wc_start;
 
@@ -116,13 +80,13 @@ int main(int argc, char **argv)
     printf("Matrix multiplication times:\n   N      TIME (secs)    F-norm of Error\n -----   -------------  -----------------\n");
 
     // Now run the four test cases
-    for (int run = 0; run < 1; run++)
+    for (int run = 0; run < 4; run++)
     {
         srand(12345);
         Size size = sizes[run];
-        int M = 4;
-        int N = 4;
-        int K = 4;
+        int M = size.M;
+        int N = size.N;
+        int K = size.K;
 
         int size_A = M * N;
         int size_B = N * K;
