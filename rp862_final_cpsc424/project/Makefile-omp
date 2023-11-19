@@ -1,6 +1,6 @@
-CC_SERIAL = icc
+CC = icc
 
-CFLAGS     = -g -O3 -xHost -fno-alias -std=c99 -I include
+CFLAGS     = -g -O3 -xHost -fno-alias -std=c99 -qopenmp -I include
 
 SRC_DIR 	= src
 OBJ_DIR 	= obj
@@ -11,7 +11,7 @@ TIMING 	  = $(OBJ_DIR)/timing.o
 UTILITIES = $(OBJ_DIR)/utilities.o
 MODULES   = $(TIMING) $(UTILITIES)
 
-EXECUTABLES = a-serial b-serial-blocking
+EXECUTABLES = c-omp
 
 # For debugging
 SRC_FILES = $(shell find $(SRC_DIR) -name '*.c')
@@ -26,17 +26,12 @@ $(info ALL = $(addprefix $(BIN_DIR)/, $(EXECUTABLES)))
 # general file rule
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	@mkdir -p $(@D)
-	$(CC_SERIAL) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@
 
-a-serial: $(BIN_DIR)/a-serial
-$(BIN_DIR)/a-serial: $(OBJ_DIR)/a-serial.o $(MODULES)
+c-omp: $(BIN_DIR)/c-omp
+$(BIN_DIR)/c-omp: $(OBJ_DIR)/c-omp.o $(MODULES)
 	@mkdir -p $(BIN_DIR)
-	$(CC_SERIAL) $(CFLAGS) $^ -o $@
-
-b-serial-blocking: $(BIN_DIR)/b-serial-blocking
-$(BIN_DIR)/b-serial-blocking: $(OBJ_DIR)/b-serial-blocking.o $(MODULES)
-	@mkdir -p $(BIN_DIR)
-	$(CC_SERIAL) $(CFLAGS) $^ -o $@
+	$(CC) $(CFLAGS) $^ -o $@
 
 clean:
 	rm -rf $(OBJ_DIR) $(BIN_DIR)

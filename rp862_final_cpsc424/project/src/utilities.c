@@ -22,14 +22,6 @@ double compute_fnorm(const char *filename, double *computed, int size_computed)
     return f_norm;
 }
 
-void fill_matrix(double *M, int size)
-{
-    for (int i = 0; i < size; i++)
-    {
-        M[i] = ((double)rand() / (double)RAND_MAX);
-    }
-}
-
 int get_environment_value(const char *env_name)
 {
     char *value_str = getenv(env_name);

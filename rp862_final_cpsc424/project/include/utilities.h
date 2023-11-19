@@ -1,11 +1,5 @@
-
-/**
- * Fill double[size] with random values
- *
- * @param M double[size] array
- * @param size of the M array
- */
-void fill_matrix(double *M, int size);
+#ifndef UTILITIES_H
+#define UTILITIES_H
 
 /**
  * Compute the Frobenius norm betweeen the known result matrix stored at filename
@@ -22,3 +16,5 @@ void write_data_to_file(const char *filename,
                         int np,
                         double exe_time,
                         double f_norm);
+
+#endif

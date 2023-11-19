@@ -1,9 +1,12 @@
+#include <math.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <timing.h>
 #include <utilities.h>
+
+static const int BLOCK_SIZE = 2;
 
 /**
  * Returns the wall clock time elapsed in the naive matrix multiplication between A and B
@@ -20,7 +23,6 @@ double matrix_multiply_naive(double *A, double *B, double *C, int M, int N, int 
     double wc_start, wc_end;
     double cpu_start, cpu_end;
 
-    timing(&wc_start, &cpu_start);
     printf("Matrix A\n[");
     for (int i = 0; i < M; i++)
     {
@@ -44,18 +46,61 @@ double matrix_multiply_naive(double *A, double *B, double *C, int M, int N, int 
         printf("],\n");
     }
     printf("]\n");
-    for (int i = 0; i < M; i++)
-    {
-        int iA = i * N;
-        for (int j = 0; j < K; j++)
-        {
-            int jB = j * N;
-            int iC = i * N + j;
 
-            C[iC] = 0;
-            for (int k = 0; k < N; k++)
+    timing(&wc_start, &cpu_start);
+
+    for (int ii = 0; ii < N; ii += BLOCK_SIZE)
+    {
+        for (int jj = 0; jj < N; jj += BLOCK_SIZE)
+        {
+            printf("Matrix A Block (i, j): (%d,%d)\n", ii, jj);
+            printf("[\n");
+            for (int i = ii; i < ii + BLOCK_SIZE; i++)
             {
-                C[iC] += A[iA + k] * B[jB + k];
+                printf("[");
+                for (int j = jj; j < jj + BLOCK_SIZE; j++)
+                {
+                    printf("%f ,", A[i * N + j]);
+                }
+                printf("],\n");
+            }
+            printf("]\n");
+
+            printf("Matrix B Block (i, j): (%d,%d)\n", ii, jj);
+            printf("[\n");
+            for (int i = ii; i < ii + BLOCK_SIZE; i++)
+            {
+                printf("[");
+                for (int j = jj; j < jj + BLOCK_SIZE; j++)
+                {
+                    printf("%f ,", B[j * N + i]);
+                }
+                printf("],\n");
+            }
+            printf("]\n");
+        }
+    }
+
+    for (int ii = 0; ii < N; ii += BLOCK_SIZE)
+    {
+        for (int jj = 0; jj < N; jj += BLOCK_SIZE)
+        {
+            for (int kk = 0; kk < N; kk += BLOCK_SIZE)
+            {
+                for (int i = ii; i < ii + BLOCK_SIZE; i++)
+                {
+                    int iA = i * N;
+                    for (int j = jj; j < jj + BLOCK_SIZE; j++)
+                    {
+                        int jB = j * N;
+                        int iC = i * N + j;
+                        C[iC] = 0;
+                        for (int k = kk; k < kk + BLOCK_SIZE; k++)
+                        {
+                            C[iC] += A[iA + k] * B[jB + k];
+                        }
+                    }
+                }
             }
         }
     }
@@ -71,6 +116,7 @@ double matrix_multiply_naive(double *A, double *B, double *C, int M, int N, int 
         printf("],\n");
     }
     printf("]\n");
+
     timing(&wc_end, &cpu_end);
     double elapsed_time = wc_end - wc_start;
 
@@ -150,7 +196,7 @@ int main(int argc, char **argv)
 
         // Print a table row
         printf("  %5d    %9.4f  %17.12f\n", N, wctime, Fnorm);
-        write_data_to_file("out/results.csv", "a-serial", N, 1, wctime, Fnorm);
+        write_data_to_file("out/results.csv", "b-serial", N, 1, wctime, Fnorm);
 
         free(C);
     }
