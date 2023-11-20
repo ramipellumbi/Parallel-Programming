@@ -85,7 +85,7 @@ int main(int argc, char **argv)
 
         // Print a table row
         printf("  %5d    %9.4f  %17.12f\n", size, wctime, Fnorm);
-        write_data_to_file("out/results.csv", "a-serial", size, 1, 1, wctime, Fnorm);
+        write_data_to_file("out/results-serial.csv", "a-serial", size, 1, 1, wctime, Fnorm);
 
         free(C);
     }

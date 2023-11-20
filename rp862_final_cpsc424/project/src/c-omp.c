@@ -7,119 +7,150 @@
 #include <utilities.h>
 #include <timing.h>
 
-static const int BLOCK_SIZE = 16;
-// alignas(512) static double blockA[BLOCK_SIZE * BLOCK_SIZE];
-// alignas(512) static double blockB[BLOCK_SIZE * BLOCK_SIZE];
-// alignas(512) static double blockC[BLOCK_SIZE * BLOCK_SIZE];
-// #pragma omp threadprivate(blockA, blockB, blockC)
+#define BLOCK_SIZE 32
 
 /**
- * Returns the wall clock time elapsed in the matrix multiplication between A and B
+ * Returns the wall clock time elapsed in the naive matrix multiplication between A and B
  *
- * @param A double[M*N] (row wise storage)
- * @param B double[N*K] (column wise storage)
- * @param C double[L] (row wise storage) where L >= M*K.
+ * @param A double[M*N] (row wise storage) -> first N entries are row 1
+ * @param B double[N*K] (column wise storage) -> first N entries are column 1
+ * @param C double[M*k] (row wise storage) -> first N entries are row 1
  * @param M Number of rows of A
  * @param N Number of columns of A (rows of B)
  * @param K Number or columns of B
  */
-double matrix_multiply_omp(double *A, double *B, double *C, int M, int N, int K)
+double matrix_multiply_blocking(double *A, double *B, double *C, int M, int N, int K)
 {
     double wc_start, wc_end;
     double cpu_start, cpu_end;
-    int blockNum = M / BLOCK_SIZE;
+    int iA, jB, iC;
 
     timing(&wc_start, &cpu_start);
-#pragma omp parallel default(none) shared(A, B, C, blockNum)
+    // Calculate the bounds for the blocked multiplication
+    int M_block_max = (M / BLOCK_SIZE) * BLOCK_SIZE;
+    int K_block_max = (K / BLOCK_SIZE) * BLOCK_SIZE;
+    int N_block_max = (N / BLOCK_SIZE) * BLOCK_SIZE;
+
+    // Blocked multiplication
+#pragma omp parallel default(none) shared(M_block_max, K_block_max, N_block_max, A, B, C, M, N, K) private(iA, jB, iC)
     {
-#pragma omp for
-        for (size_t bi = 0; bi < blockNum; bi++)
+#pragma omp for schedule(runtime)
+        for (int ii = 0; ii < M_block_max; ii += BLOCK_SIZE)
         {
-            for (size_t bj = 0; bj < blockNum; bj++)
+            for (int jj = 0; jj < K_block_max; jj += BLOCK_SIZE)
             {
-                for (size_t bk = 0; bk < blockNum; bk++)
+                for (int kk = 0; kk < N_block_max; kk += BLOCK_SIZE)
                 {
-                    for (int i = 0; i < BLOCK_SIZE; i++)
+                    for (int i = ii; i < ii + BLOCK_SIZE; i++)
                     {
-                        for (int j = 0; j < BLOCK_SIZE; j++)
+                        iA = i * N;
+                        for (int j = jj; j < jj + BLOCK_SIZE; j++)
                         {
-                            int iC = bi * BLOCK_SIZE * blockNum * BLOCK_SIZE + i * blockNum * BLOCK_SIZE + bj * BLOCK_SIZE + j;
-                            double dot_product = 0.;
-                            C[iC] = 0;
-#pragma omp simd reduction(+ : dot_product)
-                            for (int k = 0; k < BLOCK_SIZE; k++)
+                            jB = j * N;
+                            iC = i * K + j;
+                            double sum = 0;
+#pragma omp simd reduction(+ : sum)
+                            for (int k = kk; k < kk + BLOCK_SIZE; k++)
                             {
-                                size_t iA = bi * BLOCK_SIZE * blockNum * BLOCK_SIZE + i * blockNum * BLOCK_SIZE + bk * BLOCK_SIZE + k;
-                                size_t jB = bj * BLOCK_SIZE * blockNum * BLOCK_SIZE + k * blockNum * BLOCK_SIZE + bj * BLOCK_SIZE + j;
-                                dot_product += A[iA] * B[jB];
+                                sum += A[iA + k] * B[jB + k];
                             }
-                            C[iC] += dot_product;
+                            C[iC] += sum;
                         }
                     }
                 }
             }
         }
+#pragma omp barrier
+
+        // A is M x N and we only processed a sub-matrix M1 x N1
+        // B is N x K and we only processed a sub-matrix N1 x K1
+#pragma omp for
+        for (int i = 0; i < M_block_max; i++)
+        {
+            iA = i * N;
+            for (int j = 0; j < K; j++)
+            {
+                jB = j * N;
+                iC = i * K + j;
+                double sum = 0;
+#pragma omp simd reduction(+ : sum)
+                for (int k = N_block_max; k < N; k++)
+                {
+                    sum += A[iA + k] * B[jB + k];
+                }
+                C[iC] += sum;
+            }
+        }
+#pragma omp barrier
+
+#pragma omp for
+        for (int i = M_block_max; i < M; i++)
+        {
+            iA = i * N;
+            for (int j = 0; j < K; j++)
+            {
+                jB = j * N;
+                iC = i * K + j;
+                double sum = 0;
+#pragma omp simd reduction(+ : sum)
+                for (int k = 0; k < N; k++)
+                {
+                    sum += A[iA + k] * B[jB + k];
+                }
+                C[iC] += sum;
+            }
+        }
+#pragma omp barrier
+
+#pragma omp for
+        for (int i = 0; i < M_block_max; i++)
+        {
+            iA = i * N;
+            for (int j = K_block_max; j < K; j++)
+            {
+                jB = j * N;
+                iC = i * K + j;
+                double sum = 0;
+#pragma omp simd reduction(+ : sum)
+                for (int k = 0; k < N_block_max; k++)
+                {
+                    sum += A[iA + k] * B[jB + k];
+                }
+                C[iC] += sum;
+            }
+        }
     }
+
     timing(&wc_end, &cpu_end);
     double elapsed_time = wc_end - wc_start;
 
     return elapsed_time;
 }
 
-typedef struct Size
-{
-    int M;
-    int N;
-    int K;
-} Size;
-
 int main(int argc, char **argv)
 {
     double *A, *B, *C;
-    Size sizes[4] = {{
-                         M : 1000,
-                         N : 1000,
-                         K : 1000,
-                     },
-                     {
-                         M : 2000,
-                         N : 2000,
-                         K : 2000,
-                     },
-                     {
-                         M : 4000,
-                         N : 4000,
-                         K : 4000,
-                     },
-                     {
-                         M : 8000,
-                         N : 8000,
-                         K : 8000,
-                     }};
-    char files[4][75] = {"/gpfs/gibbs/project/cpsc424/shared/assignments/assignment3/data/C-1000.dat",
+    size_t sizes[5] = {1000, 2000, 4000, 7633, 8000};
+    char files[5][75] = {"/gpfs/gibbs/project/cpsc424/shared/assignments/assignment3/data/C-1000.dat",
                          "/gpfs/gibbs/project/cpsc424/shared/assignments/assignment3/data/C-2000.dat",
                          "/gpfs/gibbs/project/cpsc424/shared/assignments/assignment3/data/C-4000.dat",
+                         "/gpfs/gibbs/project/cpsc424/shared/assignments/assignment3/data/C-7633.dat",
                          "/gpfs/gibbs/project/cpsc424/shared/assignments/assignment3/data/C-8000.dat"};
 
     // Print a table heading
-    printf("\n Matrix multiplication times:\n   N      TIME (secs)    F-norm of Error\n -----   -------------  -----------------\n");
+    printf("Matrix multiplication times:\n   N      TIME (secs)    F-norm of Error\n -----   -------------  -----------------\n");
 
     // Now run the four test cases
-    for (int run = 0; run < 4; run++)
+    for (int run = 0; run < 5; run++)
     {
         srand(12345);
-        Size size = sizes[run];
-        int M = size.M;
-        int N = size.N;
-        int K = size.K;
+        size_t size = sizes[run];
+        int size_A = size * size;
+        int size_B = size * size;
+        int size_C = size * size;
 
-        int size_A = M * N;
-        int size_B = N * K;
-        int size_C = M * K;
-
-        // Allocate size bytes of memory, aligned to the alignment specified in align, and return a pointer to the allocated memory.
-        double *A = (double *)malloc(M * K * sizeof(double));
-        double *B = (double *)malloc(K * N * sizeof(double));
+        A = (double *)calloc(size_A, sizeof(double));
+        B = (double *)calloc(size_B, sizeof(double));
         C = (double *)calloc(size_C, sizeof(double));
 
         for (int i = 0; i < size_A; i++)
@@ -131,7 +162,7 @@ int main(int argc, char **argv)
             B[i] = ((double)rand() / (double)RAND_MAX);
         }
 
-        double wctime = matrix_multiply_omp(A, B, C, M, N, K);
+        double wctime = matrix_multiply_blocking(A, B, C, size, size, size);
 
         free(A);
         free(B);
@@ -139,8 +170,8 @@ int main(int argc, char **argv)
         double Fnorm = compute_fnorm(files[run], C, size_C);
 
         // Print a table row
-        printf("  %5d    %9.4f  %17.12f\n", N, wctime, Fnorm);
-        write_data_to_file("out/results.csv", "c-omp", N, 1, wctime, Fnorm);
+        printf("  %5d    %9.4f  %17.12f\n", size, wctime, Fnorm);
+        write_data_to_file("out/results-omp.csv", "c-omp", size, BLOCK_SIZE, 1, wctime, Fnorm);
 
         free(C);
     }

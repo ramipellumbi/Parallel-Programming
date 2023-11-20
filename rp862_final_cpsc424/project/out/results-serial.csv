@@ -1,5 +1,4 @@
 program,num_cores,np,num_tasks_per_node,num_tasks_per_socket,N,block_size,exe_time,f_norm
-
 "b-serial-blocking",1,1,1,-1,1000,16,0.171231,0.000000000058
 "b-serial-blocking",1,1,1,-1,2000,16,1.338850,0.000000000307
 "b-serial-blocking",1,1,1,-1,4000,16,11.255767,0.000000001665
@@ -60,3 +59,18 @@ program,num_cores,np,num_tasks_per_node,num_tasks_per_socket,N,block_size,exe_ti
 "b-serial-blocking",1,1,1,-1,4000,64,13.802820,0.000000000980
 "b-serial-blocking",1,1,1,-1,7633,64,88.464931,0.000000004683
 "b-serial-blocking",1,1,1,-1,8000,64,105.841344,0.000000005212
+"b-serial-blocking",1,1,1,-1,1000,32,0.137541,0.000000000047
+"b-serial-blocking",1,1,1,-1,2000,32,1.221229,0.000000000238
+"b-serial-blocking",1,1,1,-1,4000,32,11.469303,0.000000001250
+"b-serial-blocking",1,1,1,-1,7633,32,83.223349,0.000000006159
+"b-serial-blocking",1,1,1,-1,8000,32,84.432584,0.000000006818
+"b-serial-blocking",1,1,1,-1,1000,32,0.137830,0.000000000047
+"b-serial-blocking",1,1,1,-1,2000,32,1.236413,0.000000000238
+"b-serial-blocking",1,1,1,-1,4000,32,11.479822,0.000000001250
+"b-serial-blocking",1,1,1,-1,7633,32,83.163106,0.000000006159
+"b-serial-blocking",1,1,1,-1,8000,32,84.819226,0.000000006818
+"b-serial-blocking",1,1,1,-1,1000,32,0.137479,0.000000000047
+"b-serial-blocking",1,1,1,-1,2000,32,1.224152,0.000000000238
+"b-serial-blocking",1,1,1,-1,4000,32,11.450672,0.000000001250
+"b-serial-blocking",1,1,1,-1,7633,32,82.673115,0.000000006159
+"b-serial-blocking",1,1,1,-1,8000,32,85.368265,0.000000006818
