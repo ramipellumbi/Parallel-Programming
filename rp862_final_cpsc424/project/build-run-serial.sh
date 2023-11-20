@@ -19,6 +19,12 @@ echo $SLURM_NTASKS_PER_NODE
 make -f Makefile-serial clean
 make -f Makefile-serial
 
-time ./bin/a-serial
-time ./bin/b-serial-blocking
+for k in {1..3}
+do 
+    time ./bin/b-serial-blocking
+done
 
+for k in {1..3}
+do
+    time ./bin/a-serial
+done
