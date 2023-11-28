@@ -1,0 +1,103 @@
+The following modules were not unloaded:
+  (Use "module --force purge" to unload all):
+
+  1) StdEnv
+
+Currently Loaded Modules:
+  1) StdEnv                              (S)
+  2) GCCcore/10.2.0
+  3) zlib/1.2.11-GCCcore-10.2.0
+  4) binutils/2.35-GCCcore-10.2.0
+  5) iccifort/2020.4.304
+  6) numactl/2.0.13-GCCcore-10.2.0
+  7) UCX/1.9.0-GCCcore-10.2.0
+  8) impi/2019.9.304-iccifort-2020.4.304
+  9) iimpi/2020b
+ 10) imkl/2020.4.304-iimpi-2020b
+ 11) intel/2020b
+
+  Where:
+   S:  Module is Sticky, requires --force to unload or purge
+
+ 
+
+/vast/palmer/home.grace/cpsc424_rp862/Desktop/cpsc-524-parallel-programming/rp862_final_cpsc424/project
+r918u05n01
+
+SRC_FILES = src/a-serial.c src/b-serial-blocking.c src/c-omp.c src/d-omp-ts.c src/timing.c src/utilities.c
+OBJ_FILES =  obj/a-serial.o  obj/b-serial-blocking.o  obj/c-omp.o  obj/d-omp-ts.o  obj/timing.o  obj/utilities.o
+ALL = bin/c-omp
+rm -rf obj bin
+SRC_FILES = src/a-serial.c src/b-serial-blocking.c src/c-omp.c src/d-omp-ts.c src/timing.c src/utilities.c
+OBJ_FILES =  obj/a-serial.o  obj/b-serial-blocking.o  obj/c-omp.o  obj/d-omp-ts.o  obj/timing.o  obj/utilities.o
+ALL = bin/c-omp
+icc -g -O3 -xHost -fno-alias -std=c99 -qopenmp -I include -c src/c-omp.c -o obj/c-omp.o
+icc -g -O3 -xHost -fno-alias -std=c99 -qopenmp -I include -c src/timing.c -o obj/timing.o
+icc -g -O3 -xHost -fno-alias -std=c99 -qopenmp -I include -c src/utilities.c -o obj/utilities.o
+icc -g -O3 -xHost -fno-alias -std=c99 -qopenmp -I include obj/c-omp.o obj/timing.o obj/utilities.o -o bin/c-omp
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not setMatrix multiplication times:
+   N      TIME (secs)    F-norm of Error
+ -----   -------------  -----------------
+   1000       0.0435     0.000000000047
+   2000       0.1990     0.000000000238
+   4000       0.8697     0.000000001250
+   7633       4.1525     0.000000006169
+   8000       4.1398     0.000000006818
+
+real	0m14.755s
+user	3m42.958s
+sys	0m5.318s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not setMatrix multiplication times:
+   N      TIME (secs)    F-norm of Error
+ -----   -------------  -----------------
+   1000       0.0325     0.000000000047
+   2000       0.2071     0.000000000238
+   4000       0.8601     0.000000001250
+   7633       4.0834     0.000000006169
+   8000       4.3686     0.000000006818
+
+real	0m14.907s
+user	3m44.587s
+sys	0m5.172s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not setMatrix multiplication times:
+   N      TIME (secs)    F-norm of Error
+ -----   -------------  -----------------
+   1000       0.0322     0.000000000047
+   2000       0.1913     0.000000000238
+   4000       0.9547     0.000000001250
+   7633       4.1928     0.000000006169
+   8000       4.0328     0.000000006818
+
+real	0m14.869s
+user	3m40.266s
+sys	0m5.503s

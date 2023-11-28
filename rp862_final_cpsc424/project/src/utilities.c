@@ -22,14 +22,6 @@ double compute_fnorm(const char *filename, double *computed, int size_computed)
     return f_norm;
 }
 
-void fill_matrix(double *M, int size)
-{
-    for (int i = 0; i < size; i++)
-    {
-        M[i] = ((double)rand() / (double)RAND_MAX);
-    }
-}
-
 int get_environment_value(const char *env_name)
 {
     char *value_str = getenv(env_name);
@@ -45,6 +37,7 @@ int get_environment_value(const char *env_name)
 void write_data_to_file(const char *filename,
                         const char *program,
                         int N,
+                        int block_size,
                         int np,
                         double exe_time,
                         double f_norm)
@@ -87,10 +80,10 @@ void write_data_to_file(const char *filename,
     // if the file does not exist, add the header row
     if (!does_file_exist)
     {
-        fprintf(fp, "program,num_cores,np,num_tasks_per_node,num_tasks_per_socket,N,exe_time,f_norm\n");
+        fprintf(fp, "program,num_cores,np,num_tasks_per_node,num_tasks_per_socket,N,block_size,exe_time,f_norm\n");
     }
 
     // add data to row
-    fprintf(fp, "\"%s\",%d,%d,%d,%d,%d,%f,%.12f\n", program, num_cores, np, num_tasks_per_node, num_tasks_per_socket, N, exe_time, f_norm);
+    fprintf(fp, "\"%s\",%d,%d,%d,%d,%d,%d,%f,%.12f\n", program, num_cores, np, num_tasks_per_node, num_tasks_per_socket, N, block_size, exe_time, f_norm);
     fclose(fp);
 }

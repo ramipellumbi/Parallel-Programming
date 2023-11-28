@@ -135,7 +135,7 @@ void gemm_k(int M, int N, int K, double *A, double *B, double *C, int offset)
                     // Note: if we're working on row i, then the total number of double entries for
                     // rows 0 through i-1 is i*N. Thus, iA points to the first entry of row i.
 
-        for (j = 0; j < K; j++, iC++)
+        for (j = 0; j < K; j++)
         {
             // We're going to compute the dot product of row i of A and column j of B.
             // iC points to the entries of row i of C. (We compute C[i,j] as the dot
