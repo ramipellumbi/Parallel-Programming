@@ -1,0 +1,133 @@
+This directory contains a sample CUDA matrix multiplication code in matmul.cu.
+
+Two GPU-equipped nodes have been reserved for class use in the cpsc424gpu reservation. Each node contains 4 GPUs. 
+In addition, each node contains 36 CPU cores and 192 GB of CPU memory. 
+
+In fairness to all, please run only 1 GPU job at a time, with exactly 1 GPU per job. Along with the GPU,
+each job may use up to 9 CPU cores and up to a total of 45G in CPU memory (5G per core). 
+
+ACCESSING GPUs IN BATCH MODE
+
+Since the GPUs are scarce resources, it is best to use batch jobs to access them for this class.
+We have provided a sample Slurm script (build-run-matmul.sh) that you can use to get started.
+To run the sample script, submit it using sbatch, as with any other script.
+As needed, you can easily modify the main body of the script to build and run any of the codes for this assignment.
+(You'll want to start by removing the nvidia-smi and deviceQuery commands since you don't often need to run those.) 
+
+A sample output from a batch submission of the script is in the file slurm-29529237.out.
+
+If you're using OOD for cluster access, you can start either a normal (non-GPU) remote desktop session using 
+the cpsc424 reservation (1 core only, please!) or a shell session (from the Clusters pull-down menu in OOD). 
+Then you can use sbatch from the non-GPU session to submit Slurm scripts using a GPU. The non-GPU session
+is fine for editing, and the batch submissions will be used to run your code.
+
+If you're going to use batch submissions from a remote desktop, DO NOT request a GPU in the remote desktop form.
+(A GPU can be requested in the Slurm script used for your batch jobs.)
+
+ACCESSING GPUs INTERACTIVELY FROM A SHELL SESSION
+
+In certain cases (such as running Nvidia's debugger), you may need to access GPUs interactively. 
+You may do this either from a shell session (from the Clusters pull-down menu in OOD) or from a terminal
+session on a login node started using ssh.
+ 
+To access a GPU interactively from a shell session, run an salloc command similar to this one:
+
+salloc --nodes=1 --ntasks=1 --cpus-per-task=9 --mem-per-cpu=5G --reservation=cpsc424gpu -t 2:00:00 --gpus=1 --partition=gpu
+
+You may add the --x11 option if you need to use a graphical tool such as the Nvidia debugger. 
+You may reduce some or all of the parameter values, if you like. In fairness to others, however, 
+please do not increase any of these limits unless you have discussed it with the course instructor.
+
+ACCESSING GPUS INTERACTIVELY FROM AN OOD REMOTE DESKTOP
+
+You can create a remote desktop session using the following settings in the OOD form:
+
+Number of hours: 1
+Number of CPU cores per node: 9
+Memory per CPU core in GiB: 5
+Partition: gpu
+Number of GPUs per node: 1
+Reservation: cpsc424gpu
+Additional job options (1 per line):
+--nodes=1
+--ntasks-per-node=1
+--cpus-per-task=9
+
+=============================================================================
+
+From here on in this document, if you are running interactively, you must be running
+on a GPU node. Most GPU-related commands will not work on nodes that have no GPUs.
+
+NOTE: For this assignment, we will use the Gnu gcc compiler for non-CUDA code, since our
+installations of CUDA are not set up for the Intel icc compiler. 
+
+=============================================================================
+
+The sample sbatch script described above runs through the following steps.
+(In an interactive session, you can execute each step by typing in the commands.)
+
+It starts by loading the CUDA module file, which also loads a GCC module file:
+
+   module purge
+   module load CUDA
+   module list
+
+Loading the CUDA module file  will set the PATH and LD_LIBRARY_PATH environment
+variables to find the gcc compilers and the Cuda tools and libraries.
+
+After loading the module files, the script runs "nvidia-smi" to get information 
+about the GPU assigned to you. NOTE: Neither this command, the deviceQuery command,  
+nor the Makefile I've provided will work on non-GPU nodes.
+
+Next, the script runs the following command:
+
+/vast/palmer/apps/avx.grace/software/CUDAcore/11.3.1/extras/demo_suite/deviceQuery
+
+The output will give you more information about specs and limitations of the GPU.
+
+=============================================================================
+
+Next, the script builds the sample matrix multiplication code, by running
+
+   make clean
+   make matmul
+
+The make command uses the makefile Makefile, which invokes the nvcc compiler 
+to build the code. 
+
+Once the code is built, the script executes it using:
+
+                      ./matmul <n> <B> <G>
+
+where 
+
+     <n> is the number of rows and columns in the (square) matrices (set to 1024)
+
+     <B> is the number of thread rows and columns in each (2-D) thread block (set to 32)
+
+     <G> is the number of block rows and columns in the (2-D) kernel grid (set to 32)
+         NOTE: <G> is ignored in the sample code. Instead, the code computes <G>
+               based on the matrix and thread block dimensions.
+
+You are free to change the three arguments, subject to certain constraints. 
+The total number of threads in each direction will be <B> times <G>.
+For the sample code, you need to have a total of at least <n> threads in both the x and y 
+directions since each thread in the sample code computes just one entry of the output matrix.
+
+Since everything in the sample is square, and the maximum thread count in a thread block 
+for the GPU is 1024, the maximum possible value for <B> is 32.
+
+So the sample code will set 
+
+     blockDim.x = blockDim.y = <B>
+     blockDim.z = 1
+
+and
+
+     gridDim.x = gridDim.y = <G> (As noted above, this is actually ignored in the sample code.)
+     gridDim.z = 1
+
+(You could have excess blocks, if you wish, by increasing <G>, but there's no good reason for that.) 
+The sample code checks to make sure that it has a sufficient number of threads
+in the x and y directions to carry out the computation, and it calculates <G> accordingly. You may
+need to modify this part of the code for later parts of the assignment.
