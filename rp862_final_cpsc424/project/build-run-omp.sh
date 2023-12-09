@@ -17,9 +17,12 @@ pwd
 echo $SLURM_JOB_NODELIST
 echo $SLURM_NTASKS_PER_NODE
 make -f Makefile-omp clean
-make -f Makefile-omp c-omp
+make -f Makefile-omp
 
 export OMP_NUM_THREADS=24
 
-time ./bin/c-omp
+for k in 1 2 3
+do 
+    time ./bin/d-omp-ts
+done
 

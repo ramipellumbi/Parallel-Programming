@@ -20,17 +20,37 @@
  */
 double matrix_multiply_blocking(double *A, double *B, double *C, int M, int N, int K)
 {
+    /**
+     * Can think of A * B as multiplication of block matrices
+     * 
+     *     A1, A2
+     * A = A3, A4
+     * 
+     * B = B1, B2
+     *     B3, B4
+     * 
+     * Yielding
+     * 
+     * C = A1*B1 + A2*B3, A1*B2 + A2*B4
+     *     A3*B1 + A4*BB, A3*B2 + A4*B4
+     * 
+     * The matrices A and B are divided as above so that A1 and B1 
+     * make use of efficient cache utilization by multiplying appropriate 
+     * sub blocks. The remaining computation is done in cleanup loops.
+    */
     double wc_start, wc_end;
     double cpu_start, cpu_end;
     int iA, jB, iC;
 
     timing(&wc_start, &cpu_start);
+    
+
     // Calculate the bounds for the blocked multiplication
     int M_block_max = (M / BLOCK_SIZE) * BLOCK_SIZE;
     int K_block_max = (K / BLOCK_SIZE) * BLOCK_SIZE;
     int N_block_max = (N / BLOCK_SIZE) * BLOCK_SIZE;
 
-    // Blocked multiplication
+    // Compute A1 * B1
     for (int ii = 0; ii < M_block_max; ii += BLOCK_SIZE)
     {
         for (int jj = 0; jj < K_block_max; jj += BLOCK_SIZE)
@@ -54,8 +74,7 @@ double matrix_multiply_blocking(double *A, double *B, double *C, int M, int N, i
         }
     }
 
-    // A is M x N and we only processed a sub-matrix M1 x N1
-    // B is N x K and we only processed a sub-matrix N1 x K1
+    // This for loop does A2*B3 and A2*B4 and places into appropriate block of C
     for (int i = 0; i < M_block_max; i++)
     {
         iA = i * N;
@@ -70,6 +89,7 @@ double matrix_multiply_blocking(double *A, double *B, double *C, int M, int N, i
         }
     }
 
+    // This for loop does [A3 A4] * B
     for (int i = M_block_max; i < M; i++)
     {
         iA = i * N;
@@ -84,6 +104,7 @@ double matrix_multiply_blocking(double *A, double *B, double *C, int M, int N, i
         }
     }
 
+    // This for loop does A1*B2
     for (int i = 0; i < M_block_max; i++)
     {
         iA = i * N;

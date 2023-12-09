@@ -11,7 +11,7 @@ TIMING 	  = $(OBJ_DIR)/timing.o
 UTILITIES = $(OBJ_DIR)/utilities.o
 MODULES   = $(TIMING) $(UTILITIES)
 
-EXECUTABLES = c-omp
+EXECUTABLES = c-omp d-omp-ts
 
 # For debugging
 SRC_FILES = $(shell find $(SRC_DIR) -name '*.c')
@@ -30,6 +30,11 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 
 c-omp: $(BIN_DIR)/c-omp
 $(BIN_DIR)/c-omp: $(OBJ_DIR)/c-omp.o $(MODULES)
+	@mkdir -p $(BIN_DIR)
+	$(CC) $(CFLAGS) $^ -o $@
+
+d-omp-ts: $(BIN_DIR)/d-omp-ts
+$(BIN_DIR)/d-omp-ts: $(OBJ_DIR)/d-omp-ts.o $(MODULES)
 	@mkdir -p $(BIN_DIR)
 	$(CC) $(CFLAGS) $^ -o $@
 

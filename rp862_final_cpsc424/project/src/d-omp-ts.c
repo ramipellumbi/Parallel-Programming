@@ -7,7 +7,11 @@
 #include <utilities.h>
 #include <timing.h>
 
-#define BLOCK_SIZE 32
+#define BLOCK_SIZE 16
+alignas(64) static double blockA[BLOCK_SIZE * BLOCK_SIZE];
+alignas(64) static double blockB[BLOCK_SIZE * BLOCK_SIZE];
+alignas(64) static double blockC[BLOCK_SIZE * BLOCK_SIZE];
+#pragma omp threadprivate(blockA, blockB, blockC)
 
 /**
  * Returns the wall clock time elapsed in the multithreaded matrix multiplication between A and B
@@ -41,20 +45,45 @@ double matrix_multiply_blocking(double *A, double *B, double *C, int M, int N, i
             {
                 for (int kk = 0; kk < N_block_max; kk += BLOCK_SIZE)
                 {
+                    // copy into local blocks on this thread
                     for (int i = ii; i < ii + BLOCK_SIZE; i++)
                     {
-                        iA = i * N;
                         for (int j = jj; j < jj + BLOCK_SIZE; j++)
                         {
-                            jB = j * N;
-                            iC = i * K + j;
+                            int lIdx = (i % BLOCK_SIZE) * BLOCK_SIZE + j % BLOCK_SIZE;
+                            int gIdx = i * N + j + kk;
+                            blockA[lIdx] = A[gIdx];
+                            blockB[lIdx] = B[gIdx];
+                            blockC[lIdx] = 0;
+                        }
+                    }
+
+                    // do the multiplication of blockA and blockB on this thread
+                    for (int i = 0; i < BLOCK_SIZE; i++)
+                    {
+                        iA = i * BLOCK_SIZE;
+                        for (int j = 0; j < BLOCK_SIZE; j++)
+                        {
+                            jB = j * BLOCK_SIZE;
+                            iC = i * BLOCK_SIZE + j;
                             double sum = 0;
 #pragma omp simd reduction(+ : sum)
-                            for (int k = kk; k < kk + BLOCK_SIZE; k++)
+                            for (int k = 0; k < BLOCK_SIZE; k++)
                             {
-                                sum += A[iA + k] * B[jB + k];
+                                sum += blockA[iA + k] * blockB[jB + k];
                             }
-                            C[iC] += sum;
+                            blockC[iC] += sum;
+                        }
+                    }
+
+                    // copy blockC back into C
+                    for (int i = ii; i < ii + BLOCK_SIZE; i++)
+                    {
+                        for (int j = jj; j < jj + BLOCK_SIZE; j++)
+                        {
+                            int lIdx = (i % BLOCK_SIZE) * BLOCK_SIZE + j % BLOCK_SIZE;
+                            int gIdx = i * K + j + kk;
+                            C[gIdx] = blockC[lIdx];
                         }
                     }
                 }
@@ -171,7 +200,7 @@ int main(int argc, char **argv)
 
         // Print a table row
         printf("  %5d    %9.4f  %17.12f\n", size, wctime, Fnorm);
-        write_data_to_file("out/results-omp.csv", "c-omp", size, BLOCK_SIZE, 1, wctime, Fnorm);
+        write_data_to_file("out/results-omp.csv", "d-omp-ts", size, BLOCK_SIZE, 1, wctime, Fnorm);
 
         free(C);
     }

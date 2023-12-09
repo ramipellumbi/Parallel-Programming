@@ -1,0 +1,64 @@
+The following modules were not unloaded:
+  (Use "module --force purge" to unload all):
+
+  1) StdEnv
+
+Currently Loaded Modules:
+  1) StdEnv                              (S)
+  2) GCCcore/10.2.0
+  3) zlib/1.2.11-GCCcore-10.2.0
+  4) binutils/2.35-GCCcore-10.2.0
+  5) iccifort/2020.4.304
+  6) numactl/2.0.13-GCCcore-10.2.0
+  7) UCX/1.9.0-GCCcore-10.2.0
+  8) impi/2019.9.304-iccifort-2020.4.304
+  9) iimpi/2020b
+ 10) imkl/2020.4.304-iimpi-2020b
+ 11) intel/2020b
+
+  Where:
+   S:  Module is Sticky, requires --force to unload or purge
+
+ 
+
+/home/cpsc424_rp862/Desktop/cpsc-524-parallel-programming/rp862_final_cpsc424/project
+r918u05n01
+
+SRC_FILES = src/a-serial.c src/b-serial-blocking.c src/c-omp.c src/d-omp-ts.c src/timing.c src/utilities.c
+OBJ_FILES =  obj/a-serial.o  obj/b-serial-blocking.o  obj/c-omp.o  obj/d-omp-ts.o  obj/timing.o  obj/utilities.o
+ALL = bin/c-omp bin/d-omp-ts
+rm -rf obj bin
+SRC_FILES = src/a-serial.c src/b-serial-blocking.c src/c-omp.c src/d-omp-ts.c src/timing.c src/utilities.c
+OBJ_FILES =  obj/a-serial.o  obj/b-serial-blocking.o  obj/c-omp.o  obj/d-omp-ts.o  obj/timing.o  obj/utilities.o
+ALL = bin/c-omp bin/d-omp-ts
+icc -g -O3 -xHost -fno-alias -std=c99 -qopenmp -I include -c src/c-omp.c -o obj/c-omp.o
+icc -g -O3 -xHost -fno-alias -std=c99 -qopenmp -I include -c src/timing.c -o obj/timing.o
+icc -g -O3 -xHost -fno-alias -std=c99 -qopenmp -I include -c src/utilities.c -o obj/utilities.o
+icc -g -O3 -xHost -fno-alias -std=c99 -qopenmp -I include obj/c-omp.o obj/timing.o obj/utilities.o -o bin/c-omp
+icc -g -O3 -xHost -fno-alias -std=c99 -qopenmp -I include -c src/d-omp-ts.c -o obj/d-omp-ts.o
+icc -g -O3 -xHost -fno-alias -std=c99 -qopenmp -I include obj/d-omp-ts.o obj/timing.o obj/utilities.o -o bin/d-omp-ts
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not setfree(): invalid pointer
+/var/spool/slurmd/job29533053/slurm_script: line 24: 2227370 Aborted                 (core dumped) ./bin/d-omp-ts
+
+real	0m3.914s
+user	0m34.285s
+sys	0m0.556s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set/var/spool/slurmd/job29533053/slurm_script: line 24: 2227398 Segmentation fault      (core dumped) ./bin/d-omp-ts
+
+real	0m2.432s
+user	0m6.961s
+sys	0m0.210s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not setfree(): invalid pointer
+/var/spool/slurmd/job29533053/slurm_script: line 24: 2227433 Aborted                 (core dumped) ./bin/d-omp-ts
+
+real	0m2.395s
+user	0m6.292s
+sys	0m0.184s
