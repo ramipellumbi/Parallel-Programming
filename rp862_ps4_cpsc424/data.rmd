@@ -1,0 +1,99 @@
+---
+title: "Data Exploration CUDA"
+author: "Rami Pellumbi"
+date: "December 10, 2023"
+output:
+  pdf_document: default
+---
+
+```{r}
+library(knitr)
+library(scales)
+library(kableExtra)
+library(ggplot2)
+library(pubtheme)
+library(tidyverse)
+```
+
+```{r}
+task1 <- read_csv("./out/task1.csv", show_col_types = FALSE)
+```
+
+```{r}
+mean_results <- task1 %>%
+  group_by(multiplier, precision, n, p, m, block_x, block_y, grid_x, grid_y) %>%
+  summarise(
+    mean_time = mean(exe_time), .groups = "keep"
+  )
+
+dfa <- mean_results %>%
+  filter(precision == "float") %>%
+  group_by(multiplier, n, p, m) %>%
+  filter(mean_time == min(mean_time))
+
+cpua <- dfa %>%
+  filter(multiplier == "cpu")
+
+gpua <- dfa %>%
+  filter(multiplier == "gpu")
+
+tablea <- gpua %>%
+  left_join(cpua, by = c("n", "p", "m")) %>%
+  mutate(
+    "(n,m,p)" = paste("(", n, ",", m, ",", p, ")", sep = ""),
+    "(block x block y)" = paste("(", block_x.x, ",", block_y.x, ")", sep = ""),
+    "(grid x, grid y)" = paste("(", grid_x.x, ",", grid_y.x, ")", sep = ""),
+    "gpu time (ms)" = mean_time.x,
+    "cpu time (ms)" = mean_time.y
+  ) %>%
+  ungroup() %>%
+  select("(n,m,p)", "(block x block y)", "(grid x, grid y)",
+         "gpu time (ms)", "cpu time (ms)")
+
+kable(tablea, format = "latex", booktabs = TRUE,
+      caption = "GPU Kernel Performance Float (ms)") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"),
+                full_width = FALSE,
+                font_size = 12,
+                position = "left")
+```
+
+```{r}
+tableb <- mean_results %>%
+  filter(precision == "double") %>%
+  mutate(
+    "(n,m,p)" = paste("(", n, ",", m, ",", p, ")", sep = ""),
+    "(block x block y)" = paste("(", block_x, ",", block_y, ")", sep = ""),
+    "(grid x, grid y)" = paste("(", grid_x, ",", grid_y, ")", sep = ""),
+    "gpu time" = mean_time
+  ) %>%
+  ungroup() %>%
+  select("(n,m,p)", "(block x block y)", "(grid x, grid y)", "gpu time")
+
+kable(tableb, format = "latex", booktabs = TRUE,
+      caption = "GPU Kernel Performance Double (ms)") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"),
+                full_width = FALSE,
+                font_size = 12,
+                position = "left")
+```
+
+```{r}
+tablec <- mean_results %>%
+  filter(n == 30536) %>%
+  mutate(
+    "(n,m,p)" = paste("(", n, ",", m, ",", p, ")", sep = ""),
+    "(block x block y)" = paste("(", block_x, ",", block_y, ")", sep = ""),
+    "(grid x, grid y)" = paste("(", grid_x, ",", grid_y, ")", sep = ""),
+    "gpu time" = mean_time
+  ) %>%
+  ungroup() %>%
+  select("(n,m,p)", "gpu time")
+
+kable(tablec, format = "latex", booktabs = TRUE,
+      caption = "Max Size GPU Kernel Performance Float (ms)") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"),
+                full_width = FALSE,
+                font_size = 12,
+                position = "left")
+```
