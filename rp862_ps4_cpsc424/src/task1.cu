@@ -77,7 +77,7 @@ __global__ void gpu_matrixmult_rectangular(FP *A, FP *B, FP *C, int n, int p, in
 int main(int argc, char **argv)
 {
 
-    FP *A, *B, *C, *HOST_C;    // matrices on host
+    FP *A, *B, *C;    // matrices on host
     FP *dev_A, *dev_B, *dev_C; // matrices on device
     int n, p, m;               // matrix dimensions
 
@@ -152,7 +152,6 @@ int main(int argc, char **argv)
     A = (FP *)malloc(size_A);      // dynamically allocated memory for arrays on host
     B = (FP *)malloc(size_B);      // dynamically allocated memory for arrays on host
     C = (FP *)malloc(size_C);      // results from GPU
-    HOST_C = (FP *)malloc(size_C); // results from rectangular kij algorithm
 
     srand(12345);
     for (size_t i = 0; i < n; i++)
@@ -165,9 +164,9 @@ int main(int argc, char **argv)
 
     for (size_t i = 0; i < p; i++)
     {
-        for (size_t j = 0; j < n; j++)
+        for (size_t j = 0; j < m; j++)
         {
-            B[i * n + j] = (FP)rand() / (FP)RAND_MAX;
+            B[i * m + j] = (FP)rand() / (FP)RAND_MAX;
         }
     }
 
@@ -176,7 +175,6 @@ int main(int argc, char **argv)
         for (size_t j = 0; j < m; j++)
         {
             C[i * m + j] = 0.;
-            HOST_C[i * m + j] = 0;
         }
     }
 
@@ -207,7 +205,6 @@ int main(int argc, char **argv)
     free(A);
     free(B);
     free(C);
-    free(HOST_C);
     cudaFree(dev_A);
     cudaFree(dev_B);
     cudaFree(dev_C);
