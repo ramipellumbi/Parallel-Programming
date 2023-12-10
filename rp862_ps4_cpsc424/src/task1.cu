@@ -69,7 +69,7 @@ __global__ void gpu_matrixmult_rectangular(FP *A, FP *B, FP *C, int n, int p, in
         for (int indexa = start_index_a; indexa < max_index_a; indexa++)
         {
             C[index] += A[indexa] * B[indexb];
-            indexb += m; // move to next row of b
+            indexb += m;
         }
     }
 }
