@@ -1,0 +1,194 @@
+***Purging module files
+
+The following modules were not unloaded:
+  (Use "module --force purge" to unload all):
+
+  1) StdEnv
+
+***Loading CUDA module file
+
+
+
+Currently Loaded Modules:
+  1) StdEnv                       (S)   5) GCC/10.2.0
+  2) GCCcore/10.2.0                     6) CUDAcore/11.1.1        (g)
+  3) zlib/1.2.11-GCCcore-10.2.0         7) CUDA/11.1.1-GCC-10.2.0 (g)
+  4) binutils/2.35-GCCcore-10.2.0
+
+  Where:
+   S:  Module is Sticky, requires --force to unload or purge
+   g:  built for GPU
+
+ 
+
+
+***Running nvidia-smi
+
+Sun Dec 10 15:55:24 2023       
++---------------------------------------------------------------------------------------+
+| NVIDIA-SMI 545.23.08              Driver Version: 545.23.08    CUDA Version: 12.3     |
+|-----------------------------------------+----------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |         Memory-Usage | GPU-Util  Compute M. |
+|                                         |                      |               MIG M. |
+|=========================================+======================+======================|
+|   0  NVIDIA GeForce RTX 2080 Ti     On  | 00000000:86:00.0 Off |                  N/A |
+| 31%   36C    P8              22W / 250W |      1MiB / 11264MiB |      0%      Default |
+|                                         |                      |                  N/A |
++-----------------------------------------+----------------------+----------------------+
+                                                                                         
++---------------------------------------------------------------------------------------+
+| Processes:                                                                            |
+|  GPU   GI   CI        PID   Type   Process name                            GPU Memory |
+|        ID   ID                                                             Usage      |
+|=======================================================================================|
+|  No running processes found                                                           |
++---------------------------------------------------------------------------------------+
+
+
+***Running deviceQuery
+/vast/palmer/apps/avx.grace/software/CUDAcore/11.3.1/extras/demo_suite/deviceQuery Starting...
+
+ CUDA Device Query (Runtime API) version (CUDART static linking)
+
+Detected 1 CUDA Capable device(s)
+
+Device 0: "NVIDIA GeForce RTX 2080 Ti"
+  CUDA Driver Version / Runtime Version          12.3 / 11.3
+  CUDA Capability Major/Minor version number:    7.5
+  Total amount of global memory:                 11012 MBytes (11546394624 bytes)
+  (68) Multiprocessors, ( 64) CUDA Cores/MP:     4352 CUDA Cores
+  GPU Max Clock rate:                            1545 MHz (1.54 GHz)
+  Memory Clock rate:                             7000 Mhz
+  Memory Bus Width:                              352-bit
+  L2 Cache Size:                                 5767168 bytes
+  Maximum Texture Dimension Size (x,y,z)         1D=(131072), 2D=(131072, 65536), 3D=(16384, 16384, 16384)
+  Maximum Layered 1D Texture Size, (num) layers  1D=(32768), 2048 layers
+  Maximum Layered 2D Texture Size, (num) layers  2D=(32768, 32768), 2048 layers
+  Total amount of constant memory:               65536 bytes
+  Total amount of shared memory per block:       49152 bytes
+  Total number of registers available per block: 65536
+  Warp size:                                     32
+  Maximum number of threads per multiprocessor:  1024
+  Maximum number of threads per block:           1024
+  Max dimension size of a thread block (x,y,z): (1024, 1024, 64)
+  Max dimension size of a grid size    (x,y,z): (2147483647, 65535, 65535)
+  Maximum memory pitch:                          2147483647 bytes
+  Texture alignment:                             512 bytes
+  Concurrent copy and kernel execution:          Yes with 3 copy engine(s)
+  Run time limit on kernels:                     No
+  Integrated GPU sharing Host Memory:            No
+  Support host page-locked memory mapping:       Yes
+  Alignment requirement for Surfaces:            Yes
+  Device has ECC support:                        Disabled
+  Device supports Unified Addressing (UVA):      Yes
+  Device supports Compute Preemption:            Yes
+  Supports Cooperative Kernel Launch:            Yes
+  Supports MultiDevice Co-op Kernel Launch:      Yes
+  Device PCI Domain ID / Bus ID / location ID:   0 / 134 / 0
+  Compute Mode:
+     < Default (multiple host threads can use ::cudaSetDevice() with device simultaneously) >
+
+deviceQuery, CUDA Driver = CUDART, CUDA Driver Version = 12.3, CUDA Runtime Version = 11.3, NumDevs = 1, Device0 = NVIDIA GeForce RTX 2080 Ti
+Result = PASS
+
+***Building taskw
+rm -f obj/*.o  bin/task1  bin/task2  bin/serial 
+nvcc -gencode=arch=compute_75,code=sm_75 -O3 -g -I include -o obj/serial.o -c src/serial.cu
+Building binary bin/serial from object obj/serial.o
+nvcc -gencode=arch=compute_75,code=sm_75 -lm -g -o bin/serial obj/serial.o
+rm obj/serial.o
+nvcc -gencode=arch=compute_75,code=sm_75 -O3 -g -I include -o obj/task2.o -c src/task2.cu
+src/task2.cu(139): warning: variable "HOST_C" was declared but never referenced
+
+Building binary bin/task2 from object obj/task2.o
+nvcc -gencode=arch=compute_75,code=sm_75 -lm -g -o bin/task2 obj/task2.o
+rm obj/task2.o
+Running n=8192, p=8192, m=8192
+Running block BLOCK_DIM_X=8 BLOCK_DIM_Y=8
+With GRID_DIM_X=1024 GRID_DIM_Y=1024
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 8, Block_Dim_y = 8, Grid_Dim_x = 1024, Grid_Dim_y = 1024
+Time to calculate results on GPU: 3043.782715 ms.
+
+real	0m7.047s
+user	0m6.526s
+sys	0m0.474s
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 8, Block_Dim_y = 8, Grid_Dim_x = 1024, Grid_Dim_y = 1024
+Time to calculate results on GPU: 3041.122803 ms.
+
+real	0m7.026s
+user	0m6.535s
+sys	0m0.435s
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 8, Block_Dim_y = 8, Grid_Dim_x = 1024, Grid_Dim_y = 1024
+Time to calculate results on GPU: 3039.815186 ms.
+
+real	0m7.023s
+user	0m6.529s
+sys	0m0.443s
+Running block BLOCK_DIM_X=16 BLOCK_DIM_Y=16
+With GRID_DIM_X=512 GRID_DIM_Y=512
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 16, Block_Dim_y = 16, Grid_Dim_x = 512, Grid_Dim_y = 512
+Time to calculate results on GPU: 2588.681641 ms.
+
+real	0m6.559s
+user	0m6.076s
+sys	0m0.436s
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 16, Block_Dim_y = 16, Grid_Dim_x = 512, Grid_Dim_y = 512
+Time to calculate results on GPU: 2605.029053 ms.
+
+real	0m6.581s
+user	0m6.089s
+sys	0m0.438s
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 16, Block_Dim_y = 16, Grid_Dim_x = 512, Grid_Dim_y = 512
+Time to calculate results on GPU: 2623.766602 ms.
+
+real	0m6.596s
+user	0m6.109s
+sys	0m0.431s
+Running block BLOCK_DIM_X=32 BLOCK_DIM_Y=32
+With GRID_DIM_X=256 GRID_DIM_Y=256
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 32, Block_Dim_y = 32, Grid_Dim_x = 256, Grid_Dim_y = 256
+Time to calculate results on GPU: 2573.579590 ms.
+
+real	0m6.550s
+user	0m6.070s
+sys	0m0.425s
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 32, Block_Dim_y = 32, Grid_Dim_x = 256, Grid_Dim_y = 256
+Time to calculate results on GPU: 2539.176270 ms.
+
+real	0m6.522s
+user	0m6.055s
+sys	0m0.418s
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 32, Block_Dim_y = 32, Grid_Dim_x = 256, Grid_Dim_y = 256
+Time to calculate results on GPU: 2564.020264 ms.
+
+real	0m6.563s
+user	0m6.055s
+sys	0m0.449s

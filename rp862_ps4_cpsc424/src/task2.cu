@@ -1,4 +1,4 @@
-#define FP float
+#define FP double
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
 
@@ -52,12 +52,18 @@ void write_data_to_file(const char *filename,   // name of csv
  * @param A is n x p - STORED ROW-WISE
  * @param B is p x m - STORED ROW-WISE
  * @param C is n x m - STORED ROW-WISE
+ *
+ * This function was modified and extensively based on Figure 4.16
+ * and Figure 4.20 along with section 4.7 in Chapter 4 of Kirk and Hwu's
+ * `Programming Massively Parallel Processors`
  */
 __global__ void gpu_matrixmult_rectangular_shared(FP *A, FP *B, FP *C, int n, int p, int m, int TILE_WIDTH)
 {
-    __shared__ FP tiles[TILE_WIDTH * TILE_WIDTH * TILE_WIDTH * TILE_WIDTH];
-    __shared__ FP *Mds = &tiles[0];
-    __shared__ FP *Nds = &tiles[TILE_WIDTH * TILE_WIDTH];
+    // the textbook uses two double arrays - I interpreted not copying
+    // the data structure as continuing to use single arrays
+    extern __shared__ FP tiles[];
+    FP *Ads = &tiles[0];
+    FP *Bds = &tiles[TILE_WIDTH * TILE_WIDTH];
 
     int bx = blockIdx.x;
     int by = blockIdx.y;
@@ -67,36 +73,76 @@ __global__ void gpu_matrixmult_rectangular_shared(FP *A, FP *B, FP *C, int n, in
     int row = by * TILE_WIDTH + ty;
     int col = bx * TILE_WIDTH + tx;
 
-    int tile_idx = ty + TILE_WIDTH + tx;
+    int tile_idx = ty * TILE_WIDTH + tx;
 
     FP Cvalue = 0;
     // Loop over the A and B tiles required to compute the C element
-    for (size_t ph = 0; ph < Width / TILE_WIDTH; ph++)
+    for (size_t ph = 0; ph < ceil((double)p / (double)TILE_WIDTH); ph++)
     {
         // collaborative loading of A and B tiles into shared memory
-        Mds[tile_idx] = A[row * Width + ph * TILE_WIDTH + tx];
-        Nds[tile_idx] = B[(ph * TILE_WIDTH + ty) * Width + col];
+        int col_bound_A = ph * TILE_WIDTH + tx;
+        int row_bound_B = ph * TILE_WIDTH + ty;
+
+        int indexa = row * p + col_bound_A;
+        int indexb = row_bound_B * m + col;
+        if (row < n && col_bound_A < p)
+        {
+            Ads[tile_idx] = A[indexa];
+        }
+        if (col < m && row_bound_B < p)
+        {
+            Bds[tile_idx] = B[indexb];
+        }
         __syncthreads();
 
         for (size_t k = 0; k < TILE_WIDTH; k++)
         {
-            Cvalue += Mds[ty][k] * Nds[k][tx];
+            // row ty column k of A with row k column tx of B
+            Cvalue += Ads[ty * TILE_WIDTH + k] * Bds[k * TILE_WIDTH + tx];
         }
         __syncthreads();
     }
-    C[row * Width + col] = Cvalue;
+    if (col < m && row < n)
+    {
+        C[row * m + col] = Cvalue;
+    }
 }
+
+// void cpu_matrixmult_rectangular_kij(FP *A, FP *B, FP *C, int n, int p, int m)
+// {
+//     FP r;
+//     // the dot product between a row of A and column of B is between p numbers
+//     for (size_t k = 0; k < p; k++)
+//     {
+//         // there are n rows in A
+//         for (size_t i = 0; i < n; i++)
+//         {
+//             size_t ia = i * p + k; // row i column k of A
+//             r = A[ia];
+
+//             // there are m columns in b
+//             for (size_t j = 0; j < m; j++)
+//             {
+//                 size_t ib = k * m + j; // row k column j of B
+//                 size_t ic = i * m + j; // row i column j of C
+
+//                 C[ic] += r * B[ib];
+//             }
+//         }
+//     }
+// }
 
 int main(int argc, char **argv)
 {
 
-    FP *A, *B, *C;    // matrices on host
+    FP *A, *B, *C; // matrices on host
+    FP *HOST_C;    
     FP *dev_A, *dev_B, *dev_C; // matrices on device
     int n, p, m;               // matrix dimensions
 
-    int gpucount = 0;  // Count of available GPUs
-    int gpunum = 0;    // Device number to use
-    int Grid_Dim_x = 1;  // Grid dimension, x and y
+    int gpucount = 0;   // Count of available GPUs
+    int gpunum = 0;     // Device number to use
+    int Grid_Dim_x = 1; // Grid dimension, x and y
     int Grid_Dim_y = 1;
     int Block_Dim_x = 1; // Block dimension, x and y
     int Block_Dim_y = 1;
@@ -129,6 +175,7 @@ int main(int argc, char **argv)
 
     Block_Dim_x = atoi(argv[4]); // Rectangular block
     Block_Dim_y = atoi(argv[5]);
+    int TILE_WIDTH = Block_Dim_x;
     if (Block_Dim_x * Block_Dim_y > 1024)
     {
         printf("Error, too many threads in block\n");
@@ -162,9 +209,10 @@ int main(int argc, char **argv)
     size_t size_B = p * m * sizeof(FP);
     size_t size_C = n * m * sizeof(FP);
 
-    A = (FP *)malloc(size_A);      // dynamically allocated memory for arrays on host
-    B = (FP *)malloc(size_B);      // dynamically allocated memory for arrays on host
-    C = (FP *)malloc(size_C);      // results from GPU
+    A = (FP *)malloc(size_A); // dynamically allocated memory for arrays on host
+    B = (FP *)malloc(size_B); // dynamically allocated memory for arrays on host
+    C = (FP *)malloc(size_C); // results from GPU
+    // HOST_C = (FP *)malloc(size_C);
 
     srand(12345);
     for (size_t i = 0; i < n; i++)
@@ -188,6 +236,7 @@ int main(int argc, char **argv)
         for (size_t j = 0; j < m; j++)
         {
             C[i * m + j] = 0.;
+            // HOST_C[i * m + j] = 0.;
         }
     }
 
@@ -203,7 +252,8 @@ int main(int argc, char **argv)
 
     cudaEventRecord(start, 0);
 
-    gpu_matrixmult_rectangular<<<Grid, Block>>>(dev_A, dev_B, dev_C, n, p, m);
+    size_t TW = 2 * TILE_WIDTH * TILE_WIDTH * sizeof(FP);
+    gpu_matrixmult_rectangular_shared<<<Grid, Block, TW>>>(dev_A, dev_B, dev_C, n, p, m, TILE_WIDTH);
 
     cudaEventRecord(stop, 0); // instrument code to measure end time
     cudaEventSynchronize(stop);
@@ -212,12 +262,56 @@ int main(int argc, char **argv)
     cudaMemcpy(C, dev_C, size_C, cudaMemcpyDeviceToHost);
 
     printf("Time to calculate results on GPU: %f ms.\n", elapsed_time_ms); // exec. time
-    write_data_to_file("out/task1.csv", "task1", "gpu", n, p, m, Block_Dim_x, Block_Dim_y, Grid_Dim_x, Grid_Dim_y,elapsed_time_ms);
+    write_data_to_file("out/task2.csv", "task2", "gpu", n, p, m, Block_Dim_x, Block_Dim_y, Grid_Dim_x, Grid_Dim_y, elapsed_time_ms);
+
+    // // ------------- COMPUTATION DONE ON HOST CPU ----------------------------
+    // // DEBUGGING USE ONLY (AND FOR LIMITED NUMBERS OF TIMING RUNS)
+
+    // cudaEventRecord(start, 0); // use same timing
+    // // cudaEventSynchronize(start); // not needed
+
+    // cpu_matrixmult_rectangular_kij(A, B, HOST_C, n, p, m); // do calculation on host (NOTE: This computes the diff with GPU result.)
+
+    // cudaEventRecord(stop, 0); // instrument code to measue end time
+    // cudaEventSynchronize(stop);
+    // cudaEventElapsedTime(&elapsed_time_ms, start, stop);
+
+    // printf("Time to calculate results on CPU: %f ms.\n", elapsed_time_ms); // exec. time
+
+    // // ------------------- check device creates correct results -----------------
+
+    // double error, suma, sumb, sumc, ai, bi, ci;
+    // suma = 0.;
+    // sumb = 0;
+    // sumc = 0;
+    // for (size_t i = 0; i < n * p; i++)
+    // {
+    //     ai = (double)A[i];
+    //     suma += ai * ai;
+    // }
+    // for (size_t i = 0; i < p * m; i++)
+    // {
+    //     bi = (double)B[i];
+    //     sumb += bi * bi;
+    // }
+    // for (size_t i = 0; i < n * m; i++)
+    // {
+    //     ci = (double)C[i] - (double)HOST_C[i];
+    //     sumc += ci * ci;
+    // }
+    // suma = sqrt(suma);
+    // sumb = sqrt(sumb);
+    // sumc = sqrt(sumc);
+    // error = sumc / (suma * sumb);
+    // printf("Approximate relative error between GPU and CPU: %e\n", error);
+    // END OF OPTIONAL SECTION THAT CAN BE OMITTED
+    // -------------- clean up ---------------------------------------
 
     // -------------- clean up ---------------------------------------
     free(A);
     free(B);
     free(C);
+    // free(HOST_C);
     cudaFree(dev_A);
     cudaFree(dev_B);
     cudaFree(dev_C);

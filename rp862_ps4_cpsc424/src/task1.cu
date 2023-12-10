@@ -55,7 +55,6 @@ void write_data_to_file(const char *filename,   // name of csv
  */
 __global__ void gpu_matrixmult_rectangular(FP *A, FP *B, FP *C, int n, int p, int m)
 {
-
     int col = threadIdx.x + blockDim.x * blockIdx.x;
     int row = threadIdx.y + blockDim.y * blockIdx.y;
 
