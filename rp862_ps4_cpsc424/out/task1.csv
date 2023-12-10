@@ -128,3 +128,4 @@ program,multiplier,precision,n,p,m,block_x,block_y,grid_x,grid_y,exe_time
 "task1a","cpu","float",8192,8192,1024,0,0,0,0,25091.673828
 "task1a","cpu","float",8192,8192,1024,0,0,0,0,25534.822266
 "task1a","cpu","float",8192,8192,1024,0,0,0,0,25066.224609
+"task1","gpu","float",30536,30536,30536,32,32,955,955,121486.492188

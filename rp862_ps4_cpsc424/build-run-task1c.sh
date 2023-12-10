@@ -40,7 +40,7 @@ make task1
 
 # PART B - EDIT FP to double first and comment out the above
 
-sizes="30899,30899,30899 30960,30960,30960"
+sizes="30536,30536,30536"
 for tuple in $sizes
 do
     IFS=',' read -ra ADDR <<< "$tuple"
