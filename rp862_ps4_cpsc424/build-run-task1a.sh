@@ -68,8 +68,8 @@ for tuple in $sizes
 do
     IFS=',' read -ra ADDR <<< "$tuple"
     n=${ADDR[0]}
-    p=${ADDR[1]}
-    m=${ADDR[2]}
+    m=${ADDR[1]}
+    p=${ADDR[2]}
     echo "Running n=$n, p=$p, m=$m"
 
     time ./bin/serial $n $p $m 

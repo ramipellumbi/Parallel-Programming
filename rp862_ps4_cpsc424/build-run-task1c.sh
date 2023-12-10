@@ -40,7 +40,7 @@ make task1
 
 # PART B - EDIT FP to double first and comment out the above
 
-sizes="30899,30899,30899 30960,30960,30960 30990,30990,30990 31005,31005,31005"
+sizes="30899,30899,30899 30960,30960,30960"
 for tuple in $sizes
 do
     IFS=',' read -ra ADDR <<< "$tuple"
@@ -54,7 +54,5 @@ do
     Grid_Dim_y=$((($n + $blocky - 1)/$blocky))
     echo "Running block BLOCK_DIM_X=$blockx BLOCK_DIM_Y=$blocky"
     echo "With GRID_DIM_X=$Grid_Dim_x GRID_DIM_Y=$Grid_Dim_y"
-    time ./bin/task1 $n $p $m $blockx $blocky $Grid_Dim_x $Grid_Dim_y
-    time ./bin/task1 $n $p $m $blockx $blocky $Grid_Dim_x $Grid_Dim_y
     time ./bin/task1 $n $p $m $blockx $blocky $Grid_Dim_x $Grid_Dim_y
 done
