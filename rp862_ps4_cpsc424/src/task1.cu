@@ -201,7 +201,7 @@ int main(int argc, char **argv)
     cudaMemcpy(C, dev_C, size_C, cudaMemcpyDeviceToHost);
 
     printf("Time to calculate results on GPU: %f ms.\n", elapsed_time_ms); // exec. time
-    write_data_to_file("out/task1.csv", "task1a", "gpu", n, p, m, Block_Dim_x, Block_Dim_y, Grid_Dim_x, Grid_Dim_y,elapsed_time_ms);
+    write_data_to_file("out/task1.csv", "task1", "gpu", n, p, m, Block_Dim_x, Block_Dim_y, Grid_Dim_x, Grid_Dim_y,elapsed_time_ms);
 
     // -------------- clean up ---------------------------------------
     free(A);

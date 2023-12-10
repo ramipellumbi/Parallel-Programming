@@ -38,11 +38,9 @@ make clean
 make serial
 make task1 
 
-# PART A
+# PART B - EDIT FP to double first and comment out the above
 
-# n,m,p blocks delimited by a space
-sizes="1024,1024,1024 8192,8192,8192 1024,1024,8192 8192,8192,1024 8192,1024,8192"
-
+sizes="30990,30990,30990"
 for tuple in $sizes
 do
     IFS=',' read -ra ADDR <<< "$tuple"
@@ -62,17 +60,4 @@ do
         time ./bin/task1 $n $m $p $blockx $blocky $Grid_Dim_x $Grid_Dim_y
         time ./bin/task1 $n $m $p $blockx $blocky $Grid_Dim_x $Grid_Dim_y
     done
-done
-
-for tuple in $sizes
-do
-    IFS=',' read -ra ADDR <<< "$tuple"
-    n=${ADDR[0]}
-    p=${ADDR[1]}
-    m=${ADDR[2]}
-    echo "Running n=$n, p=$p, m=$m"
-
-    time ./bin/serial $n $m $p 
-    time ./bin/serial $n $m $p 
-    time ./bin/serial $n $m $p 
 done
