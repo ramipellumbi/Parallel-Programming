@@ -5,7 +5,8 @@
 #include <stdlib.h>
 #include <math.h>
 
-__global__ void gpu_matrixmult(FP *a,FP *b, FP *c, int n) {
+__global__ void gpu_matrixmult(FP *a,FP *b, FP *c, int n) 
+{
 
   int col = threadIdx.x + blockDim.x * blockIdx.x;
   int row = threadIdx.y + blockDim.y * blockIdx.y;
@@ -22,24 +23,30 @@ __global__ void gpu_matrixmult(FP *a,FP *b, FP *c, int n) {
 }
 
 
-void cpu_matrixmult(FP *a,FP *b, FP *c, int n) {
+void cpu_matrixmult(FP *a,FP *b, FP *c, int n) 
+{
 
   int index, indexa, indexb;
   FP cvalue;
   for(int col=0;col < n; col++)
-    for(int row=0;row < n; row++) {
+  {
+    for(int row=0;row < n; row++) 
+    {
       indexb = col;
       index = row * n + col;
       cvalue = 0.;
       for (indexa = row*n; indexa < (row*n + n); indexa++, indexb+=n) 
-	cvalue += a[indexa]*b[indexb];
-      c[index] -= cvalue; //NOTE: This calculates the diff between CPU and GPU computations.
+      {
+	    cvalue += a[indexa]*b[indexb];
+        c[index] -= cvalue; //NOTE: This calculates the diff between CPU and GPU computations.
+      }
     }
+  }
 }
 
 
-int main(int argc, char *argv[]) {
-
+int main(int argc, char *argv[]) 
+{
   int i, j; // loop counters
 
   int gpucount = 0; // Count of available GPUs
