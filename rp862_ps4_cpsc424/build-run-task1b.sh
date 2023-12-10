@@ -49,9 +49,9 @@ do
     m=${ADDR[2]}
 
     echo "Running n=$n, p=$p, m=$m"
-    for blockx in 8 16 32 64 128
+    for blockx in 8 16 32 64 128 256
     do
-        for blocky in 8 16 32 64 128
+        for blocky in 8 16 32 64 128 256
         do
             Grid_Dim_x=$((($m + $blockx - 1)/$blockx))
             Grid_Dim_y=$((($n + $blocky - 1)/$blocky))

@@ -40,15 +40,15 @@ make task1
 
 # PART A
 
-# n,p,m blocks delimited by a space
+# n,m,p blocks delimited by a space
 sizes="1024,1024,1024 8192,8192,8192 1024,1024,8192 8192,8192,1024 8192,1024,8192"
 
 for tuple in $sizes
 do
     IFS=',' read -ra ADDR <<< "$tuple"
     n=${ADDR[0]}
-    p=${ADDR[1]}
-    m=${ADDR[2]}
+    m=${ADDR[1]}
+    p=${ADDR[2]}
 
     echo "Running n=$n, p=$p, m=$m"
     for blockx in 8 16 32 64 128

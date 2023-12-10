@@ -74,54 +74,6 @@ __global__ void gpu_matrixmult_rectangular(FP *A, FP *B, FP *C, int n, int p, in
     }
 }
 
-/**
- * @param A is n x p - STORED ROW-WISE
- * @param B is p x m - STORED ROW-WISE
- * @param C is n x m - STORED ROW-WISE
- */
-void cpu_matrixmult_rectangular_kij(FP *A, FP *B, FP *C, int n, int p, int m)
-{
-    FP r;
-    // the dot product between a row of A and column of B is between p numbers
-    for (size_t k = 0; k < p; k++)
-    {
-        // there are n rows in A
-        for (size_t i = 0; i < n; i++)
-        {
-            size_t ia = i * p + k; // row i column k of A
-            r = A[ia];
-
-            // there are m columns in b
-            for (size_t j = 0; j < m; j++)
-            {
-                size_t ib = k * m + j; // row k column j of B
-                size_t ic = i * m + j; // row i column j of C
-
-                C[ic] += r * B[ib];
-            }
-        }
-    }
-}
-
-/**
- * Print matrix M (stored row wise)
- */
-void print_matrix(FP *M, const char *name, size_t nrow, size_t ncol)
-{
-    printf("Matrix %s\n", name);
-    printf("[\n");
-    for (size_t i = 0; i < nrow; i++)
-    {
-        printf("[");
-        for (size_t j = 0; j < ncol; j++)
-        {
-            printf("%f,", M[i * ncol + j]);
-        }
-        printf("],\n");
-    }
-    printf("]\n");
-}
-
 int main(int argc, char **argv)
 {
 
@@ -250,44 +202,6 @@ int main(int argc, char **argv)
 
     printf("Time to calculate results on GPU: %f ms.\n", elapsed_time_ms); // exec. time
     write_data_to_file("out/task1.csv", "task1a", "gpu", n, p, m, Block_Dim_x, Block_Dim_y, Grid_Dim_x, Grid_Dim_y,elapsed_time_ms);
-
-    // ------------- COMPUTATION DONE ON HOST CPU ----------------------------
-    // cudaEventRecord(start, 0); // use same timing
-
-    // cpu_matrixmult_rectangular_kij(A, B, HOST_C, n, p, m); // do calculation on host
-
-    // cudaEventRecord(stop, 0); // instrument code to measue end time
-    // cudaEventSynchronize(stop);
-    // cudaEventElapsedTime(&elapsed_time_ms, start, stop);
-
-    // printf("Time to calculate results on CPU: %f ms.\n", elapsed_time_ms); // exec. time
-    // write_data_to_file("out/task1.csv", "task1a", "cpu", n, p, m, Block_Dim_x, Block_Dim_y, Grid_Dim_x, Grid_Dim_y,elapsed_time_ms);
-
-    // ------------------- check device creates correct results -----------------
-    // double error, suma, sumb, sumc, ai, bi, ci;
-    // suma = 0.;
-    // sumb = 0;
-    // sumc = 0;
-    // for (size_t i = 0; i < n * p; i++)
-    // {
-    //     ai = (double)A[i];
-    //     suma += ai * ai;
-    // }
-    // for (size_t i = 0; i < p * m; i++)
-    // {
-    //     bi = (double)B[i];
-    //     sumb += bi * bi;
-    // }
-    // for (size_t i = 0; i < n * m; i++)
-    // {
-    //     ci = (double)(C[i] - HOST_C[i]);
-    //     sumc += ci * ci;
-    // }
-    // suma = sqrt(suma);
-    // sumb = sqrt(sumb);
-    // sumc = sqrt(sumc);
-    // error = sumc / (suma * sumb);
-    // printf("Approximate relative error between GPU and CPU: %e\n", error);
 
     // -------------- clean up ---------------------------------------
     free(A);

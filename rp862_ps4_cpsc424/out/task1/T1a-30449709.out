@@ -24,7 +24,7 @@ Currently Loaded Modules:
 
 ***Running nvidia-smi
 
-Sat Dec  9 22:30:18 2023       
+Sun Dec 10 10:29:08 2023       
 +---------------------------------------------------------------------------------------+
 | NVIDIA-SMI 545.23.08              Driver Version: 545.23.08    CUDA Version: 12.3     |
 |-----------------------------------------+----------------------+----------------------+
@@ -32,8 +32,8 @@ Sat Dec  9 22:30:18 2023
 | Fan  Temp   Perf          Pwr:Usage/Cap |         Memory-Usage | GPU-Util  Compute M. |
 |                                         |                      |               MIG M. |
 |=========================================+======================+======================|
-|   0  NVIDIA GeForce RTX 2080 Ti     On  | 00000000:AF:00.0 Off |                  N/A |
-| 29%   32C    P8              25W / 250W |      1MiB / 11264MiB |      0%      Default |
+|   0  NVIDIA GeForce RTX 2080 Ti     On  | 00000000:3B:00.0 Off |                  N/A |
+| 34%   37C    P8              26W / 250W |      1MiB / 11264MiB |      0%      Default |
 |                                         |                      |                  N/A |
 +-----------------------------------------+----------------------+----------------------+
                                                                                          
@@ -85,7 +85,7 @@ Device 0: "NVIDIA GeForce RTX 2080 Ti"
   Device supports Compute Preemption:            Yes
   Supports Cooperative Kernel Launch:            Yes
   Supports MultiDevice Co-op Kernel Launch:      Yes
-  Device PCI Domain ID / Bus ID / location ID:   0 / 175 / 0
+  Device PCI Domain ID / Bus ID / location ID:   0 / 59 / 0
   Compute Mode:
      < Default (multiple host threads can use ::cudaSetDevice() with device simultaneously) >
 
@@ -93,7 +93,7 @@ deviceQuery, CUDA Driver = CUDART, CUDA Driver Version = 12.3, CUDA Runtime Vers
 Result = PASS
 
 ***Building task1
-rm -f obj/*.o  bin/task1  bin/matmul  bin/serial 
+rm -f obj/*.o  bin/task1  bin/serial 
 nvcc -gencode=arch=compute_75,code=sm_75 -O3 -g -I include -o obj/serial.o -c src/serial.cu
 Building binary bin/serial from object obj/serial.o
 nvcc -gencode=arch=compute_75,code=sm_75 -lm -g -o bin/serial obj/serial.o
@@ -109,28 +109,28 @@ Device count = 1
 Using device 0
 Matrix Dimension = 8192
 Block_Dim_x = 8, Block_Dim_y = 8, Grid_Dim_x = 1024, Grid_Dim_y = 1024
-Time to calculate results on GPU: 3791.342773 ms.
+Time to calculate results on GPU: 3840.357910 ms.
 
-real	0m7.819s
-user	0m7.254s
-sys	0m0.525s
+real	0m7.574s
+user	0m6.939s
+sys	0m0.583s
 Device count = 1
 Using device 0
 Matrix Dimension = 8192
 Block_Dim_x = 8, Block_Dim_y = 8, Grid_Dim_x = 1024, Grid_Dim_y = 1024
-Time to calculate results on GPU: 3800.817627 ms.
+Time to calculate results on GPU: 3868.014160 ms.
 
-real	0m7.838s
-user	0m7.265s
-sys	0m0.524s
+real	0m7.563s
+user	0m6.982s
+sys	0m0.531s
 Device count = 1
 Using device 0
 Matrix Dimension = 8192
 Block_Dim_x = 8, Block_Dim_y = 8, Grid_Dim_x = 1024, Grid_Dim_y = 1024
-Time to calculate results on GPU: 3814.608398 ms.
+Time to calculate results on GPU: 3858.431885 ms.
 
-real	0m7.855s
-user	0m7.274s
+real	0m7.560s
+user	0m6.964s
 sys	0m0.526s
 Running block BLOCK_DIM_X=8 BLOCK_DIM_Y=16
 With GRID_DIM_X=1024 GRID_DIM_Y=512
@@ -138,28 +138,28 @@ Device count = 1
 Using device 0
 Matrix Dimension = 8192
 Block_Dim_x = 8, Block_Dim_y = 16, Grid_Dim_x = 1024, Grid_Dim_y = 512
-Time to calculate results on GPU: 3573.551270 ms.
+Time to calculate results on GPU: 3672.371338 ms.
 
-real	0m7.614s
-user	0m7.044s
-sys	0m0.515s
+real	0m7.374s
+user	0m6.800s
+sys	0m0.522s
 Device count = 1
 Using device 0
 Matrix Dimension = 8192
 Block_Dim_x = 8, Block_Dim_y = 16, Grid_Dim_x = 1024, Grid_Dim_y = 512
-Time to calculate results on GPU: 3597.836426 ms.
+Time to calculate results on GPU: 3694.062012 ms.
 
-real	0m7.641s
-user	0m7.069s
-sys	0m0.520s
+real	0m7.398s
+user	0m6.800s
+sys	0m0.539s
 Device count = 1
 Using device 0
 Matrix Dimension = 8192
 Block_Dim_x = 8, Block_Dim_y = 16, Grid_Dim_x = 1024, Grid_Dim_y = 512
-Time to calculate results on GPU: 3610.547363 ms.
+Time to calculate results on GPU: 3687.059814 ms.
 
-real	0m7.649s
-user	0m7.074s
+real	0m7.382s
+user	0m6.802s
 sys	0m0.524s
 Running block BLOCK_DIM_X=8 BLOCK_DIM_Y=32
 With GRID_DIM_X=1024 GRID_DIM_Y=256
@@ -167,440 +167,93 @@ Device count = 1
 Using device 0
 Matrix Dimension = 8192
 Block_Dim_x = 8, Block_Dim_y = 32, Grid_Dim_x = 1024, Grid_Dim_y = 256
-Time to calculate results on GPU: 3518.138184 ms.
+Time to calculate results on GPU: 3598.424561 ms.
 
-real	0m7.547s
-user	0m6.975s
-sys	0m0.531s
+real	0m7.325s
+user	0m6.707s
+sys	0m0.543s
 Device count = 1
 Using device 0
 Matrix Dimension = 8192
 Block_Dim_x = 8, Block_Dim_y = 32, Grid_Dim_x = 1024, Grid_Dim_y = 256
-Time to calculate results on GPU: 3519.332520 ms.
+Time to calculate results on GPU: 3597.375244 ms.
 
-real	0m7.582s
-user	0m6.978s
-sys	0m0.538s
+real	0m7.290s
+user	0m6.703s
+sys	0m0.537s
 Device count = 1
 Using device 0
 Matrix Dimension = 8192
 Block_Dim_x = 8, Block_Dim_y = 32, Grid_Dim_x = 1024, Grid_Dim_y = 256
-Time to calculate results on GPU: 3525.213135 ms.
+Time to calculate results on GPU: 3617.707275 ms.
 
-real	0m7.567s
-user	0m6.976s
-sys	0m0.542s
+real	0m7.320s
+user	0m6.734s
+sys	0m0.529s
 Running block BLOCK_DIM_X=8 BLOCK_DIM_Y=64
 With GRID_DIM_X=1024 GRID_DIM_Y=128
 Device count = 1
 Using device 0
 Matrix Dimension = 8192
 Block_Dim_x = 8, Block_Dim_y = 64, Grid_Dim_x = 1024, Grid_Dim_y = 128
-Time to calculate results on GPU: 3542.618164 ms.
+Time to calculate results on GPU: 3616.974854 ms.
 
-real	0m7.581s
-user	0m7.017s
-sys	0m0.515s
+real	0m7.345s
+user	0m6.737s
+sys	0m0.519s
 Device count = 1
 Using device 0
 Matrix Dimension = 8192
 Block_Dim_x = 8, Block_Dim_y = 64, Grid_Dim_x = 1024, Grid_Dim_y = 128
-Time to calculate results on GPU: 3512.128418 ms.
+Time to calculate results on GPU: 3618.649902 ms.
 
-real	0m7.563s
-user	0m6.967s
-sys	0m0.534s
+real	0m7.307s
+user	0m6.727s
+sys	0m0.526s
 Device count = 1
 Using device 0
 Matrix Dimension = 8192
 Block_Dim_x = 8, Block_Dim_y = 64, Grid_Dim_x = 1024, Grid_Dim_y = 128
-Time to calculate results on GPU: 3537.385986 ms.
+Time to calculate results on GPU: 3651.924561 ms.
 
-real	0m7.588s
-user	0m7.002s
-sys	0m0.528s
+real	0m7.399s
+user	0m6.764s
+sys	0m0.521s
 Running block BLOCK_DIM_X=8 BLOCK_DIM_Y=128
 With GRID_DIM_X=1024 GRID_DIM_Y=64
 Device count = 1
 Using device 0
 Matrix Dimension = 8192
 Block_Dim_x = 8, Block_Dim_y = 128, Grid_Dim_x = 1024, Grid_Dim_y = 64
-Time to calculate results on GPU: 3562.007812 ms.
+Time to calculate results on GPU: 3633.332520 ms.
 
-real	0m7.603s
-user	0m7.032s
-sys	0m0.523s
+real	0m7.319s
+user	0m6.753s
+sys	0m0.515s
 Device count = 1
 Using device 0
 Matrix Dimension = 8192
 Block_Dim_x = 8, Block_Dim_y = 128, Grid_Dim_x = 1024, Grid_Dim_y = 64
-Time to calculate results on GPU: 3529.727051 ms.
+Time to calculate results on GPU: 3661.993408 ms.
 
-real	0m7.567s
-user	0m6.997s
-sys	0m0.522s
-Device count = 1
-Using device 0
-Matrix Dimension = 8192
-Block_Dim_x = 8, Block_Dim_y = 128, Grid_Dim_x = 1024, Grid_Dim_y = 64
-Time to calculate results on GPU: 3550.326172 ms.
-
-real	0m7.587s
-user	0m7.006s
-sys	0m0.531s
-Running block BLOCK_DIM_X=16 BLOCK_DIM_Y=8
-With GRID_DIM_X=512 GRID_DIM_Y=1024
-Device count = 1
-Using device 0
-Matrix Dimension = 8192
-Block_Dim_x = 16, Block_Dim_y = 8, Grid_Dim_x = 512, Grid_Dim_y = 1024
-Time to calculate results on GPU: 3242.572754 ms.
-
-real	0m7.290s
-user	0m6.713s
-sys	0m0.520s
-Device count = 1
-Using device 0
-Matrix Dimension = 8192
-Block_Dim_x = 16, Block_Dim_y = 8, Grid_Dim_x = 512, Grid_Dim_y = 1024
-Time to calculate results on GPU: 3229.588135 ms.
-
-real	0m7.279s
-user	0m6.700s
-sys	0m0.519s
-Device count = 1
-Using device 0
-Matrix Dimension = 8192
-Block_Dim_x = 16, Block_Dim_y = 8, Grid_Dim_x = 512, Grid_Dim_y = 1024
-Time to calculate results on GPU: 3224.623535 ms.
-
-real	0m7.274s
-user	0m6.686s
-sys	0m0.530s
-Running block BLOCK_DIM_X=16 BLOCK_DIM_Y=16
-With GRID_DIM_X=512 GRID_DIM_Y=512
-Device count = 1
-Using device 0
-Matrix Dimension = 8192
-Block_Dim_x = 16, Block_Dim_y = 16, Grid_Dim_x = 512, Grid_Dim_y = 512
-Time to calculate results on GPU: 3067.413818 ms.
-
-real	0m7.116s
-user	0m6.526s
-sys	0m0.535s
-Device count = 1
-Using device 0
-Matrix Dimension = 8192
-Block_Dim_x = 16, Block_Dim_y = 16, Grid_Dim_x = 512, Grid_Dim_y = 512
-Time to calculate results on GPU: 3090.244141 ms.
-
-real	0m7.130s
-user	0m6.553s
-sys	0m0.524s
-Device count = 1
-Using device 0
-Matrix Dimension = 8192
-Block_Dim_x = 16, Block_Dim_y = 16, Grid_Dim_x = 512, Grid_Dim_y = 512
-Time to calculate results on GPU: 3075.626709 ms.
-
-real	0m7.119s
-user	0m6.541s
-sys	0m0.526s
-Running block BLOCK_DIM_X=16 BLOCK_DIM_Y=32
-With GRID_DIM_X=512 GRID_DIM_Y=256
-Device count = 1
-Using device 0
-Matrix Dimension = 8192
-Block_Dim_x = 16, Block_Dim_y = 32, Grid_Dim_x = 512, Grid_Dim_y = 256
-Time to calculate results on GPU: 2915.585693 ms.
-
-real	0m6.948s
-user	0m6.366s
-sys	0m0.535s
-Device count = 1
-Using device 0
-Matrix Dimension = 8192
-Block_Dim_x = 16, Block_Dim_y = 32, Grid_Dim_x = 512, Grid_Dim_y = 256
-Time to calculate results on GPU: 2915.474609 ms.
-
-real	0m7.050s
-user	0m6.475s
-sys	0m0.524s
-Device count = 1
-Using device 0
-Matrix Dimension = 8192
-Block_Dim_x = 16, Block_Dim_y = 32, Grid_Dim_x = 512, Grid_Dim_y = 256
-Time to calculate results on GPU: 2912.504883 ms.
-
-real	0m7.055s
-user	0m6.465s
-sys	0m0.537s
-Running block BLOCK_DIM_X=16 BLOCK_DIM_Y=64
-With GRID_DIM_X=512 GRID_DIM_Y=128
-Device count = 1
-Using device 0
-Matrix Dimension = 8192
-Block_Dim_x = 16, Block_Dim_y = 64, Grid_Dim_x = 512, Grid_Dim_y = 128
-Time to calculate results on GPU: 2946.602783 ms.
-
-real	0m6.985s
-user	0m6.405s
+real	0m7.356s
+user	0m6.767s
 sys	0m0.534s
 Device count = 1
 Using device 0
 Matrix Dimension = 8192
-Block_Dim_x = 16, Block_Dim_y = 64, Grid_Dim_x = 512, Grid_Dim_y = 128
-Time to calculate results on GPU: 2935.899658 ms.
+Block_Dim_x = 8, Block_Dim_y = 128, Grid_Dim_x = 1024, Grid_Dim_y = 64
+Time to calculate results on GPU: 3642.858643 ms.
 
-real	0m6.976s
-user	0m6.401s
-sys	0m0.527s
-Device count = 1
-Using device 0
-Matrix Dimension = 8192
-Block_Dim_x = 16, Block_Dim_y = 64, Grid_Dim_x = 512, Grid_Dim_y = 128
-Time to calculate results on GPU: 2909.534424 ms.
-
-real	0m6.956s
-user	0m6.376s
-sys	0m0.525s
-Running block BLOCK_DIM_X=16 BLOCK_DIM_Y=128
-With GRID_DIM_X=512 GRID_DIM_Y=64
+real	0m7.338s
+user	0m6.755s
+sys	0m0.528s
+Running block BLOCK_DIM_X=8 BLOCK_DIM_Y=256
+With GRID_DIM_X=1024 GRID_DIM_Y=32
 Device count = 1
 Error, too many threads in block
 
-real	0m0.055s
-user	0m0.004s
-sys	0m0.022s
-Device count = 1
-Error, too many threads in block
-
-real	0m0.031s
-user	0m0.002s
-sys	0m0.023s
-Device count = 1
-Error, too many threads in block
-
-real	0m0.029s
-user	0m0.002s
-sys	0m0.022s
-Running block BLOCK_DIM_X=32 BLOCK_DIM_Y=8
-With GRID_DIM_X=256 GRID_DIM_Y=1024
-Device count = 1
-Using device 0
-Matrix Dimension = 8192
-Block_Dim_x = 32, Block_Dim_y = 8, Grid_Dim_x = 256, Grid_Dim_y = 1024
-Time to calculate results on GPU: 3047.050049 ms.
-
-real	0m7.062s
-user	0m6.504s
-sys	0m0.530s
-Device count = 1
-Using device 0
-Matrix Dimension = 8192
-Block_Dim_x = 32, Block_Dim_y = 8, Grid_Dim_x = 256, Grid_Dim_y = 1024
-Time to calculate results on GPU: 3056.060791 ms.
-
-real	0m7.089s
-user	0m6.523s
-sys	0m0.520s
-Device count = 1
-Using device 0
-Matrix Dimension = 8192
-Block_Dim_x = 32, Block_Dim_y = 8, Grid_Dim_x = 256, Grid_Dim_y = 1024
-Time to calculate results on GPU: 3065.533691 ms.
-
-real	0m7.109s
-user	0m6.526s
-sys	0m0.532s
-Running block BLOCK_DIM_X=32 BLOCK_DIM_Y=16
-With GRID_DIM_X=256 GRID_DIM_Y=512
-Device count = 1
-Using device 0
-Matrix Dimension = 8192
-Block_Dim_x = 32, Block_Dim_y = 16, Grid_Dim_x = 256, Grid_Dim_y = 512
-Time to calculate results on GPU: 3089.657471 ms.
-
-real	0m7.129s
-user	0m6.550s
-sys	0m0.527s
-Device count = 1
-Using device 0
-Matrix Dimension = 8192
-Block_Dim_x = 32, Block_Dim_y = 16, Grid_Dim_x = 256, Grid_Dim_y = 512
-Time to calculate results on GPU: 3074.697510 ms.
-
-real	0m7.099s
-user	0m6.538s
-sys	0m0.521s
-Device count = 1
-Using device 0
-Matrix Dimension = 8192
-Block_Dim_x = 32, Block_Dim_y = 16, Grid_Dim_x = 256, Grid_Dim_y = 512
-Time to calculate results on GPU: 3099.618164 ms.
-
-real	0m7.147s
-user	0m6.570s
-sys	0m0.520s
-Running block BLOCK_DIM_X=32 BLOCK_DIM_Y=32
-With GRID_DIM_X=256 GRID_DIM_Y=256
-Device count = 1
-Using device 0
-Matrix Dimension = 8192
-Block_Dim_x = 32, Block_Dim_y = 32, Grid_Dim_x = 256, Grid_Dim_y = 256
-Time to calculate results on GPU: 2867.545166 ms.
-
-real	0m6.920s
-user	0m6.335s
-sys	0m0.518s
-Device count = 1
-Using device 0
-Matrix Dimension = 8192
-Block_Dim_x = 32, Block_Dim_y = 32, Grid_Dim_x = 256, Grid_Dim_y = 256
-Time to calculate results on GPU: 2897.223877 ms.
-
-real	0m6.942s
-user	0m6.356s
-sys	0m0.535s
-Device count = 1
-Using device 0
-Matrix Dimension = 8192
-Block_Dim_x = 32, Block_Dim_y = 32, Grid_Dim_x = 256, Grid_Dim_y = 256
-Time to calculate results on GPU: 2869.814697 ms.
-
-real	0m6.908s
-user	0m6.339s
-sys	0m0.520s
-Running block BLOCK_DIM_X=32 BLOCK_DIM_Y=64
-With GRID_DIM_X=256 GRID_DIM_Y=128
-Device count = 1
-Error, too many threads in block
-
-real	0m0.058s
-user	0m0.003s
-sys	0m0.023s
-Device count = 1
-Error, too many threads in block
-
-real	0m0.030s
-user	0m0.004s
-sys	0m0.020s
-Device count = 1
-Error, too many threads in block
-
-real	0m0.029s
-user	0m0.002s
-sys	0m0.022s
-Running block BLOCK_DIM_X=32 BLOCK_DIM_Y=128
-With GRID_DIM_X=256 GRID_DIM_Y=64
-Device count = 1
-Error, too many threads in block
-
-real	0m0.030s
-user	0m0.003s
-sys	0m0.021s
-Device count = 1
-Error, too many threads in block
-
-real	0m0.036s
-user	0m0.003s
-sys	0m0.021s
-Device count = 1
-Error, too many threads in block
-
-real	0m0.033s
-user	0m0.002s
-sys	0m0.022s
-Running block BLOCK_DIM_X=64 BLOCK_DIM_Y=8
-With GRID_DIM_X=128 GRID_DIM_Y=1024
-Device count = 1
-Using device 0
-Matrix Dimension = 8192
-Block_Dim_x = 64, Block_Dim_y = 8, Grid_Dim_x = 128, Grid_Dim_y = 1024
-Time to calculate results on GPU: 3038.771729 ms.
-
-real	0m7.072s
-user	0m6.501s
-sys	0m0.527s
-Device count = 1
-Using device 0
-Matrix Dimension = 8192
-Block_Dim_x = 64, Block_Dim_y = 8, Grid_Dim_x = 128, Grid_Dim_y = 1024
-Time to calculate results on GPU: 3066.060059 ms.
-
-real	0m7.112s
-user	0m6.533s
-sys	0m0.526s
-Device count = 1
-Using device 0
-Matrix Dimension = 8192
-Block_Dim_x = 64, Block_Dim_y = 8, Grid_Dim_x = 128, Grid_Dim_y = 1024
-Time to calculate results on GPU: 3053.973633 ms.
-
-real	0m7.096s
-user	0m6.513s
-sys	0m0.531s
-Running block BLOCK_DIM_X=64 BLOCK_DIM_Y=16
-With GRID_DIM_X=128 GRID_DIM_Y=512
-Device count = 1
-Using device 0
-Matrix Dimension = 8192
-Block_Dim_x = 64, Block_Dim_y = 16, Grid_Dim_x = 128, Grid_Dim_y = 512
-Time to calculate results on GPU: 2968.472412 ms.
-
-real	0m7.008s
-user	0m6.432s
-sys	0m0.529s
-Device count = 1
-Using device 0
-Matrix Dimension = 8192
-Block_Dim_x = 64, Block_Dim_y = 16, Grid_Dim_x = 128, Grid_Dim_y = 512
-Time to calculate results on GPU: 2981.727539 ms.
-
-real	0m7.015s
-user	0m6.444s
-sys	0m0.531s
-Device count = 1
-Using device 0
-Matrix Dimension = 8192
-Block_Dim_x = 64, Block_Dim_y = 16, Grid_Dim_x = 128, Grid_Dim_y = 512
-Time to calculate results on GPU: 2980.248779 ms.
-
-real	0m7.030s
-user	0m6.446s
-sys	0m0.529s
-Running block BLOCK_DIM_X=64 BLOCK_DIM_Y=32
-With GRID_DIM_X=128 GRID_DIM_Y=256
-Device count = 1
-Error, too many threads in block
-
-real	0m0.052s
-user	0m0.002s
-sys	0m0.024s
-Device count = 1
-Error, too many threads in block
-
-real	0m0.028s
-user	0m0.002s
-sys	0m0.022s
-Device count = 1
-Error, too many threads in block
-
-real	0m0.028s
-user	0m0.004s
-sys	0m0.020s
-Running block BLOCK_DIM_X=64 BLOCK_DIM_Y=64
-With GRID_DIM_X=128 GRID_DIM_Y=128
-Device count = 1
-Error, too many threads in block
-
-real	0m0.035s
-user	0m0.005s
-sys	0m0.018s
-Device count = 1
-Error, too many threads in block
-
-real	0m0.028s
+real	0m0.043s
 user	0m0.005s
 sys	0m0.019s
 Device count = 1
@@ -608,114 +261,541 @@ Error, too many threads in block
 
 real	0m0.027s
 user	0m0.003s
-sys	0m0.021s
-Running block BLOCK_DIM_X=64 BLOCK_DIM_Y=128
-With GRID_DIM_X=128 GRID_DIM_Y=64
+sys	0m0.020s
 Device count = 1
 Error, too many threads in block
 
 real	0m0.027s
 user	0m0.003s
 sys	0m0.020s
+Running block BLOCK_DIM_X=16 BLOCK_DIM_Y=8
+With GRID_DIM_X=512 GRID_DIM_Y=1024
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 16, Block_Dim_y = 8, Grid_Dim_x = 512, Grid_Dim_y = 1024
+Time to calculate results on GPU: 3296.905762 ms.
+
+real	0m6.989s
+user	0m6.413s
+sys	0m0.533s
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 16, Block_Dim_y = 8, Grid_Dim_x = 512, Grid_Dim_y = 1024
+Time to calculate results on GPU: 3305.238770 ms.
+
+real	0m7.012s
+user	0m6.428s
+sys	0m0.519s
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 16, Block_Dim_y = 8, Grid_Dim_x = 512, Grid_Dim_y = 1024
+Time to calculate results on GPU: 3310.917480 ms.
+
+real	0m7.007s
+user	0m6.422s
+sys	0m0.526s
+Running block BLOCK_DIM_X=16 BLOCK_DIM_Y=16
+With GRID_DIM_X=512 GRID_DIM_Y=512
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 16, Block_Dim_y = 16, Grid_Dim_x = 512, Grid_Dim_y = 512
+Time to calculate results on GPU: 3169.579102 ms.
+
+real	0m6.863s
+user	0m6.270s
+sys	0m0.535s
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 16, Block_Dim_y = 16, Grid_Dim_x = 512, Grid_Dim_y = 512
+Time to calculate results on GPU: 3191.332764 ms.
+
+real	0m6.881s
+user	0m6.301s
+sys	0m0.520s
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 16, Block_Dim_y = 16, Grid_Dim_x = 512, Grid_Dim_y = 512
+Time to calculate results on GPU: 3184.132568 ms.
+
+real	0m6.885s
+user	0m6.299s
+sys	0m0.533s
+Running block BLOCK_DIM_X=16 BLOCK_DIM_Y=32
+With GRID_DIM_X=512 GRID_DIM_Y=256
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 16, Block_Dim_y = 32, Grid_Dim_x = 512, Grid_Dim_y = 256
+Time to calculate results on GPU: 3014.947754 ms.
+
+real	0m6.709s
+user	0m6.127s
+sys	0m0.526s
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 16, Block_Dim_y = 32, Grid_Dim_x = 512, Grid_Dim_y = 256
+Time to calculate results on GPU: 3009.925537 ms.
+
+real	0m6.706s
+user	0m6.122s
+sys	0m0.529s
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 16, Block_Dim_y = 32, Grid_Dim_x = 512, Grid_Dim_y = 256
+Time to calculate results on GPU: 3028.984863 ms.
+
+real	0m6.737s
+user	0m6.145s
+sys	0m0.538s
+Running block BLOCK_DIM_X=16 BLOCK_DIM_Y=64
+With GRID_DIM_X=512 GRID_DIM_Y=128
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 16, Block_Dim_y = 64, Grid_Dim_x = 512, Grid_Dim_y = 128
+Time to calculate results on GPU: 3034.720459 ms.
+
+real	0m6.728s
+user	0m6.147s
+sys	0m0.528s
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 16, Block_Dim_y = 64, Grid_Dim_x = 512, Grid_Dim_y = 128
+Time to calculate results on GPU: 3011.383545 ms.
+
+real	0m6.705s
+user	0m6.136s
+sys	0m0.511s
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 16, Block_Dim_y = 64, Grid_Dim_x = 512, Grid_Dim_y = 128
+Time to calculate results on GPU: 3020.337158 ms.
+
+real	0m6.711s
+user	0m6.134s
+sys	0m0.519s
+Running block BLOCK_DIM_X=16 BLOCK_DIM_Y=128
+With GRID_DIM_X=512 GRID_DIM_Y=64
 Device count = 1
 Error, too many threads in block
 
-real	0m0.027s
+real	0m0.046s
 user	0m0.004s
+sys	0m0.021s
+Device count = 1
+Error, too many threads in block
+
+real	0m0.030s
+user	0m0.004s
+sys	0m0.019s
+Device count = 1
+Error, too many threads in block
+
+real	0m0.031s
+user	0m0.003s
+sys	0m0.020s
+Running block BLOCK_DIM_X=16 BLOCK_DIM_Y=256
+With GRID_DIM_X=512 GRID_DIM_Y=32
+Device count = 1
+Error, too many threads in block
+
+real	0m0.026s
+user	0m0.003s
 sys	0m0.020s
 Device count = 1
 Error, too many threads in block
 
 real	0m0.028s
 user	0m0.003s
+sys	0m0.020s
+Device count = 1
+Error, too many threads in block
+
+real	0m0.027s
+user	0m0.002s
 sys	0m0.021s
+Running block BLOCK_DIM_X=32 BLOCK_DIM_Y=8
+With GRID_DIM_X=256 GRID_DIM_Y=1024
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 32, Block_Dim_y = 8, Grid_Dim_x = 256, Grid_Dim_y = 1024
+Time to calculate results on GPU: 3152.067139 ms.
+
+real	0m6.834s
+user	0m6.270s
+sys	0m0.528s
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 32, Block_Dim_y = 8, Grid_Dim_x = 256, Grid_Dim_y = 1024
+Time to calculate results on GPU: 3157.181152 ms.
+
+real	0m6.854s
+user	0m6.261s
+sys	0m0.531s
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 32, Block_Dim_y = 8, Grid_Dim_x = 256, Grid_Dim_y = 1024
+Time to calculate results on GPU: 3152.286377 ms.
+
+real	0m6.855s
+user	0m6.251s
+sys	0m0.545s
+Running block BLOCK_DIM_X=32 BLOCK_DIM_Y=16
+With GRID_DIM_X=256 GRID_DIM_Y=512
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 32, Block_Dim_y = 16, Grid_Dim_x = 256, Grid_Dim_y = 512
+Time to calculate results on GPU: 3190.980713 ms.
+
+real	0m6.885s
+user	0m6.295s
+sys	0m0.536s
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 32, Block_Dim_y = 16, Grid_Dim_x = 256, Grid_Dim_y = 512
+Time to calculate results on GPU: 3191.508545 ms.
+
+real	0m6.888s
+user	0m6.305s
+sys	0m0.532s
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 32, Block_Dim_y = 16, Grid_Dim_x = 256, Grid_Dim_y = 512
+Time to calculate results on GPU: 3208.725586 ms.
+
+real	0m6.902s
+user	0m6.313s
+sys	0m0.533s
+Running block BLOCK_DIM_X=32 BLOCK_DIM_Y=32
+With GRID_DIM_X=256 GRID_DIM_Y=256
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 32, Block_Dim_y = 32, Grid_Dim_x = 256, Grid_Dim_y = 256
+Time to calculate results on GPU: 2981.268555 ms.
+
+real	0m6.676s
+user	0m6.096s
+sys	0m0.525s
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 32, Block_Dim_y = 32, Grid_Dim_x = 256, Grid_Dim_y = 256
+Time to calculate results on GPU: 2975.122070 ms.
+
+real	0m6.677s
+user	0m6.091s
+sys	0m0.526s
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 32, Block_Dim_y = 32, Grid_Dim_x = 256, Grid_Dim_y = 256
+Time to calculate results on GPU: 2968.912598 ms.
+
+real	0m6.685s
+user	0m6.084s
+sys	0m0.541s
+Running block BLOCK_DIM_X=32 BLOCK_DIM_Y=64
+With GRID_DIM_X=256 GRID_DIM_Y=128
+Device count = 1
+Error, too many threads in block
+
+real	0m0.053s
+user	0m0.003s
+sys	0m0.022s
+Device count = 1
+Error, too many threads in block
+
+real	0m0.026s
+user	0m0.003s
+sys	0m0.020s
+Device count = 1
+Error, too many threads in block
+
+real	0m0.027s
+user	0m0.002s
+sys	0m0.021s
+Running block BLOCK_DIM_X=32 BLOCK_DIM_Y=128
+With GRID_DIM_X=256 GRID_DIM_Y=64
+Device count = 1
+Error, too many threads in block
+
+real	0m0.026s
+user	0m0.002s
+sys	0m0.021s
+Device count = 1
+Error, too many threads in block
+
+real	0m0.029s
+user	0m0.004s
+sys	0m0.019s
+Device count = 1
+Error, too many threads in block
+
+real	0m0.029s
+user	0m0.006s
+sys	0m0.017s
+Running block BLOCK_DIM_X=32 BLOCK_DIM_Y=256
+With GRID_DIM_X=256 GRID_DIM_Y=32
+Device count = 1
+Error, too many threads in block
+
+real	0m0.026s
+user	0m0.004s
+sys	0m0.018s
+Device count = 1
+Error, too many threads in block
+
+real	0m0.027s
+user	0m0.003s
+sys	0m0.020s
+Device count = 1
+Error, too many threads in block
+
+real	0m0.027s
+user	0m0.004s
+sys	0m0.019s
+Running block BLOCK_DIM_X=64 BLOCK_DIM_Y=8
+With GRID_DIM_X=128 GRID_DIM_Y=1024
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 64, Block_Dim_y = 8, Grid_Dim_x = 128, Grid_Dim_y = 1024
+Time to calculate results on GPU: 3162.884766 ms.
+
+real	0m6.835s
+user	0m6.271s
+sys	0m0.526s
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 64, Block_Dim_y = 8, Grid_Dim_x = 128, Grid_Dim_y = 1024
+Time to calculate results on GPU: 3162.784668 ms.
+
+real	0m6.864s
+user	0m6.284s
+sys	0m0.524s
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 64, Block_Dim_y = 8, Grid_Dim_x = 128, Grid_Dim_y = 1024
+Time to calculate results on GPU: 3161.657959 ms.
+
+real	0m6.850s
+user	0m6.272s
+sys	0m0.524s
+Running block BLOCK_DIM_X=64 BLOCK_DIM_Y=16
+With GRID_DIM_X=128 GRID_DIM_Y=512
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 64, Block_Dim_y = 16, Grid_Dim_x = 128, Grid_Dim_y = 512
+Time to calculate results on GPU: 3096.514893 ms.
+
+real	0m6.797s
+user	0m6.195s
+sys	0m0.544s
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 64, Block_Dim_y = 16, Grid_Dim_x = 128, Grid_Dim_y = 512
+Time to calculate results on GPU: 3082.675293 ms.
+
+real	0m6.772s
+user	0m6.187s
+sys	0m0.527s
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 64, Block_Dim_y = 16, Grid_Dim_x = 128, Grid_Dim_y = 512
+Time to calculate results on GPU: 3086.919678 ms.
+
+real	0m6.786s
+user	0m6.207s
+sys	0m0.526s
+Running block BLOCK_DIM_X=64 BLOCK_DIM_Y=32
+With GRID_DIM_X=128 GRID_DIM_Y=256
+Device count = 1
+Error, too many threads in block
+
+real	0m0.045s
+user	0m0.004s
+sys	0m0.021s
+Device count = 1
+Error, too many threads in block
+
+real	0m0.028s
+user	0m0.006s
+sys	0m0.018s
+Device count = 1
+Error, too many threads in block
+
+real	0m0.027s
+user	0m0.005s
+sys	0m0.017s
+Running block BLOCK_DIM_X=64 BLOCK_DIM_Y=64
+With GRID_DIM_X=128 GRID_DIM_Y=128
+Device count = 1
+Error, too many threads in block
+
+real	0m0.026s
+user	0m0.003s
+sys	0m0.019s
+Device count = 1
+Error, too many threads in block
+
+real	0m0.027s
+user	0m0.002s
+sys	0m0.020s
+Device count = 1
+Error, too many threads in block
+
+real	0m0.026s
+user	0m0.004s
+sys	0m0.018s
+Running block BLOCK_DIM_X=64 BLOCK_DIM_Y=128
+With GRID_DIM_X=128 GRID_DIM_Y=64
+Device count = 1
+Error, too many threads in block
+
+real	0m0.028s
+user	0m0.004s
+sys	0m0.019s
+Device count = 1
+Error, too many threads in block
+
+real	0m0.027s
+user	0m0.003s
+sys	0m0.020s
+Device count = 1
+Error, too many threads in block
+
+real	0m0.026s
+user	0m0.003s
+sys	0m0.019s
+Running block BLOCK_DIM_X=64 BLOCK_DIM_Y=256
+With GRID_DIM_X=128 GRID_DIM_Y=32
+Device count = 1
+Error, too many threads in block
+
+real	0m0.026s
+user	0m0.005s
+sys	0m0.018s
+Device count = 1
+Error, too many threads in block
+
+real	0m0.038s
+user	0m0.003s
+sys	0m0.020s
+Device count = 1
+Error, too many threads in block
+
+real	0m0.026s
+user	0m0.005s
+sys	0m0.017s
 Running block BLOCK_DIM_X=128 BLOCK_DIM_Y=8
 With GRID_DIM_X=64 GRID_DIM_Y=1024
 Device count = 1
 Using device 0
 Matrix Dimension = 8192
 Block_Dim_x = 128, Block_Dim_y = 8, Grid_Dim_x = 64, Grid_Dim_y = 1024
-Time to calculate results on GPU: 3024.736084 ms.
+Time to calculate results on GPU: 3130.383789 ms.
 
-real	0m7.057s
-user	0m6.484s
-sys	0m0.530s
+real	0m6.808s
+user	0m6.239s
+sys	0m0.527s
 Device count = 1
 Using device 0
 Matrix Dimension = 8192
 Block_Dim_x = 128, Block_Dim_y = 8, Grid_Dim_x = 64, Grid_Dim_y = 1024
-Time to calculate results on GPU: 3019.080566 ms.
+Time to calculate results on GPU: 3122.518066 ms.
 
-real	0m7.066s
-user	0m6.488s
-sys	0m0.530s
+real	0m6.824s
+user	0m6.243s
+sys	0m0.520s
 Device count = 1
 Using device 0
 Matrix Dimension = 8192
 Block_Dim_x = 128, Block_Dim_y = 8, Grid_Dim_x = 64, Grid_Dim_y = 1024
-Time to calculate results on GPU: 3014.034912 ms.
+Time to calculate results on GPU: 3125.513916 ms.
 
-real	0m7.056s
-user	0m6.472s
-sys	0m0.533s
+real	0m6.817s
+user	0m6.234s
+sys	0m0.526s
 Running block BLOCK_DIM_X=128 BLOCK_DIM_Y=16
 With GRID_DIM_X=64 GRID_DIM_Y=512
 Device count = 1
 Error, too many threads in block
 
-real	0m0.054s
+real	0m0.050s
+user	0m0.003s
+sys	0m0.022s
+Device count = 1
+Error, too many threads in block
+
+real	0m0.026s
+user	0m0.002s
+sys	0m0.021s
+Device count = 1
+Error, too many threads in block
+
+real	0m0.027s
 user	0m0.004s
-sys	0m0.022s
-Device count = 1
-Error, too many threads in block
-
-real	0m0.031s
-user	0m0.003s
-sys	0m0.022s
-Device count = 1
-Error, too many threads in block
-
-real	0m0.029s
-user	0m0.003s
-sys	0m0.022s
+sys	0m0.019s
 Running block BLOCK_DIM_X=128 BLOCK_DIM_Y=32
 With GRID_DIM_X=64 GRID_DIM_Y=256
 Device count = 1
 Error, too many threads in block
 
-real	0m0.029s
+real	0m0.027s
 user	0m0.002s
-sys	0m0.022s
-Device count = 1
-Error, too many threads in block
-
-real	0m0.029s
-user	0m0.004s
-sys	0m0.020s
-Device count = 1
-Error, too many threads in block
-
-real	0m0.030s
-user	0m0.003s
 sys	0m0.021s
+Device count = 1
+Error, too many threads in block
+
+real	0m0.026s
+user	0m0.003s
+sys	0m0.019s
+Device count = 1
+Error, too many threads in block
+
+real	0m0.026s
+user	0m0.004s
+sys	0m0.019s
 Running block BLOCK_DIM_X=128 BLOCK_DIM_Y=64
 With GRID_DIM_X=64 GRID_DIM_Y=128
 Device count = 1
 Error, too many threads in block
 
-real	0m0.030s
-user	0m0.004s
-sys	0m0.020s
-Device count = 1
-Error, too many threads in block
-
-real	0m0.030s
+real	0m0.026s
 user	0m0.002s
-sys	0m0.022s
+sys	0m0.021s
 Device count = 1
 Error, too many threads in block
 
-real	0m0.027s
+real	0m0.026s
+user	0m0.003s
+sys	0m0.019s
+Device count = 1
+Error, too many threads in block
+
+real	0m0.028s
 user	0m0.003s
 sys	0m0.020s
 Running block BLOCK_DIM_X=128 BLOCK_DIM_Y=128
@@ -723,18 +803,158 @@ With GRID_DIM_X=64 GRID_DIM_Y=64
 Device count = 1
 Error, too many threads in block
 
-real	0m0.029s
+real	0m0.025s
 user	0m0.002s
-sys	0m0.022s
+sys	0m0.021s
 Device count = 1
 Error, too many threads in block
 
-real	0m0.032s
-user	0m0.005s
+real	0m0.026s
+user	0m0.003s
 sys	0m0.019s
 Device count = 1
 Error, too many threads in block
 
-real	0m0.032s
+real	0m0.027s
+user	0m0.003s
+sys	0m0.019s
+Running block BLOCK_DIM_X=128 BLOCK_DIM_Y=256
+With GRID_DIM_X=64 GRID_DIM_Y=32
+Device count = 1
+Error, too many threads in block
+
+real	0m0.027s
+user	0m0.003s
+sys	0m0.020s
+Device count = 1
+Error, too many threads in block
+
+real	0m0.027s
+user	0m0.005s
+sys	0m0.018s
+Device count = 1
+Error, too many threads in block
+
+real	0m0.027s
 user	0m0.004s
+sys	0m0.018s
+Running block BLOCK_DIM_X=256 BLOCK_DIM_Y=8
+With GRID_DIM_X=32 GRID_DIM_Y=1024
+Device count = 1
+Error, too many threads in block
+
+real	0m0.026s
+user	0m0.001s
+sys	0m0.021s
+Device count = 1
+Error, too many threads in block
+
+real	0m0.026s
+user	0m0.004s
+sys	0m0.018s
+Device count = 1
+Error, too many threads in block
+
+real	0m0.026s
+user	0m0.003s
+sys	0m0.020s
+Running block BLOCK_DIM_X=256 BLOCK_DIM_Y=16
+With GRID_DIM_X=32 GRID_DIM_Y=512
+Device count = 1
+Error, too many threads in block
+
+real	0m0.030s
+user	0m0.002s
+sys	0m0.021s
+Device count = 1
+Error, too many threads in block
+
+real	0m0.030s
+user	0m0.003s
+sys	0m0.020s
+Device count = 1
+Error, too many threads in block
+
+real	0m0.030s
+user	0m0.003s
+sys	0m0.019s
+Running block BLOCK_DIM_X=256 BLOCK_DIM_Y=32
+With GRID_DIM_X=32 GRID_DIM_Y=256
+Device count = 1
+Error, too many threads in block
+
+real	0m0.033s
+user	0m0.004s
+sys	0m0.019s
+Device count = 1
+Error, too many threads in block
+
+real	0m0.028s
+user	0m0.003s
+sys	0m0.019s
+Device count = 1
+Error, too many threads in block
+
+real	0m0.033s
+user	0m0.002s
+sys	0m0.021s
+Running block BLOCK_DIM_X=256 BLOCK_DIM_Y=64
+With GRID_DIM_X=32 GRID_DIM_Y=128
+Device count = 1
+Error, too many threads in block
+
+real	0m0.028s
+user	0m0.005s
+sys	0m0.018s
+Device count = 1
+Error, too many threads in block
+
+real	0m0.026s
+user	0m0.003s
+sys	0m0.019s
+Device count = 1
+Error, too many threads in block
+
+real	0m0.026s
+user	0m0.002s
+sys	0m0.020s
+Running block BLOCK_DIM_X=256 BLOCK_DIM_Y=128
+With GRID_DIM_X=32 GRID_DIM_Y=64
+Device count = 1
+Error, too many threads in block
+
+real	0m0.028s
+user	0m0.002s
+sys	0m0.020s
+Device count = 1
+Error, too many threads in block
+
+real	0m0.025s
+user	0m0.004s
+sys	0m0.018s
+Device count = 1
+Error, too many threads in block
+
+real	0m0.027s
+user	0m0.003s
+sys	0m0.020s
+Running block BLOCK_DIM_X=256 BLOCK_DIM_Y=256
+With GRID_DIM_X=32 GRID_DIM_Y=32
+Device count = 1
+Error, too many threads in block
+
+real	0m0.029s
+user	0m0.004s
+sys	0m0.019s
+Device count = 1
+Error, too many threads in block
+
+real	0m0.026s
+user	0m0.003s
+sys	0m0.019s
+Device count = 1
+Error, too many threads in block
+
+real	0m0.027s
+user	0m0.003s
 sys	0m0.020s
