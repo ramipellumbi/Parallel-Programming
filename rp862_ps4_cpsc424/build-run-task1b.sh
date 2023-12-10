@@ -47,14 +47,17 @@ do
     n=${ADDR[0]}
     m=${ADDR[1]}
     p=${ADDR[2]}
-    blockx=32
-    blocky=32
 
-    Grid_Dim_x=$((($m + $blockx - 1)/$blockx))
-    Grid_Dim_y=$((($n + $blocky - 1)/$blocky))
-    echo "Running block BLOCK_DIM_X=$blockx BLOCK_DIM_Y=$blocky"
-    echo "With GRID_DIM_X=$Grid_Dim_x GRID_DIM_Y=$Grid_Dim_y"
-    time ./bin/task1 $n $m $p $blockx $blocky $Grid_Dim_x $Grid_Dim_y
-    time ./bin/task1 $n $m $p $blockx $blocky $Grid_Dim_x $Grid_Dim_y
-    time ./bin/task1 $n $m $p $blockx $blocky $Grid_Dim_x $Grid_Dim_y
+    echo "Running n=$n, p=$p, m=$m"
+    for blockx in 8 16 32 64 128 256
+    do
+        blocky=$((1024/$blockx))
+        Grid_Dim_x=$((($m + $blockx - 1)/$blockx))
+        Grid_Dim_y=$((($n + $blocky - 1)/$blocky))
+        echo "Running block BLOCK_DIM_X=$blockx BLOCK_DIM_Y=$blocky"
+        echo "With GRID_DIM_X=$Grid_Dim_x GRID_DIM_Y=$Grid_Dim_y"
+        time ./bin/task1 $n $p$ $m $blockx $blocky $Grid_Dim_x $Grid_Dim_y
+        time ./bin/task1 $n $p$ $m $blockx $blocky $Grid_Dim_x $Grid_Dim_y
+        time ./bin/task1 $n $p$ $m $blockx $blocky $Grid_Dim_x $Grid_Dim_y
+    done
 done
