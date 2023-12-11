@@ -24,7 +24,7 @@ Currently Loaded Modules:
 
 ***Running nvidia-smi
 
-Sun Dec 10 19:19:05 2023       
+Sun Dec 10 21:08:20 2023       
 +---------------------------------------------------------------------------------------+
 | NVIDIA-SMI 545.23.08              Driver Version: 545.23.08    CUDA Version: 12.3     |
 |-----------------------------------------+----------------------+----------------------+
@@ -32,8 +32,8 @@ Sun Dec 10 19:19:05 2023
 | Fan  Temp   Perf          Pwr:Usage/Cap |         Memory-Usage | GPU-Util  Compute M. |
 |                                         |                      |               MIG M. |
 |=========================================+======================+======================|
-|   0  NVIDIA GeForce RTX 2080 Ti     On  | 00000000:86:00.0 Off |                  N/A |
-| 31%   34C    P8              22W / 250W |      1MiB / 11264MiB |      0%      Default |
+|   0  NVIDIA GeForce RTX 2080 Ti     On  | 00000000:3B:00.0 Off |                  N/A |
+| 33%   37C    P8               5W / 250W |      1MiB / 11264MiB |      0%      Default |
 |                                         |                      |                  N/A |
 +-----------------------------------------+----------------------+----------------------+
                                                                                          
@@ -85,7 +85,7 @@ Device 0: "NVIDIA GeForce RTX 2080 Ti"
   Device supports Compute Preemption:            Yes
   Supports Cooperative Kernel Launch:            Yes
   Supports MultiDevice Co-op Kernel Launch:      Yes
-  Device PCI Domain ID / Bus ID / location ID:   0 / 134 / 0
+  Device PCI Domain ID / Bus ID / location ID:   0 / 59 / 0
   Compute Mode:
      < Default (multiple host threads can use ::cudaSetDevice() with device simultaneously) >
 
@@ -108,27 +108,27 @@ With GRID_DIM_X=256 GRID_DIM_Y=256
 Device count = 1
 Using device 0
 Matrix Dimension = 8192
-Block_Dim_x = 32, Block_Dim_y = 32, Grid_Dim_x = 256, Grid_Dim_y = 256
-Time to calculate results on GPU: 0.001920 ms.
+Block_Dim_x = 32, Block_Dim_y = 32, Grid_Dim_x = 128, Grid_Dim_y = 256
+Time to calculate results on GPU: 640.850952 ms.
 
-real	0m3.667s
-user	0m3.335s
-sys	0m0.299s
+real	0m4.357s
+user	0m3.981s
+sys	0m0.339s
 Device count = 1
 Using device 0
 Matrix Dimension = 8192
-Block_Dim_x = 32, Block_Dim_y = 32, Grid_Dim_x = 256, Grid_Dim_y = 256
-Time to calculate results on GPU: 0.001952 ms.
+Block_Dim_x = 32, Block_Dim_y = 32, Grid_Dim_x = 128, Grid_Dim_y = 256
+Time to calculate results on GPU: 602.279663 ms.
 
-real	0m3.662s
-user	0m3.339s
-sys	0m0.291s
+real	0m4.268s
+user	0m3.933s
+sys	0m0.303s
 Device count = 1
 Using device 0
 Matrix Dimension = 8192
-Block_Dim_x = 32, Block_Dim_y = 32, Grid_Dim_x = 256, Grid_Dim_y = 256
-Time to calculate results on GPU: 0.001920 ms.
+Block_Dim_x = 32, Block_Dim_y = 32, Grid_Dim_x = 128, Grid_Dim_y = 256
+Time to calculate results on GPU: 592.588013 ms.
 
-real	0m3.667s
-user	0m3.340s
-sys	0m0.295s
+real	0m4.254s
+user	0m3.931s
+sys	0m0.292s

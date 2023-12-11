@@ -24,7 +24,7 @@ Currently Loaded Modules:
 
 ***Running nvidia-smi
 
-Sun Dec 10 19:09:21 2023       
+Sun Dec 10 21:01:14 2023       
 +---------------------------------------------------------------------------------------+
 | NVIDIA-SMI 545.23.08              Driver Version: 545.23.08    CUDA Version: 12.3     |
 |-----------------------------------------+----------------------+----------------------+
@@ -33,7 +33,7 @@ Sun Dec 10 19:09:21 2023
 |                                         |                      |               MIG M. |
 |=========================================+======================+======================|
 |   0  NVIDIA GeForce RTX 2080 Ti     On  | 00000000:AF:00.0 Off |                  N/A |
-| 29%   36C    P8              25W / 250W |      1MiB / 11264MiB |      0%      Default |
+| 29%   31C    P8              25W / 250W |      1MiB / 11264MiB |      0%      Default |
 |                                         |                      |                  N/A |
 +-----------------------------------------+----------------------+----------------------+
                                                                                          
@@ -93,7 +93,7 @@ deviceQuery, CUDA Driver = CUDART, CUDA Driver Version = 12.3, CUDA Runtime Vers
 Result = PASS
 
 ***Building task 3
-rm -f obj/*.o  bin/task1  bin/task2  bin/task3  bin/serial 
+rm -f obj/*.o  bin/task1  bin/task4  bin/task2  bin/task3  bin/serial 
 nvcc -gencode=arch=compute_75,code=sm_75 -O3 -g -I include -o obj/serial.o -c src/serial.cu
 Building binary bin/serial from object obj/serial.o
 nvcc -gencode=arch=compute_75,code=sm_75 -lm -g -o bin/serial obj/serial.o
@@ -108,27 +108,11 @@ With GRID_DIM_X=256 GRID_DIM_Y=256
 Device count = 1
 Using device 0
 Matrix Dimension = 8192
-Block_Dim_x = 32, Block_Dim_y = 32, Grid_Dim_x = 256, Grid_Dim_y = 256
-Time to calculate results on GPU: 876.089844 ms.
+Block_Dim_x = 32, Block_Dim_y = 32, Grid_Dim_x = 64, Grid_Dim_y = 256
+Time to calculate results on GPU: 465.731018 ms.
+Time to calculate results on CPU: 224662.203125 ms.
+Approximate relative error between GPU and CPU: 3.973395e-08
 
-real	0m4.539s
-user	0m4.221s
-sys	0m0.281s
-Device count = 1
-Using device 0
-Matrix Dimension = 8192
-Block_Dim_x = 32, Block_Dim_y = 32, Grid_Dim_x = 256, Grid_Dim_y = 256
-Time to calculate results on GPU: 903.322388 ms.
-
-real	0m4.554s
-user	0m4.243s
-sys	0m0.275s
-Device count = 1
-Using device 0
-Matrix Dimension = 8192
-Block_Dim_x = 32, Block_Dim_y = 32, Grid_Dim_x = 256, Grid_Dim_y = 256
-Time to calculate results on GPU: 867.367371 ms.
-
-real	0m4.526s
-user	0m4.212s
-sys	0m0.280s
+real	3m49.160s
+user	3m47.928s
+sys	0m0.371s

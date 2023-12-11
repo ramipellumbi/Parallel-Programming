@@ -24,7 +24,7 @@ Currently Loaded Modules:
 
 ***Running nvidia-smi
 
-Sun Dec 10 19:15:17 2023       
+Sun Dec 10 21:07:45 2023       
 +---------------------------------------------------------------------------------------+
 | NVIDIA-SMI 545.23.08              Driver Version: 545.23.08    CUDA Version: 12.3     |
 |-----------------------------------------+----------------------+----------------------+
@@ -32,8 +32,8 @@ Sun Dec 10 19:15:17 2023
 | Fan  Temp   Perf          Pwr:Usage/Cap |         Memory-Usage | GPU-Util  Compute M. |
 |                                         |                      |               MIG M. |
 |=========================================+======================+======================|
-|   0  NVIDIA GeForce RTX 2080 Ti     On  | 00000000:AF:00.0 Off |                  N/A |
-| 29%   32C    P8              25W / 250W |      1MiB / 11264MiB |      0%      Default |
+|   0  NVIDIA GeForce RTX 2080 Ti     On  | 00000000:3B:00.0 Off |                  N/A |
+| 33%   35C    P8               4W / 250W |      1MiB / 11264MiB |      0%      Default |
 |                                         |                      |                  N/A |
 +-----------------------------------------+----------------------+----------------------+
                                                                                          
@@ -85,7 +85,7 @@ Device 0: "NVIDIA GeForce RTX 2080 Ti"
   Device supports Compute Preemption:            Yes
   Supports Cooperative Kernel Launch:            Yes
   Supports MultiDevice Co-op Kernel Launch:      Yes
-  Device PCI Domain ID / Bus ID / location ID:   0 / 175 / 0
+  Device PCI Domain ID / Bus ID / location ID:   0 / 59 / 0
   Compute Mode:
      < Default (multiple host threads can use ::cudaSetDevice() with device simultaneously) >
 
@@ -103,32 +103,32 @@ Building binary bin/task3 from object obj/task3.o
 nvcc -gencode=arch=compute_75,code=sm_75 -lm -g -o bin/task3 obj/task3.o
 rm obj/task3.o
 Running n=8192, p=8192, m=8192
-Running block BLOCK_DIM_X=16 BLOCK_DIM_Y=16
-With GRID_DIM_X=512 GRID_DIM_Y=512
+Running block BLOCK_DIM_X=32 BLOCK_DIM_Y=32
+With GRID_DIM_X=256 GRID_DIM_Y=256
 Device count = 1
 Using device 0
 Matrix Dimension = 8192
-Block_Dim_x = 16, Block_Dim_y = 16, Grid_Dim_x = 512, Grid_Dim_y = 512
-Time to calculate results on GPU: 5395.357910 ms.
+Block_Dim_x = 32, Block_Dim_y = 32, Grid_Dim_x = 43, Grid_Dim_y = 256
+Time to calculate results on GPU: 418.058899 ms.
 
-real	0m9.065s
-user	0m8.729s
-sys	0m0.285s
+real	0m4.136s
+user	0m3.756s
+sys	0m0.344s
 Device count = 1
 Using device 0
 Matrix Dimension = 8192
-Block_Dim_x = 16, Block_Dim_y = 16, Grid_Dim_x = 512, Grid_Dim_y = 512
-Time to calculate results on GPU: 5432.828125 ms.
+Block_Dim_x = 32, Block_Dim_y = 32, Grid_Dim_x = 43, Grid_Dim_y = 256
+Time to calculate results on GPU: 408.698761 ms.
 
-real	0m9.092s
-user	0m8.752s
-sys	0m0.286s
+real	0m4.059s
+user	0m3.739s
+sys	0m0.282s
 Device count = 1
 Using device 0
 Matrix Dimension = 8192
-Block_Dim_x = 16, Block_Dim_y = 16, Grid_Dim_x = 512, Grid_Dim_y = 512
-Time to calculate results on GPU: 5458.570801 ms.
+Block_Dim_x = 32, Block_Dim_y = 32, Grid_Dim_x = 43, Grid_Dim_y = 256
+Time to calculate results on GPU: 413.338348 ms.
 
-real	0m9.110s
-user	0m8.785s
-sys	0m0.281s
+real	0m4.070s
+user	0m3.757s
+sys	0m0.279s

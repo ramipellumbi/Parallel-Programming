@@ -221,11 +221,11 @@ int main(int argc, char **argv)
         exit(-1);
     }
 
-    Grid_Dim_x = atoi(argv[6]); // use square block in input from bash file but leave generalized in code
+    Grid_Dim_x = ((atoi(argv[6]) - 1) / NTB) + 1; // bash file computes (m -1) / blockx + 1 and we want (m - 1) / blockx * NTB + 1
     Grid_Dim_y = atoi(argv[7]);
-    if (Grid_Dim_x * Block_Dim_x < m)
+    if (Grid_Dim_x * NTB * Block_Dim_x < m)
     {
-        printf("%d,%d", Grid_Dim_x, Block_Dim_x);
+        printf("%d,%d\n", Grid_Dim_x, Block_Dim_x);
         printf("Error, number of threads in x dimensions less than number of array elements\n");
         exit(-1);
     }

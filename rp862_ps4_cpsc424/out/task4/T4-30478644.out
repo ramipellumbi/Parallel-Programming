@@ -24,7 +24,7 @@ Currently Loaded Modules:
 
 ***Running nvidia-smi
 
-Sun Dec 10 19:32:17 2023       
+Sun Dec 10 21:18:46 2023       
 +---------------------------------------------------------------------------------------+
 | NVIDIA-SMI 545.23.08              Driver Version: 545.23.08    CUDA Version: 12.3     |
 |-----------------------------------------+----------------------+----------------------+
@@ -33,7 +33,7 @@ Sun Dec 10 19:32:17 2023
 |                                         |                      |               MIG M. |
 |=========================================+======================+======================|
 |   0  NVIDIA GeForce RTX 2080 Ti     On  | 00000000:AF:00.0 Off |                  N/A |
-| 29%   31C    P8              25W / 250W |      1MiB / 11264MiB |      0%      Default |
+| 29%   32C    P8              24W / 250W |      1MiB / 11264MiB |      0%      Default |
 |                                         |                      |                  N/A |
 +-----------------------------------------+----------------------+----------------------+
                                                                                          
@@ -108,33 +108,33 @@ With GRID_DIM_X=69 GRID_DIM_Y=69
 Device count = 1
 Using device 0
 Matrix Dimension = 1100
-Block_Dim_x = 16, Block_Dim_y = 16, Grid_Dim_x = 69, Grid_Dim_y = 69
-Time to calculate results on GPU: 4.602176 ms.
-Time to calculate results on CPU: 315.723541 ms.
+Block_Dim_x = 16, Block_Dim_y = 16, Grid_Dim_x = 23, Grid_Dim_y = 69
+Time to calculate results on GPU: 1.652032 ms.
+Time to calculate results on CPU: 311.685333 ms.
 Approximate relative error between GPU and CPU: 4.315665e-08
 
-real	0m0.568s
+real	0m0.560s
 user	0m0.391s
-sys	0m0.145s
+sys	0m0.146s
 Device count = 1
 Using device 0
 Matrix Dimension = 1100
-Block_Dim_x = 16, Block_Dim_y = 16, Grid_Dim_x = 69, Grid_Dim_y = 69
-Time to calculate results on GPU: 4.606400 ms.
-Time to calculate results on CPU: 315.923767 ms.
+Block_Dim_x = 16, Block_Dim_y = 16, Grid_Dim_x = 23, Grid_Dim_y = 69
+Time to calculate results on GPU: 1.656256 ms.
+Time to calculate results on CPU: 303.422058 ms.
 Approximate relative error between GPU and CPU: 4.315665e-08
 
-real	0m0.643s
-user	0m0.401s
-sys	0m0.147s
-Device count = 1
-Using device 0
-Matrix Dimension = 1100
-Block_Dim_x = 16, Block_Dim_y = 16, Grid_Dim_x = 69, Grid_Dim_y = 69
-Time to calculate results on GPU: 4.607552 ms.
-Time to calculate results on CPU: 312.460693 ms.
-Approximate relative error between GPU and CPU: 4.315665e-08
-
-real	0m0.540s
-user	0m0.393s
+real	0m0.525s
+user	0m0.381s
 sys	0m0.133s
+Device count = 1
+Using device 0
+Matrix Dimension = 1100
+Block_Dim_x = 16, Block_Dim_y = 16, Grid_Dim_x = 23, Grid_Dim_y = 69
+Time to calculate results on GPU: 1.654112 ms.
+Time to calculate results on CPU: 306.986633 ms.
+Approximate relative error between GPU and CPU: 4.315665e-08
+
+real	0m0.527s
+user	0m0.388s
+sys	0m0.129s
