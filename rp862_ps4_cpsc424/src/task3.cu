@@ -1,6 +1,7 @@
 #define FP float
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
+#define NTB 16
 
 #include <cuda.h>
 #include <stdio.h>
@@ -40,11 +41,11 @@ void write_data_to_file(const char *filename,   // name of csv
     // if the file does not exist, add the header row
     if (!does_file_exist)
     {
-        fprintf(fp, "program,multiplier,precision,n,p,m,block_x,block_y,grid_x,grid_y,exe_time\n");
+        fprintf(fp, "program,multiplier,precision,n,p,m,block_x,block_y,grid_x,grid_y,NTB,exe_time\n");
     }
 
     // add data to row
-    fprintf(fp, "\"%s\",\"%s\",\"%s\",%d,%d,%d,%d,%d,%d,%d,%f\n", program, multiplier, TOSTRING(FP), n, p, m, block_x, block_y, grid_x, grid_y, exe_time);
+    fprintf(fp, "\"%s\",\"%s\",\"%s\",%d,%d,%d,%d,%d,%d,%d,%d,%f\n", program, multiplier, TOSTRING(FP), n, p, m, block_x, block_y, grid_x, grid_y, NTB, exe_time);
     fclose(fp);
 }
 
@@ -52,18 +53,55 @@ void write_data_to_file(const char *filename,   // name of csv
  * @param A is n x p - STORED ROW-WISE
  * @param B is p x m - STORED ROW-WISE
  * @param C is n x m - STORED ROW-WISE
+ */
+// void cpu_matrixmult_rectangular_kij(FP *A, FP *B, FP *C, int n, int p, int m)
+// {
+//     FP r;
+//     // the dot product between a row of A and column of B is between p numbers
+//     for (size_t k = 0; k < p; k++)
+//     {
+//         // there are n rows in A
+//         for (size_t i = 0; i < n; i++)
+//         {
+//             size_t ia = i * p + k; // row i column k of A
+//             r = A[ia];
+
+//             // there are m columns in b
+//             for (size_t j = 0; j < m; j++)
+//             {
+//                 size_t ib = k * m + j; // row k column j of B
+//                 size_t ic = i * m + j; // row i column j of C
+
+//                 C[ic] += r * B[ib];
+//             }
+//         }
+//     }
+// }
+
+/**
+ * @param A is n x p - STORED ROW-WISE
+ * @param B is p x m - STORED ROW-WISE
+ * @param C is n x m - STORED ROW-WISE
  *
- * This function was modified and extensively based on Figure 4.16
- * and Figure 4.20 along with section 4.7 in Chapter 4 of Kirk and Hwu's
- * `Programming Massively Parallel Processors`
+ * Follows psuedo-code from lecture 12 on multi-tiled matrix multiplication kernel
  */
 __global__ void gpu_matrixmult_rectangular_shared(FP *A, FP *B, FP *C, int n, int p, int m, int TILE_WIDTH)
 {
     // the textbook uses two double arrays - I interpreted not copying
     // the data structure as continuing to use single arrays
     extern __shared__ FP tiles[];
-    FP *Ads = &tiles[0];
-    FP *Bds = &tiles[TILE_WIDTH * TILE_WIDTH];
+    FP *Ads = &tiles[0]; // TILE_WIDTH xTILE_WIDTH
+    FP *Bds[NTB];        // pointer to an array of NTB elements each of size TILE_WIDTH x TILE_WIDTH
+
+    // initialize cvalues
+    FP cvalues[NTB];
+    for (size_t kt = 0; kt < NTB; kt++)
+    {
+        // tiles[0] to tiles[TILE_WIDTH*TILE_WIDTH - 1] is occupied by Ads
+        // since Bds is NTB x TILE_WIDTH x TILE_WIDTH, offset each Bds[i] by (kt+1)*TILE_WIDTH*TILE_WIDTH in tiles
+        Bds[kt] = &tiles[(kt + 1) * TILE_WIDTH * TILE_WIDTH];
+        cvalues[kt] = 0.;
+    }
 
     int bx = blockIdx.x;
     int by = blockIdx.y;
@@ -71,40 +109,56 @@ __global__ void gpu_matrixmult_rectangular_shared(FP *A, FP *B, FP *C, int n, in
     int ty = threadIdx.y;
 
     int row = by * TILE_WIDTH + ty;
-    int col = bx * TILE_WIDTH + tx;
+    // col needs to be dynamically computed based on NTB idx
 
     int tile_idx = ty * TILE_WIDTH + tx;
 
-    FP Cvalue = 0;
     // Loop over the A and B tiles required to compute the C element
     for (size_t ph = 0; ph < ceil((double)p / (double)TILE_WIDTH); ph++)
     {
         // collaborative loading of A and B tiles into shared memory
+
         int col_bound_A = ph * TILE_WIDTH + tx;
         int row_bound_B = ph * TILE_WIDTH + ty;
 
-        int indexa = row * p + col_bound_A;
-        int indexb = row_bound_B * m + col;
+        // load Ads
         if (row < n && col_bound_A < p)
         {
+            int indexa = row * p + col_bound_A;
             Ads[tile_idx] = A[indexa];
         }
-        if (col < m && row_bound_B < p)
+
+        // load multiple tiles of B into the Bds array
+        for (size_t kt = 0; kt < NTB; kt++)
         {
-            Bds[tile_idx] = B[indexb];
+            int col_offset = tx + NTB * blockDim.x * bx + kt * TILE_WIDTH;
+            int indexb = row_bound_B * m + col_offset;
+
+            if (col_offset < m && row_bound_B < p)
+            {
+                Bds[kt][tile_idx] = B[indexb];
+            }
         }
         __syncthreads();
 
         for (size_t k = 0; k < TILE_WIDTH; k++)
         {
-            // row ty column k of A with row k column tx of B
-            Cvalue += Ads[ty * TILE_WIDTH + k] * Bds[k * TILE_WIDTH + tx];
+            for (size_t kt = 0; kt < NTB; kt++)
+            {
+                // row ty column k of Ads with row k column tx of Bds[i]
+                cvalues[kt] += Ads[ty * TILE_WIDTH + k] * Bds[kt][k * TILE_WIDTH + tx];
+            }
         }
         __syncthreads();
     }
-    if (col < m && row < n)
+
+    for (size_t kt = 0; kt < NTB; kt++)
     {
-        C[row * m + col] = Cvalue;
+        int col_offset = tx + NTB * blockDim.x * bx + kt * TILE_WIDTH;
+        if (col_offset < m && row < n)
+        {
+            C[row * m + col_offset] = cvalues[kt];
+        }
     }
 }
 
@@ -112,6 +166,7 @@ int main(int argc, char **argv)
 {
 
     FP *A, *B, *C; // matrices on host
+    // FP *HOST_C;
     FP *dev_A, *dev_B, *dev_C; // matrices on device
     int n, p, m;               // matrix dimensions
 
@@ -157,7 +212,7 @@ int main(int argc, char **argv)
         exit(-1);
     }
 
-    Grid_Dim_x = atoi(argv[6]);
+    Grid_Dim_x = atoi(argv[6]); // use square block in input from bash file but leave generalized in code
     Grid_Dim_y = atoi(argv[7]);
     if (Grid_Dim_x * Block_Dim_x < m)
     {
@@ -187,6 +242,7 @@ int main(int argc, char **argv)
     A = (FP *)malloc(size_A); // dynamically allocated memory for arrays on host
     B = (FP *)malloc(size_B); // dynamically allocated memory for arrays on host
     C = (FP *)malloc(size_C); // results from GPU
+    // HOST_C = (FP *)malloc(size_C);
 
     srand(12345);
     for (size_t i = 0; i < n; i++)
@@ -210,6 +266,7 @@ int main(int argc, char **argv)
         for (size_t j = 0; j < m; j++)
         {
             C[i * m + j] = 0.;
+            // HOST_C[i * m + j] = 0.;
         }
     }
 
@@ -225,7 +282,7 @@ int main(int argc, char **argv)
 
     cudaEventRecord(start, 0);
 
-    size_t TW = 2 * TILE_WIDTH * TILE_WIDTH * sizeof(FP);
+    size_t TW = (NTB + 1) * TILE_WIDTH * TILE_WIDTH * sizeof(FP); // Bds needs NTB * TILE_WIDTH * TILE_WIDTH and Ads needs TILE_WIDTH * TILE_WIDTH FP's
     gpu_matrixmult_rectangular_shared<<<Grid, Block, TW>>>(dev_A, dev_B, dev_C, n, p, m, TILE_WIDTH);
 
     cudaEventRecord(stop, 0); // instrument code to measure end time
@@ -235,12 +292,53 @@ int main(int argc, char **argv)
     cudaMemcpy(C, dev_C, size_C, cudaMemcpyDeviceToHost);
 
     printf("Time to calculate results on GPU: %f ms.\n", elapsed_time_ms); // exec. time
-    write_data_to_file("out/task2.csv", "task2", "gpu", n, p, m, Block_Dim_x, Block_Dim_y, Grid_Dim_x, Grid_Dim_y, elapsed_time_ms);
+    write_data_to_file("out/task3.csv", "task3", "gpu", n, p, m, Block_Dim_x, Block_Dim_y, Grid_Dim_x, Grid_Dim_y, elapsed_time_ms);
+
+    // ------------- COMPUTATION DONE ON HOST CPU ----------------------------
+    // DEBUGGING USE ONLY (AND FOR LIMITED NUMBERS OF TIMING RUNS)
+
+    // cudaEventRecord(start, 0); // use same timing
+
+    // cpu_matrixmult_rectangular_kij(A, B, HOST_C, n, p, m); // do calculation on host (NOTE: This computes the diff with GPU result.)
+
+    // cudaEventRecord(stop, 0); // instrument code to measue end time
+    // cudaEventSynchronize(stop);
+    // cudaEventElapsedTime(&elapsed_time_ms, start, stop);
+
+    // printf("Time to calculate results on CPU: %f ms.\n", elapsed_time_ms); 
+
+    // ------------------- check device creates correct results -----------------
+
+    // double error, suma, sumb, sumc, ai, bi, ci;
+    // suma = 0.;
+    // sumb = 0;
+    // sumc = 0;
+    // for (size_t i = 0; i < n * p; i++)
+    // {
+    //     ai = (double)A[i];
+    //     suma += ai * ai;
+    // }
+    // for (size_t i = 0; i < p * m; i++)
+    // {
+    //     bi = (double)B[i];
+    //     sumb += bi * bi;
+    // }
+    // for (size_t i = 0; i < n * m; i++)
+    // {
+    //     ci = (double)C[i] - (double)HOST_C[i];
+    //     sumc += ci * ci;
+    // }
+    // suma = sqrt(suma);
+    // sumb = sqrt(sumb);
+    // sumc = sqrt(sumc);
+    // error = sumc / (suma * sumb);
+    // printf("Approximate relative error between GPU and CPU: %e\n", error);
 
     // -------------- clean up ---------------------------------------
     free(A);
     free(B);
     free(C);
+    // free(HOST_C);
     cudaFree(dev_A);
     cudaFree(dev_B);
     cudaFree(dev_C);

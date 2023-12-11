@@ -33,7 +33,7 @@ echo "***Running deviceQuery"
 /vast/palmer/apps/avx.grace/software/CUDAcore/11.3.1/extras/demo_suite/deviceQuery
 echo ""
 
-echo "***Building taskw"
+echo "***Building task 2"
 make clean
 make serial
 make task2 

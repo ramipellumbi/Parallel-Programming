@@ -8,8 +8,8 @@
 #SBATCH --reservation=cpsc424gpu
 #SBATCH -t 120:00
 #SBATCH --gpus=1
-#SBATCH --job-name=T1a
-#SBATCH --output=out/task1/%x-%j.out
+#SBATCH --job-name=T3
+#SBATCH --output=out/task3/%x-%j.out
 
 
 echo "***Purging module files"
@@ -33,15 +33,13 @@ echo "***Running deviceQuery"
 /vast/palmer/apps/avx.grace/software/CUDAcore/11.3.1/extras/demo_suite/deviceQuery
 echo ""
 
-echo "***Building task 1"
+echo "***Building task 3"
 make clean
 make serial
-make task1 
-
-# PART A
+make task3
 
 # n,m,p blocks delimited by a space
-sizes="1024,1024,1024 8192,8192,8192 1024,1024,8192 8192,8192,1024 8192,1024,8192"
+sizes="8192,8192,8192"
 
 for tuple in $sizes
 do
@@ -51,28 +49,15 @@ do
     p=${ADDR[2]}
 
     echo "Running n=$n, p=$p, m=$m"
-    for blockx in 8 16 32
+    for blockx in 32
     do
         blocky=$blockx
         Grid_Dim_x=$((($m + $blockx - 1)/$blockx))
         Grid_Dim_y=$((($n + $blocky - 1)/$blocky))
         echo "Running block BLOCK_DIM_X=$blockx BLOCK_DIM_Y=$blocky"
         echo "With GRID_DIM_X=$Grid_Dim_x GRID_DIM_Y=$Grid_Dim_y"
-        time ./bin/task1 $n $p $m $blockx $blocky $Grid_Dim_x $Grid_Dim_y
-        time ./bin/task1 $n $p $m $blockx $blocky $Grid_Dim_x $Grid_Dim_y
-        time ./bin/task1 $n $p $m $blockx $blocky $Grid_Dim_x $Grid_Dim_y
+        time ./bin/task3 $n $p $m $blockx $blocky $Grid_Dim_x $Grid_Dim_y
+        time ./bin/task3 $n $p $m $blockx $blocky $Grid_Dim_x $Grid_Dim_y
+        time ./bin/task3 $n $p $m $blockx $blocky $Grid_Dim_x $Grid_Dim_y
     done
 done
-
-# for tuple in $sizes
-# do
-#     IFS=',' read -ra ADDR <<< "$tuple"
-#     n=${ADDR[0]}
-#     m=${ADDR[1]}
-#     p=${ADDR[2]}
-#     echo "Running n=$n, p=$p, m=$m"
-
-#     time ./bin/serial $n $p $m 
-#     time ./bin/serial $n $p $m 
-#     time ./bin/serial $n $p $m 
-# done
