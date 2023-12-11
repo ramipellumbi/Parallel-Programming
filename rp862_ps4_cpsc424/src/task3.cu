@@ -98,6 +98,10 @@ __global__ void gpu_matrixmult_rectangular_shared(FP *A, FP *B, FP *C, int n, in
             int indexa = row * p + col_bound_A;
             Ads[tile_idx] = A[indexa];
         }
+        else
+        {
+            Ads[tile_idx] = 0;
+        }
 
         // load multiple tiles of B into the Bds array
         for (size_t kt = 0; kt < NTB; kt++)
@@ -108,6 +112,10 @@ __global__ void gpu_matrixmult_rectangular_shared(FP *A, FP *B, FP *C, int n, in
             if (col_offset < m && row_bound_B < p)
             {
                 Bds[kt][tile_idx] = B[indexb];
+            }
+            else
+            {
+                Bds[kt][tile_idx] = 0.;
             }
         }
         __syncthreads();
@@ -136,7 +144,7 @@ __global__ void gpu_matrixmult_rectangular_shared(FP *A, FP *B, FP *C, int n, in
 int main(int argc, char **argv)
 {
 
-    FP *A, *B, *C; // matrices on host
+    FP *A, *B, *C;             // matrices on host
     FP *dev_A, *dev_B, *dev_C; // matrices on device
     int n, p, m;               // matrix dimensions
 

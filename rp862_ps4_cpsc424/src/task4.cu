@@ -1,3 +1,8 @@
+/**
+ * This program is a carbon copy of task3.cu - since that was implemented in the 
+ * general way from the start. It was easier to think about the problem 
+ * generally when referencing Kirk & Kwu + the slides.
+*/
 #define FP float
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)

@@ -1,0 +1,544 @@
+***Purging module files
+
+The following modules were not unloaded:
+  (Use "module --force purge" to unload all):
+
+  1) StdEnv
+
+***Loading CUDA module file
+
+
+
+Currently Loaded Modules:
+  1) StdEnv                       (S)   5) GCC/10.2.0
+  2) GCCcore/10.2.0                     6) CUDAcore/11.1.1        (g)
+  3) zlib/1.2.11-GCCcore-10.2.0         7) CUDA/11.1.1-GCC-10.2.0 (g)
+  4) binutils/2.35-GCCcore-10.2.0
+
+  Where:
+   S:  Module is Sticky, requires --force to unload or purge
+   g:  built for GPU
+
+ 
+
+
+***Running nvidia-smi
+
+Sun Dec 10 20:17:40 2023       
++---------------------------------------------------------------------------------------+
+| NVIDIA-SMI 545.23.08              Driver Version: 545.23.08    CUDA Version: 12.3     |
+|-----------------------------------------+----------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |         Memory-Usage | GPU-Util  Compute M. |
+|                                         |                      |               MIG M. |
+|=========================================+======================+======================|
+|   0  NVIDIA GeForce RTX 2080 Ti     On  | 00000000:3B:00.0 Off |                  N/A |
+| 33%   33C    P8               4W / 250W |      1MiB / 11264MiB |      0%      Default |
+|                                         |                      |                  N/A |
++-----------------------------------------+----------------------+----------------------+
+                                                                                         
++---------------------------------------------------------------------------------------+
+| Processes:                                                                            |
+|  GPU   GI   CI        PID   Type   Process name                            GPU Memory |
+|        ID   ID                                                             Usage      |
+|=======================================================================================|
+|  No running processes found                                                           |
++---------------------------------------------------------------------------------------+
+
+
+***Running deviceQuery
+/vast/palmer/apps/avx.grace/software/CUDAcore/11.3.1/extras/demo_suite/deviceQuery Starting...
+
+ CUDA Device Query (Runtime API) version (CUDART static linking)
+
+Detected 1 CUDA Capable device(s)
+
+Device 0: "NVIDIA GeForce RTX 2080 Ti"
+  CUDA Driver Version / Runtime Version          12.3 / 11.3
+  CUDA Capability Major/Minor version number:    7.5
+  Total amount of global memory:                 11012 MBytes (11546394624 bytes)
+  (68) Multiprocessors, ( 64) CUDA Cores/MP:     4352 CUDA Cores
+  GPU Max Clock rate:                            1545 MHz (1.54 GHz)
+  Memory Clock rate:                             7000 Mhz
+  Memory Bus Width:                              352-bit
+  L2 Cache Size:                                 5767168 bytes
+  Maximum Texture Dimension Size (x,y,z)         1D=(131072), 2D=(131072, 65536), 3D=(16384, 16384, 16384)
+  Maximum Layered 1D Texture Size, (num) layers  1D=(32768), 2048 layers
+  Maximum Layered 2D Texture Size, (num) layers  2D=(32768, 32768), 2048 layers
+  Total amount of constant memory:               65536 bytes
+  Total amount of shared memory per block:       49152 bytes
+  Total number of registers available per block: 65536
+  Warp size:                                     32
+  Maximum number of threads per multiprocessor:  1024
+  Maximum number of threads per block:           1024
+  Max dimension size of a thread block (x,y,z): (1024, 1024, 64)
+  Max dimension size of a grid size    (x,y,z): (2147483647, 65535, 65535)
+  Maximum memory pitch:                          2147483647 bytes
+  Texture alignment:                             512 bytes
+  Concurrent copy and kernel execution:          Yes with 3 copy engine(s)
+  Run time limit on kernels:                     No
+  Integrated GPU sharing Host Memory:            No
+  Support host page-locked memory mapping:       Yes
+  Alignment requirement for Surfaces:            Yes
+  Device has ECC support:                        Disabled
+  Device supports Unified Addressing (UVA):      Yes
+  Device supports Compute Preemption:            Yes
+  Supports Cooperative Kernel Launch:            Yes
+  Supports MultiDevice Co-op Kernel Launch:      Yes
+  Device PCI Domain ID / Bus ID / location ID:   0 / 59 / 0
+  Compute Mode:
+     < Default (multiple host threads can use ::cudaSetDevice() with device simultaneously) >
+
+deviceQuery, CUDA Driver = CUDART, CUDA Driver Version = 12.3, CUDA Runtime Version = 11.3, NumDevs = 1, Device0 = NVIDIA GeForce RTX 2080 Ti
+Result = PASS
+
+***Building task 1
+rm -f obj/*.o  bin/task1  bin/task4  bin/task2  bin/task3  bin/serial 
+nvcc -gencode=arch=compute_75,code=sm_75 -O3 -g -I include -o obj/serial.o -c src/serial.cu
+Building binary bin/serial from object obj/serial.o
+nvcc -gencode=arch=compute_75,code=sm_75 -lm -g -o bin/serial obj/serial.o
+rm obj/serial.o
+nvcc -gencode=arch=compute_75,code=sm_75 -O3 -g -I include -o obj/task1.o -c src/task1.cu
+Building binary bin/task1 from object obj/task1.o
+nvcc -gencode=arch=compute_75,code=sm_75 -lm -g -o bin/task1 obj/task1.o
+rm obj/task1.o
+Running n=1024, p=1024, m=1024
+Running block BLOCK_DIM_X=8 BLOCK_DIM_Y=8
+With GRID_DIM_X=128 GRID_DIM_Y=128
+Device count = 1
+Using device 0
+Matrix Dimension = 1024
+Block_Dim_x = 8, Block_Dim_y = 8, Grid_Dim_x = 128, Grid_Dim_y = 128
+Time to calculate results on GPU: 7.053632 ms.
+
+real	0m0.287s
+user	0m0.072s
+sys	0m0.191s
+Device count = 1
+Using device 0
+Matrix Dimension = 1024
+Block_Dim_x = 8, Block_Dim_y = 8, Grid_Dim_x = 128, Grid_Dim_y = 128
+Time to calculate results on GPU: 7.043392 ms.
+
+real	0m0.211s
+user	0m0.074s
+sys	0m0.127s
+Device count = 1
+Using device 0
+Matrix Dimension = 1024
+Block_Dim_x = 8, Block_Dim_y = 8, Grid_Dim_x = 128, Grid_Dim_y = 128
+Time to calculate results on GPU: 7.049888 ms.
+
+real	0m0.209s
+user	0m0.078s
+sys	0m0.121s
+Running block BLOCK_DIM_X=16 BLOCK_DIM_Y=16
+With GRID_DIM_X=64 GRID_DIM_Y=64
+Device count = 1
+Using device 0
+Matrix Dimension = 1024
+Block_Dim_x = 16, Block_Dim_y = 16, Grid_Dim_x = 64, Grid_Dim_y = 64
+Time to calculate results on GPU: 4.243008 ms.
+
+real	0m0.213s
+user	0m0.074s
+sys	0m0.129s
+Device count = 1
+Using device 0
+Matrix Dimension = 1024
+Block_Dim_x = 16, Block_Dim_y = 16, Grid_Dim_x = 64, Grid_Dim_y = 64
+Time to calculate results on GPU: 4.242912 ms.
+
+real	0m0.208s
+user	0m0.072s
+sys	0m0.127s
+Device count = 1
+Using device 0
+Matrix Dimension = 1024
+Block_Dim_x = 16, Block_Dim_y = 16, Grid_Dim_x = 64, Grid_Dim_y = 64
+Time to calculate results on GPU: 4.243456 ms.
+
+real	0m0.210s
+user	0m0.070s
+sys	0m0.130s
+Running block BLOCK_DIM_X=32 BLOCK_DIM_Y=32
+With GRID_DIM_X=32 GRID_DIM_Y=32
+Device count = 1
+Using device 0
+Matrix Dimension = 1024
+Block_Dim_x = 32, Block_Dim_y = 32, Grid_Dim_x = 32, Grid_Dim_y = 32
+Time to calculate results on GPU: 3.646304 ms.
+
+real	0m0.212s
+user	0m0.073s
+sys	0m0.125s
+Device count = 1
+Using device 0
+Matrix Dimension = 1024
+Block_Dim_x = 32, Block_Dim_y = 32, Grid_Dim_x = 32, Grid_Dim_y = 32
+Time to calculate results on GPU: 3.661920 ms.
+
+real	0m0.211s
+user	0m0.073s
+sys	0m0.127s
+Device count = 1
+Using device 0
+Matrix Dimension = 1024
+Block_Dim_x = 32, Block_Dim_y = 32, Grid_Dim_x = 32, Grid_Dim_y = 32
+Time to calculate results on GPU: 3.648768 ms.
+
+real	0m0.206s
+user	0m0.067s
+sys	0m0.130s
+Running n=8192, p=8192, m=8192
+Running block BLOCK_DIM_X=8 BLOCK_DIM_Y=8
+With GRID_DIM_X=1024 GRID_DIM_Y=1024
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 8, Block_Dim_y = 8, Grid_Dim_x = 1024, Grid_Dim_y = 1024
+Time to calculate results on GPU: 2815.588135 ms.
+
+real	0m6.471s
+user	0m6.152s
+sys	0m0.285s
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 8, Block_Dim_y = 8, Grid_Dim_x = 1024, Grid_Dim_y = 1024
+Time to calculate results on GPU: 2804.334717 ms.
+
+real	0m6.475s
+user	0m6.145s
+sys	0m0.275s
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 8, Block_Dim_y = 8, Grid_Dim_x = 1024, Grid_Dim_y = 1024
+Time to calculate results on GPU: 2846.058105 ms.
+
+real	0m6.517s
+user	0m6.168s
+sys	0m0.296s
+Running block BLOCK_DIM_X=16 BLOCK_DIM_Y=16
+With GRID_DIM_X=512 GRID_DIM_Y=512
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 16, Block_Dim_y = 16, Grid_Dim_x = 512, Grid_Dim_y = 512
+Time to calculate results on GPU: 2327.929199 ms.
+
+real	0m6.005s
+user	0m5.659s
+sys	0m0.278s
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 16, Block_Dim_y = 16, Grid_Dim_x = 512, Grid_Dim_y = 512
+Time to calculate results on GPU: 2348.095459 ms.
+
+real	0m6.024s
+user	0m5.684s
+sys	0m0.277s
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 16, Block_Dim_y = 16, Grid_Dim_x = 512, Grid_Dim_y = 512
+Time to calculate results on GPU: 2353.801758 ms.
+
+real	0m6.048s
+user	0m5.691s
+sys	0m0.309s
+Running block BLOCK_DIM_X=32 BLOCK_DIM_Y=32
+With GRID_DIM_X=256 GRID_DIM_Y=256
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 32, Block_Dim_y = 32, Grid_Dim_x = 256, Grid_Dim_y = 256
+Time to calculate results on GPU: 2216.660156 ms.
+
+real	0m5.894s
+user	0m5.554s
+sys	0m0.275s
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 32, Block_Dim_y = 32, Grid_Dim_x = 256, Grid_Dim_y = 256
+Time to calculate results on GPU: 2192.567627 ms.
+
+real	0m5.868s
+user	0m5.530s
+sys	0m0.285s
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 32, Block_Dim_y = 32, Grid_Dim_x = 256, Grid_Dim_y = 256
+Time to calculate results on GPU: 2192.917969 ms.
+
+real	0m5.864s
+user	0m5.531s
+sys	0m0.282s
+Running n=1024, p=8192, m=1024
+Running block BLOCK_DIM_X=8 BLOCK_DIM_Y=8
+With GRID_DIM_X=128 GRID_DIM_Y=128
+Device count = 1
+Using device 0
+Matrix Dimension = 1024
+Block_Dim_x = 8, Block_Dim_y = 8, Grid_Dim_x = 128, Grid_Dim_y = 128
+Time to calculate results on GPU: 42.434177 ms.
+
+real	0m0.641s
+user	0m0.467s
+sys	0m0.137s
+Device count = 1
+Using device 0
+Matrix Dimension = 1024
+Block_Dim_x = 8, Block_Dim_y = 8, Grid_Dim_x = 128, Grid_Dim_y = 128
+Time to calculate results on GPU: 42.015007 ms.
+
+real	0m0.613s
+user	0m0.469s
+sys	0m0.133s
+Device count = 1
+Using device 0
+Matrix Dimension = 1024
+Block_Dim_x = 8, Block_Dim_y = 8, Grid_Dim_x = 128, Grid_Dim_y = 128
+Time to calculate results on GPU: 42.304928 ms.
+
+real	0m0.615s
+user	0m0.464s
+sys	0m0.139s
+Running block BLOCK_DIM_X=16 BLOCK_DIM_Y=16
+With GRID_DIM_X=64 GRID_DIM_Y=64
+Device count = 1
+Using device 0
+Matrix Dimension = 1024
+Block_Dim_x = 16, Block_Dim_y = 16, Grid_Dim_x = 64, Grid_Dim_y = 64
+Time to calculate results on GPU: 43.154976 ms.
+
+real	0m0.615s
+user	0m0.471s
+sys	0m0.134s
+Device count = 1
+Using device 0
+Matrix Dimension = 1024
+Block_Dim_x = 16, Block_Dim_y = 16, Grid_Dim_x = 64, Grid_Dim_y = 64
+Time to calculate results on GPU: 43.108288 ms.
+
+real	0m0.618s
+user	0m0.471s
+sys	0m0.134s
+Device count = 1
+Using device 0
+Matrix Dimension = 1024
+Block_Dim_x = 16, Block_Dim_y = 16, Grid_Dim_x = 64, Grid_Dim_y = 64
+Time to calculate results on GPU: 43.055935 ms.
+
+real	0m0.622s
+user	0m0.462s
+sys	0m0.148s
+Running block BLOCK_DIM_X=32 BLOCK_DIM_Y=32
+With GRID_DIM_X=32 GRID_DIM_Y=32
+Device count = 1
+Using device 0
+Matrix Dimension = 1024
+Block_Dim_x = 32, Block_Dim_y = 32, Grid_Dim_x = 32, Grid_Dim_y = 32
+Time to calculate results on GPU: 43.259007 ms.
+
+real	0m0.618s
+user	0m0.473s
+sys	0m0.133s
+Device count = 1
+Using device 0
+Matrix Dimension = 1024
+Block_Dim_x = 32, Block_Dim_y = 32, Grid_Dim_x = 32, Grid_Dim_y = 32
+Time to calculate results on GPU: 43.229504 ms.
+
+real	0m0.623s
+user	0m0.471s
+sys	0m0.141s
+Device count = 1
+Using device 0
+Matrix Dimension = 1024
+Block_Dim_x = 32, Block_Dim_y = 32, Grid_Dim_x = 32, Grid_Dim_y = 32
+Time to calculate results on GPU: 43.204384 ms.
+
+real	0m0.624s
+user	0m0.465s
+sys	0m0.144s
+Running n=8192, p=1024, m=8192
+Running block BLOCK_DIM_X=8 BLOCK_DIM_Y=8
+With GRID_DIM_X=1024 GRID_DIM_Y=1024
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 8, Block_Dim_y = 8, Grid_Dim_x = 1024, Grid_Dim_y = 1024
+Time to calculate results on GPU: 398.120850 ms.
+
+real	0m1.094s
+user	0m0.882s
+sys	0m0.192s
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 8, Block_Dim_y = 8, Grid_Dim_x = 1024, Grid_Dim_y = 1024
+Time to calculate results on GPU: 352.036163 ms.
+
+real	0m1.056s
+user	0m0.844s
+sys	0m0.187s
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 8, Block_Dim_y = 8, Grid_Dim_x = 1024, Grid_Dim_y = 1024
+Time to calculate results on GPU: 352.061401 ms.
+
+real	0m1.050s
+user	0m0.838s
+sys	0m0.189s
+Running block BLOCK_DIM_X=16 BLOCK_DIM_Y=16
+With GRID_DIM_X=512 GRID_DIM_Y=512
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 16, Block_Dim_y = 16, Grid_Dim_x = 512, Grid_Dim_y = 512
+Time to calculate results on GPU: 292.810059 ms.
+
+real	0m0.989s
+user	0m0.780s
+sys	0m0.186s
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 16, Block_Dim_y = 16, Grid_Dim_x = 512, Grid_Dim_y = 512
+Time to calculate results on GPU: 292.902679 ms.
+
+real	0m0.978s
+user	0m0.777s
+sys	0m0.188s
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 16, Block_Dim_y = 16, Grid_Dim_x = 512, Grid_Dim_y = 512
+Time to calculate results on GPU: 292.827515 ms.
+
+real	0m0.996s
+user	0m0.776s
+sys	0m0.196s
+Running block BLOCK_DIM_X=32 BLOCK_DIM_Y=32
+With GRID_DIM_X=256 GRID_DIM_Y=256
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 32, Block_Dim_y = 32, Grid_Dim_x = 256, Grid_Dim_y = 256
+Time to calculate results on GPU: 272.310211 ms.
+
+real	0m0.955s
+user	0m0.770s
+sys	0m0.174s
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 32, Block_Dim_y = 32, Grid_Dim_x = 256, Grid_Dim_y = 256
+Time to calculate results on GPU: 272.430389 ms.
+
+real	0m0.957s
+user	0m0.760s
+sys	0m0.185s
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 32, Block_Dim_y = 32, Grid_Dim_x = 256, Grid_Dim_y = 256
+Time to calculate results on GPU: 272.274536 ms.
+
+real	0m0.962s
+user	0m0.763s
+sys	0m0.186s
+Running n=8192, p=8192, m=1024
+Running block BLOCK_DIM_X=8 BLOCK_DIM_Y=8
+With GRID_DIM_X=128 GRID_DIM_Y=1024
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 8, Block_Dim_y = 8, Grid_Dim_x = 128, Grid_Dim_y = 1024
+Time to calculate results on GPU: 381.341736 ms.
+
+real	0m2.398s
+user	0m2.193s
+sys	0m0.187s
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 8, Block_Dim_y = 8, Grid_Dim_x = 128, Grid_Dim_y = 1024
+Time to calculate results on GPU: 404.050659 ms.
+
+real	0m2.479s
+user	0m2.261s
+sys	0m0.191s
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 8, Block_Dim_y = 8, Grid_Dim_x = 128, Grid_Dim_y = 1024
+Time to calculate results on GPU: 388.262634 ms.
+
+real	0m2.482s
+user	0m2.248s
+sys	0m0.187s
+Running block BLOCK_DIM_X=16 BLOCK_DIM_Y=16
+With GRID_DIM_X=64 GRID_DIM_Y=512
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 16, Block_Dim_y = 16, Grid_Dim_x = 64, Grid_Dim_y = 512
+Time to calculate results on GPU: 316.436005 ms.
+
+real	0m2.462s
+user	0m2.165s
+sys	0m0.258s
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 16, Block_Dim_y = 16, Grid_Dim_x = 64, Grid_Dim_y = 512
+Time to calculate results on GPU: 318.988068 ms.
+
+real	0m2.413s
+user	0m2.181s
+sys	0m0.202s
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 16, Block_Dim_y = 16, Grid_Dim_x = 64, Grid_Dim_y = 512
+Time to calculate results on GPU: 319.772064 ms.
+
+real	0m2.407s
+user	0m2.184s
+sys	0m0.195s
+Running block BLOCK_DIM_X=32 BLOCK_DIM_Y=32
+With GRID_DIM_X=32 GRID_DIM_Y=256
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 32, Block_Dim_y = 32, Grid_Dim_x = 32, Grid_Dim_y = 256
+Time to calculate results on GPU: 310.501251 ms.
+
+real	0m2.390s
+user	0m2.172s
+sys	0m0.191s
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 32, Block_Dim_y = 32, Grid_Dim_x = 32, Grid_Dim_y = 256
+Time to calculate results on GPU: 303.360229 ms.
+
+real	0m2.443s
+user	0m2.164s
+sys	0m0.252s
+Device count = 1
+Using device 0
+Matrix Dimension = 8192
+Block_Dim_x = 32, Block_Dim_y = 32, Grid_Dim_x = 32, Grid_Dim_y = 256
+Time to calculate results on GPU: 308.041412 ms.
+
+real	0m2.396s
+user	0m2.173s
+sys	0m0.196s
