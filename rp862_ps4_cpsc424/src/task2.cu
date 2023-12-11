@@ -99,7 +99,7 @@ __global__ void gpu_matrixmult_rectangular_shared(FP *A, FP *B, FP *C, int n, in
         }
         else
         {
-            Ads[tile_idx] = 0.;
+            Bds[tile_idx] = 0.;
         }
         __syncthreads();
 
