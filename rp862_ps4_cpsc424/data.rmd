@@ -97,3 +97,124 @@ kable(tablec, format = "latex", booktabs = TRUE,
                 font_size = 12,
                 position = "left")
 ```
+
+```{r}
+task2 <- read_csv("./out/task2.csv", show_col_types = FALSE)
+```
+
+```{r}
+mean_results2 <- task2 %>%
+  group_by(multiplier, precision, n, p, m, block_x, block_y, grid_x, grid_y) %>%
+  summarise(
+    mean_time = mean(exe_time), .groups = "keep"
+  )
+
+dfa <- mean_results2 %>%
+  filter(precision == "float") %>%
+  group_by(multiplier, n, p, m) %>%
+  filter(mean_time == min(mean_time))
+
+gpua <- dfa %>%
+  filter(multiplier == "gpu")
+
+tablea2 <- gpua %>%
+  left_join(cpua, by = c("n", "p", "m")) %>%
+  mutate(
+    "(n,m,p)" = paste("(", n, ",", m, ",", p, ")", sep = ""),
+    "(block x block y)" = paste("(", block_x.x, ",", block_y.x, ")", sep = ""),
+    "(grid x, grid y)" = paste("(", grid_x.x, ",", grid_y.x, ")", sep = ""),
+    "gpu time (ms)" = mean_time.x,
+    "cpu time (ms)" = mean_time.y
+  ) %>%
+  ungroup() %>%
+  select("(n,m,p)", "(block x block y)", "(grid x, grid y)",
+         "gpu time (ms)", "cpu time (ms)")
+
+tablea2$`gpu time (ms)` / tablea$`gpu time (ms)`
+
+kable(tablea2, format = "latex", booktabs = TRUE,
+      caption = "Shared Memory GPU Kernel Performance Float (ms)") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"),
+                full_width = FALSE,
+                font_size = 12,
+                position = "left")
+```
+
+```{r}
+tableb <- mean_results %>%
+  filter(precision == "double") %>%
+  mutate(
+    "(n,m,p)" = paste("(", n, ",", m, ",", p, ")", sep = ""),
+    "(block x block y)" = paste("(", block_x, ",", block_y, ")", sep = ""),
+    "(grid x, grid y)" = paste("(", grid_x, ",", grid_y, ")", sep = ""),
+    "gpu time" = mean_time
+  ) %>%
+  ungroup() %>%
+  select("(n,m,p)", "(block x block y)", "(grid x, grid y)", "gpu time")
+
+kable(tableb, format = "latex", booktabs = TRUE,
+      caption = "GPU Kernel Performance Double (ms)") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"),
+                full_width = FALSE,
+                font_size = 12,
+                position = "left")
+```
+
+```{r}
+tablec <- mean_results %>%
+  filter(n == 30536) %>%
+  mutate(
+    "(n,m,p)" = paste("(", n, ",", m, ",", p, ")", sep = ""),
+    "(block x block y)" = paste("(", block_x, ",", block_y, ")", sep = ""),
+    "(grid x, grid y)" = paste("(", grid_x, ",", grid_y, ")", sep = ""),
+    "gpu time" = mean_time
+  ) %>%
+  ungroup() %>%
+  select("(n,m,p)", "gpu time")
+
+kable(tablec, format = "latex", booktabs = TRUE,
+      caption = "Max Size GPU Kernel Performance Float (ms)") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"),
+                full_width = FALSE,
+                font_size = 12,
+                position = "left")
+```
+
+```{r}
+task3 <- read_csv("./out/task3.csv", show_col_types = FALSE)
+```
+
+```{r}
+task3
+
+mean_results3 <- task3 %>%
+  group_by(multiplier, precision, n, p, m, block_x, block_y, grid_x, grid_y, 
+           NTB) %>%
+  summarise(
+    mean_time = mean(exe_time), .groups = "keep"
+  )
+
+dfa <- mean_results3 %>%
+  filter(precision == "float") %>%
+  group_by(multiplier, n, p, m, NTB) %>%
+  filter(mean_time == min(mean_time))
+
+table4 <- dfa %>%
+  mutate(
+    "(n,m,p)" = paste("(", n, ",", m, ",", p, ")", sep = ""),
+    "NTB" = NTB,
+    "(block x block y)" = paste("(", block_x, ",", block_y, ")", sep = ""),
+    "(grid x, grid y)" = paste("(", grid_x, ",", grid_y, ")", sep = ""),
+    "gpu time (ms)" = mean_time
+  ) %>%
+  ungroup() %>%
+  select("NTB", "(n,m,p)", "(block x block y)", "(grid x, grid y)",
+         "gpu time (ms)")
+
+kable(table4, format = "latex", booktabs = TRUE,
+      caption = "Max Size GPU Kernel Performance Float (ms)") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"),
+                full_width = FALSE,
+                font_size = 12,
+                position = "left")
+```
