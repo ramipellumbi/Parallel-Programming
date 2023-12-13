@@ -17,12 +17,21 @@ pwd
 echo $SLURM_JOB_NODELIST
 echo $SLURM_NTASKS_PER_NODE
 make -f Makefile-omp clean
-make -f Makefile-omp
+make -f Makefile-omp e-omp-ts
 
+sizes="1024,1024,1024 8192,8192,8192"
 export OMP_NUM_THREADS=24
-
-for k in 1 2 3
+for tuple in $sizes
 do 
-    time ./bin/d-omp-ts
+    IFS=',' read -ra ADDR <<< "$tuple"
+    N=${ADDR[0]}
+    P=${ADDR[1]}
+    M=${ADDR[2]}
+
+    echo "Running N=$N, P=$P, M=$M"
+    for k in 1 2 3
+    do 
+        time ./bin/e-omp-ts $N $P $M
+    done
 done
 

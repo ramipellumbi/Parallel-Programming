@@ -15,33 +15,34 @@
  * @param N Number of rows of A
  * @param P Number of columns of A (rows of B)
  * @param M Number or columns of B
+ *
+ * This function takes in the correct C as computed by BLAS and detracts from it
  */
-double matrix_multiply_naive(double *A, double *B, double *C, int N, int P, int M)
+double matrix_multiply_kij(double *A, double *B, double *C, int N, int P, int M)
 {
     double wc_start, wc_end;
     double cpu_start, cpu_end;
 
     timing(&wc_start, &cpu_start);
-    for (int i = 0; i < N; i++)
+    for (int k = 0; k < P; k++)
     {
-        // get to index for start of row i
-        int iA = i * P;
-        for (int j = 0; j < M; j++)
+        for (int i = 0; i < N; i++)
         {
-            // row i column j of C
-            int iC = i * M + j;
-
-            double cvalue = 0.;
-            for (int k = 0; k < P; k++)
+            // get row i column k of A for reuse
+            int iA = i * P + k;
+            double r = A[iA];
+            for (int j = 0; j < M; j++)
             {
-                int jB = k * M + j; 
-                // row i column k of A multiplied with row k column j of B
-                cvalue += A[iA + k] * B[jB];
+                // row k column j of B
+                int iB = k * M + j;
+                // row i column j of c
+                int iC = i * M + j;
+                C[iC] -= r * B[iB];
             }
-            C[iC] -= cvalue;
         }
     }
     timing(&wc_end, &cpu_end);
+
     double elapsed_time = wc_end - wc_start;
 
     return elapsed_time;
@@ -77,16 +78,14 @@ int main(int argc, char **argv)
     double wctime_blas = wc_end - wc_start;
 
     // ------------------- run custom multiply -----------------
-    double wctime = matrix_multiply_naive(A, B, C, N, P, M);
+    double wctime = matrix_multiply_kij(A, B, C, N, P, M);
 
     // ------------------- check custom multiply creates correct results -----------------
     double error = compute_relative_error(A, B, C, N, P, M);
 
-
     // Print a table row
-    printf("\n(%d, %d, %d) %9.4f  %f\n", N, P, M,  wctime, error);
-    write_data_to_file("out/results-serial.csv", "a-serial", N, P, M, 1, 1, wctime, wctime_blas, error);
-
+    printf("\n(%d, %d, %d) %9.4f  %f\n", N, P, M, wctime, error);
+    write_data_to_file("out/results-serial.csv", "b-serial-kij", N, P, M, 1, 1, wctime, wctime_blas, error);
 
     free(A);
     free(B);

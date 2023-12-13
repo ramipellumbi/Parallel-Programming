@@ -1,6 +1,6 @@
 CC_SERIAL = icc
 
-CFLAGS     = -g -O3 -xHost -fno-alias -std=c99 -I include
+CFLAGS     = -g -O3 -xHost -fno-alias -std=c99 -lmkl_rt -I include
 
 SRC_DIR 	= src
 OBJ_DIR 	= obj
@@ -11,15 +11,15 @@ TIMING 	  = $(OBJ_DIR)/timing.o
 UTILITIES = $(OBJ_DIR)/utilities.o
 MODULES   = $(TIMING) $(UTILITIES)
 
-EXECUTABLES = a-serial b-serial-blocking
+EXECUTABLES = a-serial b-serial-kij c-serial-blocking
 
-# For debugging
-SRC_FILES = $(shell find $(SRC_DIR) -name '*.c')
-OBJ_FILES = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRC_FILES))
-$(info SRC_FILES = $(SRC_FILES))
-$(info OBJ_FILES = $(OBJ_FILES))
+.SUFFIXES : .c .o
 
-all: $(addprefix $(BIN_DIR)/, $(EXECUTABLES))
+C_FILES = $(wildcard $(SRC_DIR)/*.c)
+OBJ_FILES = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(C_FILES))
+BINARIES = $(patsubst $(SRC_DIR)/%.c, $(BIN_DIR)/%, $(C_FILES))
+
+all: $(BINARIES)
 
 $(info ALL = $(addprefix $(BIN_DIR)/, $(EXECUTABLES)))
 
@@ -28,15 +28,13 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	@mkdir -p $(@D)
 	$(CC_SERIAL) $(CFLAGS) -c $< -o $@
 
-a-serial: $(BIN_DIR)/a-serial
-$(BIN_DIR)/a-serial: $(OBJ_DIR)/a-serial.o $(MODULES)
+$(BIN_DIR)/%: $(OBJ_DIR)/%.o $(MODULES)
+	@echo "Building binary $@ from object $^"
 	@mkdir -p $(BIN_DIR)
-	$(CC_SERIAL) $(CFLAGS) $^ -o $@
+	$(CC_SERIAL) $(CFLAGS) -o $@ $^
 
-b-serial-blocking: $(BIN_DIR)/b-serial-blocking
-$(BIN_DIR)/b-serial-blocking: $(OBJ_DIR)/b-serial-blocking.o $(MODULES)
-	@mkdir -p $(BIN_DIR)
-	$(CC_SERIAL) $(CFLAGS) $^ -o $@
+%: $(BIN_DIR)/% 
+	@:
 
 clean:
 	rm -rf $(OBJ_DIR) $(BIN_DIR)

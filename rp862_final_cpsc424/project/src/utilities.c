@@ -3,25 +3,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-double compute_fnorm(const char *filename, double *computed, int size_computed)
-{
-    double *real = (double *)calloc(size_computed, sizeof(double));
-    FILE *fptr = fopen(filename, "r");
-    fread(real, sizeof(double), size_computed, fptr);
-    fclose(fptr);
-
-    double f_norm = 0.;
-    for (int i = 0; i < size_computed; i++)
-    {
-        f_norm += (real[i] - computed[i]) * (real[i] - computed[i]);
-    }
-    f_norm = sqrt(f_norm);
-
-    free(real);
-
-    return f_norm;
-}
-
 int get_environment_value(const char *env_name)
 {
     char *value_str = getenv(env_name);
@@ -37,9 +18,12 @@ int get_environment_value(const char *env_name)
 void write_data_to_file(const char *filename,
                         const char *program,
                         int N,
+                        int P,
+                        int M,
                         int block_size,
                         int np,
                         double exe_time,
+                        double blas_exe_time,
                         double f_norm)
 {
     int num_cores = get_environment_value("SLURM_CPUS_PER_TASK");
@@ -80,10 +64,120 @@ void write_data_to_file(const char *filename,
     // if the file does not exist, add the header row
     if (!does_file_exist)
     {
-        fprintf(fp, "program,num_cores,np,num_tasks_per_node,num_tasks_per_socket,N,block_size,exe_time,f_norm\n");
+        fprintf(fp, "program,num_cores,np,num_tasks_per_node,num_tasks_per_socket,N,P,M,block_size,exe_time,blas_exe_time,f_norm\n");
     }
 
     // add data to row
-    fprintf(fp, "\"%s\",%d,%d,%d,%d,%d,%d,%f,%.12f\n", program, num_cores, np, num_tasks_per_node, num_tasks_per_socket, N, block_size, exe_time, f_norm);
+    fprintf(fp, "\"%s\",%d,%d,%d,%d,%d,%d,%d,%d,%f,%f,%.12e\n", program, num_cores, np, num_tasks_per_node, num_tasks_per_socket, N, P, M, block_size, exe_time, blas_exe_time, f_norm);
     fclose(fp);
+}
+
+void load_dat_file_matrices(double **A, double **B, double **C, size_t size, size_t padded_size)
+{
+    size_t matrix_size = padded_size * padded_size;
+
+    *A = (double *)calloc(matrix_size, sizeof(double));
+    if (*A == NULL)
+    {
+        printf("Allocation failed for A");
+        exit(1);
+    }
+
+    *B = (double *)calloc(matrix_size, sizeof(double));
+    if (*B == NULL)
+    {
+        free(*A); // Free previously allocated memory
+        printf("Allocation failed for B");
+        exit(1);
+    }
+
+    *C = (double *)calloc(matrix_size, sizeof(double));
+    if (*C == NULL)
+    {
+        free(*A);
+        free(*B);
+        printf("Allocation failed for C");
+        exit(1);
+    }
+
+    // A was assumed row-wise
+    for (int i = 0; i < size; i++)
+    {
+        for (int j = 0; j < size; j++)
+        {
+            int idx = i * padded_size + j;
+            (*A)[idx] = ((double)rand() / (double)RAND_MAX);
+        }
+    }
+
+    // load B row-wise
+    for (int i = 0; i < size; i++)
+    {
+        for (int j = 0; j < size; j++)
+        {
+            int idx = j * padded_size + i;
+            (*B)[idx] = ((double)rand() / (double)RAND_MAX);
+        }
+    }
+}
+
+/**
+ * Load random matrices A and B
+ * Both are stored in a single array row-wise
+ *
+ * A is n x p
+ * B is p x m
+ */
+void load_random_matrices(double **A, double **B, size_t n, size_t p, size_t m)
+{
+    *A = (double *)malloc(n * p * sizeof(double));
+    *B = (double *)malloc(p * m * sizeof(double));
+
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < p; j++)
+        {
+            int idx = i * p + j;
+            (*A)[idx] = ((double)rand() / (double)RAND_MAX);
+        }
+    }
+
+    // load B row-wise
+    for (int i = 0; i < p; i++)
+    {
+        for (int j = 0; j < m; j++)
+        {
+            int idx = i * m + j;
+            (*B)[idx] = ((double)rand() / (double)RAND_MAX);
+        }
+    }
+}
+
+double compute_relative_error(double *A, double *B, double *C, size_t N, size_t P, size_t M)
+{
+    double error, suma, sumb, sumc, ai, bi, ci;
+    suma = 0.;
+    sumb = 0;
+    sumc = 0;
+    for (size_t i = 0; i < N * P; i++)
+    {
+        ai = A[i];
+        suma += ai * ai;
+    }
+    for (size_t i = 0; i < P * M; i++)
+    {
+        bi = B[i];
+        sumb += bi * bi;
+    }
+    for (size_t i = 0; i < N * M; i++)
+    {
+        ci = C[i];
+        sumc += ci * ci;
+    }
+    suma = sqrt(suma);
+    sumb = sqrt(sumb);
+    sumc = sqrt(sumc);
+    error = sumc / (suma * sumb);
+
+    return error;
 }
