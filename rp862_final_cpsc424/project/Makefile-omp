@@ -11,7 +11,7 @@ TIMING 	  = $(OBJ_DIR)/../timing.o
 UTILITIES = $(OBJ_DIR)/../utilities.o
 MODULES   = $(TIMING) $(UTILITIES)
 
-EXECUTABLES = t4-omp t5-omp-local-blocks
+EXECUTABLES = t5-omp t6-omp-divisible-local-blocks t7-omp-non-divisible-local-blocks
 
 .SUFFIXES : .c .o
 

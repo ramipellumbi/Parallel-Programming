@@ -11,7 +11,7 @@ TIMING 	  = $(OBJ_DIR)/../timing.o
 UTILITIES = $(OBJ_DIR)/../utilities.o
 MODULES   = $(TIMING) $(UTILITIES)
 
-EXECUTABLES = t1-serial-ijk t2-serial-kij t3-serial-blocking
+EXECUTABLES = t1-serial-ijk t2-serial-kij t3-serial-blocking t4-serial-blocking-T
 
 .SUFFIXES : .c .o
 
