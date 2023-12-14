@@ -16,6 +16,21 @@ alignas(64) static double blockC[BLOCK_SIZE][BLOCK_SIZE];
 // ensure there is no false sharing between threads by giving each thread its own local matrix copies
 #pragma omp threadprivate(blockA, blockB, blockC)
 
+size_t get_padded_value(size_t num)
+{
+    return ((num + BLOCK_SIZE - 1) / BLOCK_SIZE) * BLOCK_SIZE;
+}
+
+double* pad_matrix(const double* original, int original_rows, int original_cols, int padded_rows, int padded_cols) {
+    double* padded = (double*)calloc(padded_rows * padded_cols, sizeof(double));
+
+    for (int i = 0; i < original_rows; ++i) {
+        memcpy(&padded[i * padded_cols], &original[i * original_cols], original_cols * sizeof(double));
+    }
+
+    return padded;
+}
+
 /**
  * Returns the wall clock time elapsed in the matrix multiplication between A and B using tiled matrix multiplication,
  * OMP, and local block copies
@@ -49,46 +64,57 @@ double matrix_multiply_blocking(double *A, double *B, double *C, int N, int P, i
      */
     double wc_start, wc_end;
     double cpu_start, cpu_end;
-    int iA, jB, iC;
+    size_t iA, jB, iC;
 
     timing(&wc_start, &cpu_start);
-    // Calculate the bounds for the blocked multiplication
-    int N_block_max = (N / BLOCK_SIZE) * BLOCK_SIZE;
-    int P_block_max = (P / BLOCK_SIZE) * BLOCK_SIZE;
-    int M_block_max = (M / BLOCK_SIZE) * BLOCK_SIZE;
+
+    size_t padded_N = get_padded_value(N, BLOCK_SIZE);
+    size_t padded_M = get_padded_value(M, BLOCK_SIZE);
+    size_t padded_P = get_padded_value(P, BLOCK_SIZE);
+
+    double *padded_A = pad_matrix(A, N, P, padded_N, padded_P);
+    double *padded_B = pad_matrix(A, P, M, padded_P, padded_M);
+    double *padded_C = pad_matrix(A, N, M, padded_N, padded_P);
+
 
 #pragma omp parallel default(none) shared(N_block_max, P_block_max, M_block_max, A, B, C, M, P, N) private(iA, jB, iC)
     {
 // Compute A1 * B1
 #pragma omp for schedule(runtime)
-        for (int ii = 0; ii < N_block_max; ii += BLOCK_SIZE)
+        for (size_t ii = 0; ii < padded_N; ii += BLOCK_SIZE)
         {
-            for (int jj = 0; jj < M_block_max; jj += BLOCK_SIZE)
+            for (size_t jj = 0; jj < padded_M; jj += BLOCK_SIZE)
             {
                 // clear blockC
-                memset(blockC, 0, sizeof(blockC));
-
-                for (int kk = 0; kk < P_block_max; kk += BLOCK_SIZE)
+                for (size_t i = 0; i < BLOCK_SIZE; i++)
                 {
-                    // Copy A and B into blockA and blockB
-                    for (int i = 0; i < BLOCK_SIZE; i++)
+                    for (size_t j = 0; j < BLOCK_SIZE; j++)
+                    {
+                        blockC[i * BLOCK_SIZE + j] = 0.;
+                    }
+                }
+
+                for (size_t kk = 0; kk < padded_P; kk += BLOCK_SIZE)
+                {
+                    // Copy blocks of A and B into blockA and blockB
+                    for (size_t i = 0; i < BLOCK_SIZE; i++)
                     {
                         iA = (ii + i) * P + kk;
                         jB = (kk + i) * M + jj;
-                        for (int j = 0; j < BLOCK_SIZE; j++)
+                        for (size_t j = 0; j < BLOCK_SIZE; j++)
                         {
-                            blockA[i][j] = A[iA + j];
-                            blockB[i][j] = B[jB + j];
+                            blockA[i][j] = padded_A[iA + j];
+                            blockB[i][j] = padded_B[jB + j];
                         }
                     }
 
                     // Perform block multiplication
-                    for (int k = 0; k < BLOCK_SIZE; k++)
+                    for (size_t k = 0; k < BLOCK_SIZE; k++)
                     {
-                        for (int i = 0; i < BLOCK_SIZE; i++)
+                        for (size_t i = 0; i < BLOCK_SIZE; i++)
                         {
                             double r = blockA[i][k];
-                            for (int j = 0; j < BLOCK_SIZE; j++)
+                            for (size_t j = 0; j < BLOCK_SIZE; j++)
                             {
                                 blockC[i][j] += r * blockB[k][j];
                             }
@@ -96,18 +122,30 @@ double matrix_multiply_blocking(double *A, double *B, double *C, int N, int P, i
                     }
                 }
 
-                // copy local block back into C
-                for (int i = 0; i < BLOCK_SIZE; i++)
+                // copy local block C back into C
+                for (size_t i = 0; i < BLOCK_SIZE; i++)
                 {
                     iC = (ii + i) * M + jj;
-                    for (int j = 0; j < BLOCK_SIZE; j++)
+                    for (size_t j = 0; j < BLOCK_SIZE; j++)
                     {
-                        C[iC + j] -= blockC[i][j];
+                        padded_C[iC + j] -= blockC[i][j];
                     }
                 }
             }
         }
     }
+
+    free(padded_A);
+    free(padded_B);
+
+    // copy padded_C size_to C
+    for (size_t i = 0; i < N; i++) {
+        for (size_t j = 0; j < M; j++) {
+            C[i * M + j] = padded_C[i * padded_M + j];
+        }
+    }
+
+    free(padded_C);
 
     timing(&wc_end, &cpu_end);
     double elapsed_time = wc_end - wc_start;
@@ -121,6 +159,12 @@ int main(int argc, char **argv)
     {
         printf("Usage: a-serial <N> <P> <M>\n");
         exit(-1);
+    }
+    int num_threads = get_environment_value("OMP_NUM_THREADS");
+    if (num_threads == -1)
+    {
+        fprintf(stderr, "OMP_NUM_THREADS not set");
+        num_threads = 1;
     }
 
     // ------------------- data load -----------------
@@ -152,7 +196,7 @@ int main(int argc, char **argv)
 
     // Print a table row
     printf("\n(%d, %d, %d) %9.4f  %f\n", N, P, M, wctime, error);
-    write_data_to_file("out/results-omp.csv", "e-omp-ts", N, P, M, BLOCK_SIZE, 1, wctime, wctime_blas, error);
+    write_data_to_file("out/results-omp.csv", "omp-local", N, P, M, BLOCK_SIZE, num_threads, wctime, wctime_blas, error);
 
     free(A);
     free(B);

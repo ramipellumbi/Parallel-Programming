@@ -72,55 +72,6 @@ void write_data_to_file(const char *filename,
     fclose(fp);
 }
 
-void load_dat_file_matrices(double **A, double **B, double **C, size_t size, size_t padded_size)
-{
-    size_t matrix_size = padded_size * padded_size;
-
-    *A = (double *)calloc(matrix_size, sizeof(double));
-    if (*A == NULL)
-    {
-        printf("Allocation failed for A");
-        exit(1);
-    }
-
-    *B = (double *)calloc(matrix_size, sizeof(double));
-    if (*B == NULL)
-    {
-        free(*A); // Free previously allocated memory
-        printf("Allocation failed for B");
-        exit(1);
-    }
-
-    *C = (double *)calloc(matrix_size, sizeof(double));
-    if (*C == NULL)
-    {
-        free(*A);
-        free(*B);
-        printf("Allocation failed for C");
-        exit(1);
-    }
-
-    // A was assumed row-wise
-    for (int i = 0; i < size; i++)
-    {
-        for (int j = 0; j < size; j++)
-        {
-            int idx = i * padded_size + j;
-            (*A)[idx] = ((double)rand() / (double)RAND_MAX);
-        }
-    }
-
-    // load B row-wise
-    for (int i = 0; i < size; i++)
-    {
-        for (int j = 0; j < size; j++)
-        {
-            int idx = j * padded_size + i;
-            (*B)[idx] = ((double)rand() / (double)RAND_MAX);
-        }
-    }
-}
-
 /**
  * Load random matrices A and B
  * Both are stored in a single array row-wise
