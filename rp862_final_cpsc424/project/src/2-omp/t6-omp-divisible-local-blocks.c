@@ -16,21 +16,6 @@ alignas(64) static double blockC[BLOCK_SIZE][BLOCK_SIZE];
 // ensure there is no false sharing between threads by giving each thread its own local matrix copies
 #pragma omp threadprivate(blockA, blockB, blockC)
 
-size_t get_padded_value(size_t num)
-{
-    return ((num + BLOCK_SIZE - 1) / BLOCK_SIZE) * BLOCK_SIZE;
-}
-
-double* pad_matrix(const double* original, int original_rows, int original_cols, int padded_rows, int padded_cols) {
-    double* padded = (double*)calloc(padded_rows * padded_cols, sizeof(double));
-
-    for (int i = 0; i < original_rows; ++i) {
-        memcpy(&padded[i * padded_cols], &original[i * original_cols], original_cols * sizeof(double));
-    }
-
-    return padded;
-}
-
 /**
  * Returns the wall clock time elapsed in the matrix multiplication between A and B using tiled matrix multiplication,
  * OMP, and local block copies
@@ -44,57 +29,29 @@ double* pad_matrix(const double* original, int original_rows, int original_cols,
  */
 double matrix_multiply_blocking(double *A, double *B, double *C, int N, int P, int M)
 {
-    /**
-     * Can think of A * B as multiplication of block matrices
-     *
-     *     A1, A2
-     * A = A3, A4
-     *
-     * B = B1, B2
-     *     B3, B4
-     *
-     * Yielding
-     *
-     * C = A1*B1 + A2*B3, A1*B2 + A2*B4
-     *     A3*B1 + A4*BB, A3*B2 + A4*B4
-     *
-     * The matrices A and B are divided as above so that A1 and B1
-     * make use of efficient cache utilization by multiplying appropriate
-     * sub blocks. The remaining computation is done in cleanup loops.
-     */
     double wc_start, wc_end;
     double cpu_start, cpu_end;
     size_t iA, jB, iC;
 
     timing(&wc_start, &cpu_start);
-
-    size_t padded_N = get_padded_value(N, BLOCK_SIZE);
-    size_t padded_M = get_padded_value(M, BLOCK_SIZE);
-    size_t padded_P = get_padded_value(P, BLOCK_SIZE);
-
-    double *padded_A = pad_matrix(A, N, P, padded_N, padded_P);
-    double *padded_B = pad_matrix(A, P, M, padded_P, padded_M);
-    double *padded_C = pad_matrix(A, N, M, padded_N, padded_P);
-
-
-#pragma omp parallel default(none) shared(N_block_max, P_block_max, M_block_max, A, B, C, M, P, N) private(iA, jB, iC)
+#pragma omp parallel default(none) shared(N, P, M, A, B, C) private(iA, jB, iC)
     {
 // Compute A1 * B1
 #pragma omp for schedule(runtime)
-        for (size_t ii = 0; ii < padded_N; ii += BLOCK_SIZE)
+        for (size_t ii = 0; ii < N; ii += BLOCK_SIZE)
         {
-            for (size_t jj = 0; jj < padded_M; jj += BLOCK_SIZE)
+            for (size_t jj = 0; jj < M; jj += BLOCK_SIZE)
             {
                 // clear blockC
                 for (size_t i = 0; i < BLOCK_SIZE; i++)
                 {
                     for (size_t j = 0; j < BLOCK_SIZE; j++)
                     {
-                        blockC[i * BLOCK_SIZE + j] = 0.;
+                        blockC[i][j] = 0.;
                     }
                 }
 
-                for (size_t kk = 0; kk < padded_P; kk += BLOCK_SIZE)
+                for (size_t kk = 0; kk < P; kk += BLOCK_SIZE)
                 {
                     // Copy blocks of A and B into blockA and blockB
                     for (size_t i = 0; i < BLOCK_SIZE; i++)
@@ -103,8 +60,8 @@ double matrix_multiply_blocking(double *A, double *B, double *C, int N, int P, i
                         jB = (kk + i) * M + jj;
                         for (size_t j = 0; j < BLOCK_SIZE; j++)
                         {
-                            blockA[i][j] = padded_A[iA + j];
-                            blockB[i][j] = padded_B[jB + j];
+                            blockA[i][j] = A[iA + j];
+                            blockB[i][j] = B[jB + j];
                         }
                     }
 
@@ -128,24 +85,12 @@ double matrix_multiply_blocking(double *A, double *B, double *C, int N, int P, i
                     iC = (ii + i) * M + jj;
                     for (size_t j = 0; j < BLOCK_SIZE; j++)
                     {
-                        padded_C[iC + j] -= blockC[i][j];
+                        C[iC + j] -= blockC[i][j];
                     }
                 }
             }
         }
     }
-
-    free(padded_A);
-    free(padded_B);
-
-    // copy padded_C size_to C
-    for (size_t i = 0; i < N; i++) {
-        for (size_t j = 0; j < M; j++) {
-            C[i * M + j] = padded_C[i * padded_M + j];
-        }
-    }
-
-    free(padded_C);
 
     timing(&wc_end, &cpu_end);
     double elapsed_time = wc_end - wc_start;
@@ -172,6 +117,12 @@ int main(int argc, char **argv)
     int N = atoi(argv[1]);
     int P = atoi(argv[2]);
     int M = atoi(argv[3]);
+
+    if (N % BLOCK_SIZE != 0 || P % BLOCK_SIZE != 0 || M % BLOCK_SIZE != 0)
+    {
+        fprintf(stderr, "Matrix dimensions must be a multiple of %d", BLOCK_SIZE);
+        exit(-1);
+    }
 
     double *A, *B, *C;
     double wc_start, wc_end;

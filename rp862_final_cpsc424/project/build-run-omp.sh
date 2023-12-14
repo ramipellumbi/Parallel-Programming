@@ -31,8 +31,9 @@ do
     echo "Running N=$N, P=$P, M=$M"
     for k in {1..3}
     do 
-        time ./bin/t4-omp $N $P $M
-        time ./bin/t5-omp-local-blocks $N $P $M
+        time ./bin/t5-omp $N $P $M
+        time ./bin/t6-omp-divisible-local-blocks $N $P $M
+        time ./bin/t7-omp-non-divisible-local-blocks $N $P $M
     done
 done
 
