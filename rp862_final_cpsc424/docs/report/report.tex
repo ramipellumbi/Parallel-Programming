@@ -1,0 +1,178 @@
+\documentclass[12pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{url}
+\usepackage{forest}
+\usepackage{tabu}
+\usepackage{listings}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{float}
+\usepackage{color}
+\usepackage{multicol}
+\usepackage[colorlinks = true,
+            linkcolor = blue,
+            urlcolor  = blue,
+            citecolor = blue,
+            anchorcolor = blue]{hyperref}
+\usepackage{subfig}
+\usepackage[font=small,labelfont=bf]{caption}
+
+\newcommand{\MYhref}[3][blue]{\href{#2}{\color{#1}{#3}}}%
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+  language=Java,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=3
+}
+
+\title{Compute Bound CPU Matrix Multiplication}
+\author{Rami Pellumbi\thanks{M.S., Statistics \& Data Science}}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\newpage 
+
+\section{Introduction}
+Matrix multiplication is a cornerstone operation in numerous computational fields,
+ranging from scientific computing to machine learning. At its core, the operation 
+involves the element-wise multiplication and summation of elements across two matrices 
+to produce a third matrix. The theoretical simplicity of this operation belies its 
+computational complexity, particularly when dealing with large matrices. 
+Matrix multiplication scales with the size of the input matrices, often resulting 
+in a significant computational challenge for even modern day processors. 
+This challenge is accentuated by the fact that CPUs, with their limited number 
+of cores and sequential processing capabilities, are often outperformed by GPUs in 
+parallelizable tasks like matrix multiplication. However, understanding and optimizing 
+matrix multiplication on CPUs is crucial, as CPUs are more universally accessible 
+and are often the primary computing resource available in many environments.
+
+\ 
+
+\noindent The difficulty in optimizing matrix multiplication on CPUs stems from several factors. 
+First, the computational intensity: as the size of the matrices increases, 
+the number of calculations grows cubically, leading to a steep increase in the 
+required computational resources. Second, memory access patterns play a critical role: as the 
+size of the matrices increase, the total memory accesses increase quadratically.
+Efficient matrix multiplication algorithms must minimize cache misses and effectively utilize 
+the CPU cache hierarchy. This is challenging due to the non-contiguous memory access 
+patterns inherent in matrix multiplication. 
+
+\
+
+\noindent The current state of the art in matrix multiplication optimization are built 
+on top of Basic Linear Algebra Subprograms (BLAS). The magic of BLAS lies in its ability 
+to significantly optimize these computationally intensive operations. 
+These routines are meticulously engineered to exploit the underlying architecture of CPUs to their fullest, 
+leveraging techniques such as loop unrolling, blocking for cache, and efficient use of SIMD instructions. 
+These optimizations allow BLAS to achieve performance levels that are often an order 
+of magnitude faster than naive implementations. This project aims to match the performance 
+of BLAS by implementing a highly optimized matrix multiplication algorithm on CPUs. 
+
+\section{CPU Specifications}
+The Intel Xeon(R) Platinum 8268 CPU in the Cascade Lake family is used for profiling. 
+The processor has 24 cores, each with 2 threads, for a total of 48 threads. 
+
+\noindent The cache specifications are:
+\begin{itemize}
+    \item 24 $\times$ 32K \texttt{L1d} cache: 8-way set associative, write-back policy, dedicated to data storage. The cache line size is 64 bytes.
+    \item 24 $\times$ 32K \texttt{L1i} cache: 8-way set associative, stores instructions for execution. The cache line size is 128 bytes.
+    \item 24 $\times$ 1024K \texttt{L2} cache: 16-way set associative, write-back policy, inclusive, handles both instructions and data.
+    \item 1 $\times$ 36608K \texttt{L3} cache: 11-way set associative, write-back policy, shared across all cores, non-inclusive, handles both instructions and data.
+\end{itemize}
+
+\section{Approach}
+The first thing done is computing the theoretical peak performance of matrix multiplication 
+on the CPU via Intel's Math Kernel Library (MKL). This is done by running the \texttt{mkl\_peak} program
+
+\newpage
+\section{Project Organization}
+
+The project is laid out as follows:
+
+\begin{multicols}{2}
+    \begin{forest}
+        for tree={
+            font=\ttfamily,
+            grow'=0,
+            child anchor=west,
+            parent anchor=south,
+            anchor=west,
+            calign=first,
+            edge path={
+                \noexpand\path [draw, \forestoption{edge}]
+                (!u.south west) +(7.5pt,0) |- node[fill,inner sep=1.25pt] {} (.child anchor)\forestoption{edge label};
+            },
+            before typesetting nodes={
+                if n=1
+                {insert before={[,phantom]}}
+                {}
+            },
+            fit=band,
+            before computing xy={l=15pt},
+        }
+    [
+        [docs/]
+        [bin/]
+        [out/]
+        [src/
+        [.c]
+        ]
+        [Makefile]
+    ]
+    \end{forest}
+    \columnbreak
+    \begin{itemize}
+        \item \textbf{docs/}: This folder contains LaTeX files and other documentation materials that pertain to the report.
+        \item \textbf{bin/}: The \texttt{bin} folder holds compiled objects and executable files, centralizing the output of the compilation process.
+        \item \textbf{out/}: The \texttt{out} folder stores the outputs from each task. It also houses the csv file containing data generated by the programs.
+        \item \textbf{src/}: This directory houses the source files (\texttt{.c}) that make up the benchmarks.
+        \item \textbf{Shell Scripts}: The shell scripts are used to submit the job for the relevant task to slurm via \texttt{sbatch}.  
+    \end{itemize}
+\end{multicols}
+
+\section{Code Explanation, Compilation, and Execution}
+
+This section outlines the steps required to build and execute the code. The provided Bash scripts automate the entire process, 
+making it straightforward to compile and run the code. All the below steps assume 
+you are in the root of the project directory.
+
+\subsection{Automated Building and Execution}
+All related code is in the \texttt{src/} directory.
+There are multiple programs: 
+\begin{multicols}{2}
+    \begin{itemize}
+        \item 
+    \end{itemize}
+\end{multicols}
+\noindent To run any one experiment, 
+
+\subsection{Post-Build Objects and Executables}
+Upon successful compilation and linking, an \texttt{obj/} subdirectory will be generated within the directory. 
+This directory will contain the compiled output files. Additionally, the executable files for running each program will be 
+situated in the \texttt{bin/} subdirectory.
+
+\subsection{Output Files From \texttt{sbatch}}
+The output files generated from running the code by submitting the relevant Bash script via \texttt{sbatch} will be 
+stored in the \texttt{out} directory. 
+
+\section{Conclusion}
+
+\end{document}
