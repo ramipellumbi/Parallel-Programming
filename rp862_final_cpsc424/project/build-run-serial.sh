@@ -6,7 +6,7 @@
 #SBATCH --cpus-per-task=1
 #SBATCH --mem-per-cpu=45G
 #SBATCH --job-name=rp862-final-all-serial-mm
-#SBATCH --output=out/%x-%j.out
+#SBATCH --output=out/1-serial/%x-%j.out
 #SBATCH --time=55:00
 
 module purge
@@ -17,9 +17,10 @@ pwd
 echo $SLURM_JOB_NODELIST
 echo $SLURM_NTASKS_PER_NODE
 make -f Makefile-serial clean
-make -f Makefile-serial c-serial-blocking 
+make -f Makefile-serial
 
 # N,P,M sizes delimited by space
+ijk_sizes="1024,1024,1024, 2048,2048,2048"
 sizes="1024,1024,1024 8192,8192,8192 1024,1024,8192 8192,8192,1024 8192,1024,8192"
 
 for tuple in $sizes
@@ -30,5 +31,22 @@ do
     M=${ADDR[2]}
 
     echo "Running N=$N, P=$P, M=$M"
-    time ./bin/c-serial-blocking $N $P $M
+    for k in {1..3}
+    do
+        time ./bin/t2-serial-kij $N $P $M
+        time ./bin/t3-serial-blocking $N $P $M
+    done
+done
+
+for tuple in $ijk_sizes
+do 
+    IFS=',' read -ra ADDR <<< "$tuple"
+    N=${ADDR[0]}
+    P=${ADDR[1]}
+    M=${ADDR[2]}
+
+    echo "Running N=$N, P=$P, M=$M"
+    time ./bin/t1-serial-ijk $N $P $M
+    time ./bin/t1-serial-ijk $N $P $M
+    time ./bin/t1-serial-ijk $N $P $M
 done

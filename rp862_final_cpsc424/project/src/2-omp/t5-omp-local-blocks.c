@@ -17,7 +17,8 @@ alignas(64) static double blockC[BLOCK_SIZE][BLOCK_SIZE];
 #pragma omp threadprivate(blockA, blockB, blockC)
 
 /**
- * Returns the wall clock time elapsed in the naive matrix multiplication between A and B
+ * Returns the wall clock time elapsed in the matrix multiplication between A and B using tiled matrix multiplication,
+ * OMP, and local block copies
  *
  * @param A double[N*P] (row wise storage) -> first P entries are row 1
  * @param B double[P*M] (row wise storage) -> first M entries are row 1

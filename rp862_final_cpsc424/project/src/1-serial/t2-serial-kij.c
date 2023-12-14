@@ -7,7 +7,7 @@
 #include <utilities.h>
 
 /**
- * Returns the wall clock time elapsed in the naive matrix multiplication between A and B
+ * Returns the wall clock time elapsed in the matrix multiplication between A and B using kij access pattern
  *
  * @param A double[N*P] (row wise storage) -> first P entries are row 1
  * @param B double[P*M] (row wise storage) -> first M entries are row 1
