@@ -45,6 +45,16 @@ double matrix_multiply_blocking(double *A, double *B, double *C, int N, int P, i
     int iA, jB, iC;
 
     timing(&wc_start, &cpu_start);
+    // transpose B
+    double *B_TR = (double *)malloc(P * M * sizeof(double));
+    for (int i = 0; i < P; i++)
+    {
+        for (int j = 0; j < M; j++)
+        {
+            B_TR[j * P + i] = B[i * M + j];
+        }
+    }
+
     // Calculate the bounds for the blocked multiplication
     int N_block_max = (N / BLOCK_SIZE) * BLOCK_SIZE;
     int P_block_max = (P / BLOCK_SIZE) * BLOCK_SIZE;
@@ -63,10 +73,10 @@ double matrix_multiply_blocking(double *A, double *B, double *C, int N, int P, i
                     for (int j = jj; j < jj + BLOCK_SIZE; j++)
                     {
                         iC = i * M + j;
+                        jB = j * P;
                         for (int k = kk; k < kk + BLOCK_SIZE; k++)
                         {
-                            jB = k * M + j;
-                            C[iC] -= A[iA + k] * B[jB];
+                            C[iC] -= A[iA + k] * B_TR[jB + k];
                         }
                     }
                 }
@@ -80,11 +90,11 @@ double matrix_multiply_blocking(double *A, double *B, double *C, int N, int P, i
         int iA = i * P;
         for (int j = 0; j < M; j++)
         {
+            jB = j * P;
             iC = i * M + j;
             for (int k = P_block_max; k < P; k++)
             {
-                jB = k * M + j;
-                C[iC] -= A[iA + k] * B[jB];
+                C[iC] -= A[iA + k] * B_TR[jB + k];
             }
         }
     }
@@ -95,11 +105,11 @@ double matrix_multiply_blocking(double *A, double *B, double *C, int N, int P, i
         iA = i * P;
         for (int j = 0; j < M; j++)
         {
+            jB = j * P;
             iC = i * M + j;
             for (int k = 0; k < P; k++)
             {
-                jB = k * M + j;
-                C[iC] -= A[iA + k] * B[jB];
+                C[iC] -= A[iA + k] * B_TR[jB + k];
             }
         }
     }
@@ -110,17 +120,19 @@ double matrix_multiply_blocking(double *A, double *B, double *C, int N, int P, i
         int iA = i * P;
         for (int j = M_block_max; j < M; j++)
         {
+            jB = j * P;
             iC = i * M + j;
             for (int k = 0; k < P_block_max; k++)
             {
-                jB = k * M + j;
-                C[iC] -= A[iA + k] * B[jB];
+                C[iC] -= A[iA + k] * B_TR[jB + k];
             }
         }
     }
 
     timing(&wc_end, &cpu_end);
     double elapsed_time = wc_end - wc_start;
+
+    free(B_TR);
 
     return elapsed_time;
 }
@@ -162,7 +174,7 @@ int main(int argc, char **argv)
 
     // Print a table row
     printf("\n(%d, %d, %d) %9.4f  %f\n", N, P, M, wctime, error);
-    write_data_to_file("out/results-serial.csv", "serial-blocking", N, P, M, BLOCK_SIZE, 1, wctime, wctime_blas, error);
+    write_data_to_file("out/results-serial.csv", "serial-blocking-transpose", N, P, M, BLOCK_SIZE, 1, wctime, wctime_blas, error);
 
     free(A);
     free(B);

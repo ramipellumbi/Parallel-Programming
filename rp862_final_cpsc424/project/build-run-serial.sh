@@ -35,6 +35,7 @@ do
     do
         time ./bin/t2-serial-kij $N $P $M
         time ./bin/t3-serial-blocking $N $P $M
+        time ./bin/t4-serial-blocking-T $N $P $M
     done
 done
 

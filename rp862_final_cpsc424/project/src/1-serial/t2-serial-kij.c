@@ -85,7 +85,7 @@ int main(int argc, char **argv)
 
     // Print a table row
     printf("\n(%d, %d, %d) %9.4f  %f\n", N, P, M, wctime, error);
-    write_data_to_file("out/results-serial.csv", "b-serial-kij", N, P, M, 1, 1, wctime, wctime_blas, error);
+    write_data_to_file("out/results-serial.csv", "serial-kij", N, P, M, 1, 1, wctime, wctime_blas, error);
 
     free(A);
     free(B);

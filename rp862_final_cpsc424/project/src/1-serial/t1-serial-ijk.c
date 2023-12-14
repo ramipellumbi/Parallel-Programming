@@ -34,7 +34,7 @@ double matrix_multiply_naive(double *A, double *B, double *C, int N, int P, int 
             double cvalue = 0.;
             for (int k = 0; k < P; k++)
             {
-                int jB = k * M + j; 
+                int jB = k * M + j;
                 // row i column k of A multiplied with row k column j of B
                 cvalue += A[iA + k] * B[jB];
             }
@@ -82,11 +82,9 @@ int main(int argc, char **argv)
     // ------------------- check custom multiply creates correct results -----------------
     double error = compute_relative_error(A, B, C, N, P, M);
 
-
     // Print a table row
-    printf("\n(%d, %d, %d) %9.4f  %f\n", N, P, M,  wctime, error);
-    write_data_to_file("out/results-serial.csv", "a-serial", N, P, M, 1, 1, wctime, wctime_blas, error);
-
+    printf("\n(%d, %d, %d) %9.4f  %f\n", N, P, M, wctime, error);
+    write_data_to_file("out/results-serial.csv", "serial-ijk", N, P, M, 1, 1, wctime, wctime_blas, error);
 
     free(A);
     free(B);
