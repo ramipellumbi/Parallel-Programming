@@ -132,3 +132,32 @@ double compute_relative_error(double *A, double *B, double *C, size_t N, size_t 
 
     return error;
 }
+
+double compute_relative_error_between(double *A, double *B, double *C, double *C2, size_t N, size_t P, size_t M)
+{
+    double error, suma, sumb, sumc, ai, bi, ci;
+    suma = 0.;
+    sumb = 0;
+    sumc = 0;
+    for (size_t i = 0; i < N * P; i++)
+    {
+        ai = A[i];
+        suma += ai * ai;
+    }
+    for (size_t i = 0; i < P * M; i++)
+    {
+        bi = B[i];
+        sumb += bi * bi;
+    }
+    for (size_t i = 0; i < N * M; i++)
+    {
+        ci = C[i] - C2[i];
+        sumc += ci * ci;
+    }
+    suma = sqrt(suma);
+    sumb = sqrt(sumb);
+    sumc = sqrt(sumc);
+    error = sumc / (suma * sumb);
+
+    return error;
+}

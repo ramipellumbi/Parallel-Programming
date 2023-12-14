@@ -21,4 +21,6 @@ void load_random_matrices(double **A, double **B, size_t n, size_t p, size_t m);
 
 double compute_relative_error(double *A, double *B, double *C, size_t n, size_t p, size_t m);
 
+double compute_relative_error_between(double *A, double *B, double *C, double *C2, size_t n, size_t p, size_t m)
+
 #endif
