@@ -11,37 +11,21 @@
 #include <utilities.h>
 #include <timing.h>
 
-double compute_relative_error_2(double *A, double *B, double *C, double *C2, size_t N, size_t P, size_t M)
-{
-    double error, suma, sumb, sumc, ai, bi, ci;
-    suma = 0.;
-    sumb = 0;
-    sumc = 0;
-    for (size_t i = 0; i < N * P; i++)
-    {
-        ai = A[i];
-        suma += ai * ai;
-    }
-    for (size_t i = 0; i < P * M; i++)
-    {
-        bi = B[i];
-        sumb += bi * bi;
-    }
-    for (size_t i = 0; i < N * M; i++)
-    {
-        ci = C[i] - C2[i];
-        sumc += ci * ci;
-    }
-    suma = sqrt(suma);
-    sumb = sqrt(sumb);
-    sumc = sqrt(sumc);
-    error = sumc / (suma * sumb);
-
-    return error;
-}
+#define ROW_BLOCK 6 // operate on 6 rows at a time
+#define COL_BLOCK 16 // operate on 16 columns at a time
 
 /**
- * Returns the wall clock time elapsed in the naive matrix multiplication between A and B
+ * Returns the wall clock time elapsed in the serial matrix multiplication between A and B
+ * using blocking + AVX instructions 
+ * 
+ * Inspired by
+ * 
+ * https://www.cs.utexas.edu/users/flame/pubs/GotoTOMS_final.pdf
+ * 
+ * and mainly
+ * 
+ * https://www.cs.utexas.edu/users/flame/pubs/blis3_ipdps14.pdf
+ * https://cs.stanford.edu/people/shadjis/blas.html
  *
  * @param A double[N*P] (row wise storage) -> first P entries are row 1
  * @param B double[P*M] (row wise storage) -> first M entries are row 1
@@ -62,10 +46,6 @@ double matrix_multiply_blocking(double *A, double *B, double *C, int N, int P, i
     const int mc = 480; // kc * mc doubles fit in L2, 1024K
     // note: kc * nc fits in L3, which is 35.75 M BUT SHARED AMONGST ALL CORES
 
-    // consider blocks of 6x32 (32 because 512 bit registers fit 4 doubles)
-    const int nr = 16;
-    const int mr = 6;
-
     timing(&wc_start, &cpu_start);
     // jc = 0,...,M-1 in steps of nc
     for (size_t jc = 0; jc < M; jc += nc)
@@ -77,11 +57,11 @@ double matrix_multiply_blocking(double *A, double *B, double *C, int N, int P, i
             for (size_t ic = 0; ic < N; ic += mc)
             {
 #pragma omp parallel for
-                // jr = 0,...,nc-1 in steps of cols
-                for (size_t jr = 0; jr < nc; jr += nr)
+                // jr = 0,...,nc-1 in steps of COL_BLOCK
+                for (size_t jr = 0; jr < nc; jr += COL_BLOCK)
                 {
-                    // ir = 0,...,mc-1 in steps of rows
-                    for (size_t ir = 0; ir < mc; ir += mr)
+                    // ir = 0,...,mc-1 in steps of ROW_BLOCK
+                    for (size_t ir = 0; ir < mc; ir += ROW_BLOCK)
                     {
                         // 512 bit wide registers (operate on 8 doubles at once)
                         __m512d mB0, mB1, mA0, mA1;
