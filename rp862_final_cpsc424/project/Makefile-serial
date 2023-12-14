@@ -2,16 +2,16 @@ CC_SERIAL = icc
 
 CFLAGS     = -g -O3 -xHost -fno-alias -std=c99 -lmkl_rt -I include
 
-SRC_DIR 	= src
-OBJ_DIR 	= obj
+SRC_DIR 	= src/1-serial
+OBJ_DIR 	= obj/1-serial
 BIN_DIR 	= bin
 INCLUDE_DIR = include
 
-TIMING 	  = $(OBJ_DIR)/timing.o
-UTILITIES = $(OBJ_DIR)/utilities.o
+TIMING 	  = $(OBJ_DIR)/../timing.o
+UTILITIES = $(OBJ_DIR)/../utilities.o
 MODULES   = $(TIMING) $(UTILITIES)
 
-EXECUTABLES = a-serial b-serial-kij c-serial-blocking
+EXECUTABLES = t1-serial-ijk t2-serial-kij t3-serial-blocking
 
 .SUFFIXES : .c .o
 
@@ -29,7 +29,6 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	$(CC_SERIAL) $(CFLAGS) -c $< -o $@
 
 $(BIN_DIR)/%: $(OBJ_DIR)/%.o $(MODULES)
-	@echo "Building binary $@ from object $^"
 	@mkdir -p $(BIN_DIR)
 	$(CC_SERIAL) $(CFLAGS) -o $@ $^
 
@@ -37,4 +36,4 @@ $(BIN_DIR)/%: $(OBJ_DIR)/%.o $(MODULES)
 	@:
 
 clean:
-	rm -rf $(OBJ_DIR) $(BIN_DIR)
+	rm -rf $(OBJ_DIR) $(BINARIES)

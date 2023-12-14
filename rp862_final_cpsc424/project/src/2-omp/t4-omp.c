@@ -9,7 +9,6 @@
 #include <utilities.h>
 
 #define BLOCK_SIZE 16
-#define MIN(a, b) ((a) < (b) ? (a) : (b))
 
 /**
  * Returns the wall clock time elapsed in the naive matrix multiplication between A and B

@@ -2,8 +2,8 @@ CC = icc
 
 CFLAGS     = -g -O3 -xHost -fno-alias -std=c99 -qopenmp -lmkl_rt -I include
 
-SRC_DIR 	= src/2-omp
-OBJ_DIR 	= obj/2-omp
+SRC_DIR 	= src/3-avx
+OBJ_DIR 	= obj/3-avx
 BIN_DIR 	= bin
 INCLUDE_DIR = include
 
@@ -11,7 +11,7 @@ TIMING 	  = $(OBJ_DIR)/../timing.o
 UTILITIES = $(OBJ_DIR)/../utilities.o
 MODULES   = $(TIMING) $(UTILITIES)
 
-EXECUTABLES = t4-omp t5-omp-local-blocks
+EXECUTABLES = t6-serial-square-avx-blocking t7-omp-square-avx-blocking t8-omp-rectangular-avx-blocking
 
 .SUFFIXES : .c .o
 

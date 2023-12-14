@@ -8,10 +8,12 @@
 #include <utilities.h>
 #include <timing.h>
 
-#define BLOCK_SIZE 16
+#define BLOCK_SIZE 32
 alignas(64) static double blockA[BLOCK_SIZE][BLOCK_SIZE];
 alignas(64) static double blockB[BLOCK_SIZE][BLOCK_SIZE];
 alignas(64) static double blockC[BLOCK_SIZE][BLOCK_SIZE];
+
+// ensure there is no false sharing between threads by giving each thread its own local matrix copies
 #pragma omp threadprivate(blockA, blockB, blockC)
 
 /**
@@ -58,14 +60,14 @@ double matrix_multiply_blocking(double *A, double *B, double *C, int N, int P, i
     {
 // Compute A1 * B1
 #pragma omp for schedule(runtime)
-        for (int ii = 0; ii < N; ii += BLOCK_SIZE)
+        for (int ii = 0; ii < N_block_max; ii += BLOCK_SIZE)
         {
-            for (int jj = 0; jj < M; jj += BLOCK_SIZE)
+            for (int jj = 0; jj < M_block_max; jj += BLOCK_SIZE)
             {
                 // clear blockC
                 memset(blockC, 0, sizeof(blockC));
 
-                for (int kk = 0; kk < P; kk += BLOCK_SIZE)
+                for (int kk = 0; kk < P_block_max; kk += BLOCK_SIZE)
                 {
                     // Copy A and B into blockA and blockB
                     for (int i = 0; i < BLOCK_SIZE; i++)
