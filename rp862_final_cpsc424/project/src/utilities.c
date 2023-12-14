@@ -72,6 +72,67 @@ void write_data_to_file(const char *filename,
     fclose(fp);
 }
 
+void write_data_to_file_avx(const char *filename,
+                            const char *program,
+                            int N,
+                            int P,
+                            int M,
+                            int KC,
+                            int MC,
+                            int ROW_BLOCK,
+                            int COL_BLOCK,
+                            int np,
+                            int ALIGNMENT,
+                            double exe_time,
+                            double blas_exe_time,
+                            double f_norm)
+{
+    int num_cores = get_environment_value("SLURM_CPUS_PER_TASK");
+    if (num_cores == -1)
+    {
+        fprintf(stderr, "\nSLURM_CPUS_PER_TASK not set");
+    }
+
+    int num_tasks_per_node = get_environment_value("SLURM_NTASKS_PER_NODE");
+    if (num_tasks_per_node == -1)
+    {
+        fprintf(stderr, "\nSLURM_NTASKS_PER_NODE not set");
+    }
+
+    int num_tasks_per_socket = get_environment_value("SLURM_NTASKS_PER_SOCKET");
+    if (num_tasks_per_socket == -1)
+    {
+        fprintf(stderr, "\nSLURM_NTASKS_PER_SOCKET not set");
+    }
+
+    // check if the file exists
+    FILE *check_file = fopen(filename, "r");
+    bool does_file_exist = false;
+    if (check_file != NULL)
+    {
+        fclose(check_file);
+        does_file_exist = true;
+    }
+
+    // open the file with means to append
+    FILE *fp = fopen(filename, "a");
+    if (fp == NULL)
+    {
+        fprintf(stderr, "Could not open or create file: %s\n", filename);
+        return;
+    }
+
+    // if the file does not exist, add the header row
+    if (!does_file_exist)
+    {
+        fprintf(fp, "program,num_cores,np,num_tasks_per_node,num_tasks_per_socket,N,P,M,KC,MC,ROW_BLOCK,COL_BLOCK,ALIGNMENT,exe_time,blas_exe_time,f_norm\n");
+    }
+
+    // add data to row
+    fprintf(fp, "\"%s\",%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%f,%f,%.12e\n", program, num_cores, np, num_tasks_per_node, num_tasks_per_socket, N, P, M, KC, MC, ROW_BLOCK, COL_BLOCK, ALIGNMENT, exe_time, blas_exe_time, f_norm);
+    fclose(fp);
+}
+
 /**
  * Load random matrices A and B
  * Both are stored in a single array row-wise

@@ -1,0 +1,100 @@
+The following modules were not unloaded:
+  (Use "module --force purge" to unload all):
+
+  1) StdEnv
+
+Currently Loaded Modules:
+  1) StdEnv                              (S)
+  2) GCCcore/10.2.0
+  3) zlib/1.2.11-GCCcore-10.2.0
+  4) binutils/2.35-GCCcore-10.2.0
+  5) iccifort/2020.4.304
+  6) numactl/2.0.13-GCCcore-10.2.0
+  7) UCX/1.9.0-GCCcore-10.2.0
+  8) impi/2019.9.304-iccifort-2020.4.304
+  9) iimpi/2020b
+ 10) imkl/2020.4.304-iimpi-2020b
+ 11) intel/2020b
+
+  Where:
+   S:  Module is Sticky, requires --force to unload or purge
+
+ 
+
+/home/cpsc424_rp862/Desktop/cpsc-524-parallel-programming/rp862_final_cpsc424/project
+r918u05n01
+1
+ALL = bin/t6-serial-square-avx-blocking bin/t7-omp-square-avx-blocking bin/t8-omp-rectangular-avx-blocking
+rm -rf obj/3-avx  bin/t8-serial-divisible-avx-blocking  bin/t10-omp-square-avx-blocking  bin/t9-serial-non-divisible-avx-blocking
+ALL = bin/t6-serial-square-avx-blocking bin/t7-omp-square-avx-blocking bin/t8-omp-rectangular-avx-blocking
+icc -g -O3 -xHost -fno-alias -std=c99 -qopenmp -lmkl_rt -I include -c src/3-avx/t8-serial-divisible-avx-blocking.c -o obj/3-avx/t8-serial-divisible-avx-blocking.o
+icc -g -O3 -xHost -fno-alias -std=c99 -qopenmp -lmkl_rt -I include -c src/3-avx/../timing.c -o obj/3-avx/../timing.o
+icc -g -O3 -xHost -fno-alias -std=c99 -qopenmp -lmkl_rt -I include -c src/3-avx/../utilities.c -o obj/3-avx/../utilities.o
+icc -g -O3 -xHost -fno-alias -std=c99 -qopenmp -lmkl_rt -I include -o bin/t8-serial-divisible-avx-blocking obj/3-avx/t8-serial-divisible-avx-blocking.o obj/3-avx/../timing.o obj/3-avx/../utilities.o
+rm obj/3-avx/../timing.o obj/3-avx/../utilities.o obj/3-avx/t8-serial-divisible-avx-blocking.o
+Running N=1200, P=1200, M=1200
+
+SLURM_NTASKS_PER_SOCKET not set
+(1200, 1200, 1200)    0.0663  0.000000
+
+real	0m0.188s
+user	0m0.155s
+sys	0m0.015s
+
+SLURM_NTASKS_PER_SOCKET not set
+(1200, 1200, 1200)    0.0668  0.000000
+
+real	0m0.178s
+user	0m0.150s
+sys	0m0.022s
+
+SLURM_NTASKS_PER_SOCKET not set
+(1200, 1200, 1200)    0.0662  0.000000
+
+real	0m0.177s
+user	0m0.151s
+sys	0m0.020s
+Running N=3600, P=3600, M=3600
+
+SLURM_NTASKS_PER_SOCKET not set
+(3600, 3600, 3600)    2.0719  0.000000
+
+real	0m3.642s
+user	0m3.536s
+sys	0m0.088s
+
+SLURM_NTASKS_PER_SOCKET not set
+(3600, 3600, 3600)    2.0734  0.000000
+
+real	0m3.663s
+user	0m3.549s
+sys	0m0.085s
+
+SLURM_NTASKS_PER_SOCKET not set
+(3600, 3600, 3600)    2.0740  0.000000
+
+real	0m3.658s
+user	0m3.544s
+sys	0m0.086s
+Running N=9600, P=9600, M=9600
+
+SLURM_NTASKS_PER_SOCKET not set
+(9600, 9600, 9600)   41.1939  0.000000
+
+real	1m6.059s
+user	1m5.316s
+sys	0m0.516s
+
+SLURM_NTASKS_PER_SOCKET not set
+(9600, 9600, 9600)   41.1705  0.000000
+
+real	1m6.097s
+user	1m5.337s
+sys	0m0.528s
+
+SLURM_NTASKS_PER_SOCKET not set
+(9600, 9600, 9600)   41.2368  0.000000
+
+real	1m6.149s
+user	1m5.360s
+sys	0m0.522s

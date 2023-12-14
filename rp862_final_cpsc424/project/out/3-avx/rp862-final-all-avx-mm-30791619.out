@@ -1,0 +1,184 @@
+The following modules were not unloaded:
+  (Use "module --force purge" to unload all):
+
+  1) StdEnv
+
+Currently Loaded Modules:
+  1) StdEnv                              (S)
+  2) GCCcore/10.2.0
+  3) zlib/1.2.11-GCCcore-10.2.0
+  4) binutils/2.35-GCCcore-10.2.0
+  5) iccifort/2020.4.304
+  6) numactl/2.0.13-GCCcore-10.2.0
+  7) UCX/1.9.0-GCCcore-10.2.0
+  8) impi/2019.9.304-iccifort-2020.4.304
+  9) iimpi/2020b
+ 10) imkl/2020.4.304-iimpi-2020b
+ 11) intel/2020b
+
+  Where:
+   S:  Module is Sticky, requires --force to unload or purge
+
+ 
+
+/home/cpsc424_rp862/Desktop/cpsc-524-parallel-programming/rp862_final_cpsc424/project
+r918u05n03
+
+ALL = bin/t6-serial-square-avx-blocking bin/t7-omp-square-avx-blocking bin/t8-omp-rectangular-avx-blocking
+rm -rf obj/3-avx  bin/t8-serial-divisible-avx-blocking  bin/t9-omp-divisible-avx-blocking
+ALL = bin/t6-serial-square-avx-blocking bin/t7-omp-square-avx-blocking bin/t8-omp-rectangular-avx-blocking
+icc -g -O3 -xHost -fno-alias -std=c99 -qopenmp -lmkl_rt -I include -c src/3-avx/t9-omp-divisible-avx-blocking.c -o obj/3-avx/t9-omp-divisible-avx-blocking.o
+icc -g -O3 -xHost -fno-alias -std=c99 -qopenmp -lmkl_rt -I include -c src/3-avx/../timing.c -o obj/3-avx/../timing.o
+icc -g -O3 -xHost -fno-alias -std=c99 -qopenmp -lmkl_rt -I include -c src/3-avx/../utilities.c -o obj/3-avx/../utilities.o
+icc -g -O3 -xHost -fno-alias -std=c99 -qopenmp -lmkl_rt -I include -o bin/t9-omp-divisible-avx-blocking obj/3-avx/t9-omp-divisible-avx-blocking.o obj/3-avx/../timing.o obj/3-avx/../utilities.o
+rm obj/3-avx/../timing.o obj/3-avx/../utilities.o obj/3-avx/t9-omp-divisible-avx-blocking.o
+Running N=1200, P=1200, M=1200
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(1200, 1200, 1200)    0.0041  0.000000
+
+real	0m0.227s
+user	0m0.390s
+sys	0m0.059s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(1200, 1200, 1200)    0.0040  0.000000
+
+real	0m0.078s
+user	0m0.378s
+sys	0m0.049s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(1200, 1200, 1200)    0.0040  0.000000
+
+real	0m0.077s
+user	0m0.385s
+sys	0m0.037s
+Running N=3600, P=3600, M=3600
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(3600, 3600, 3600)    0.0935  0.000000
+
+real	0m0.530s
+user	0m4.605s
+sys	0m0.182s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(3600, 3600, 3600)    0.0934  0.000000
+
+real	0m0.532s
+user	0m4.671s
+sys	0m0.164s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(3600, 3600, 3600)    0.0935  0.000000
+
+real	0m0.530s
+user	0m4.675s
+sys	0m0.125s
+Running N=1440, P=1440, M=1440
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(1440, 1440, 1440)    0.0063  0.000000
+
+real	0m0.097s
+user	0m0.501s
+sys	0m0.075s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(1440, 1440, 1440)    0.0062  0.000000
+
+real	0m0.097s
+user	0m0.503s
+sys	0m0.070s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(1440, 1440, 1440)    0.0063  0.000000
+
+real	0m0.102s
+user	0m0.554s
+sys	0m0.059s
+Running N=4320, P=4320, M=4320
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(4320, 4320, 4320)    0.1590  0.000000
+
+real	0m0.793s
+user	0m7.690s
+sys	0m0.195s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(4320, 4320, 4320)    0.1610  0.000000
+
+real	0m0.795s
+user	0m7.662s
+sys	0m0.201s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(4320, 4320, 4320)    0.1584  0.000000
+
+real	0m0.794s
+user	0m7.628s
+sys	0m0.212s
+Running N=8400, P=8400, M=8400
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(8400, 8400, 8400)    1.0453  0.000000
+
+real	0m3.695s
+user	0m47.117s
+sys	0m0.618s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(8400, 8400, 8400)    1.0409  0.000000
+
+real	0m3.686s
+user	0m46.905s
+sys	0m0.622s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(8400, 8400, 8400)    1.0396  0.000000
+
+real	0m3.683s
+user	0m46.857s
+sys	0m0.602s
+Running N=9600, P=9600, M=9600
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(9600, 9600, 9600)    1.5580  0.000000
+
+real	0m5.123s
+user	1m8.516s
+sys	0m0.741s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(9600, 9600, 9600)    1.5546  0.000000
+
+real	0m5.122s
+user	1m8.377s
+sys	0m0.710s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(9600, 9600, 9600)    1.5539  0.000000
+
+real	0m5.129s
+user	1m8.574s
+sys	0m0.756s

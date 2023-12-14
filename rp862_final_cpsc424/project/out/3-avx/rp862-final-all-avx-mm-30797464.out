@@ -1,0 +1,148 @@
+The following modules were not unloaded:
+  (Use "module --force purge" to unload all):
+
+  1) StdEnv
+
+Currently Loaded Modules:
+  1) StdEnv                              (S)
+  2) GCCcore/10.2.0
+  3) zlib/1.2.11-GCCcore-10.2.0
+  4) binutils/2.35-GCCcore-10.2.0
+  5) iccifort/2020.4.304
+  6) numactl/2.0.13-GCCcore-10.2.0
+  7) UCX/1.9.0-GCCcore-10.2.0
+  8) impi/2019.9.304-iccifort-2020.4.304
+  9) iimpi/2020b
+ 10) imkl/2020.4.304-iimpi-2020b
+ 11) intel/2020b
+
+  Where:
+   S:  Module is Sticky, requires --force to unload or purge
+
+ 
+
+/home/cpsc424_rp862/Desktop/cpsc-524-parallel-programming/rp862_final_cpsc424/project
+r918u05n03
+
+ALL = bin/t6-serial-square-avx-blocking bin/t7-omp-square-avx-blocking bin/t8-omp-rectangular-avx-blocking
+rm -rf obj/3-avx  bin/t8-serial-divisible-avx-blocking  bin/t9-omp-divisible-avx-blocking
+ALL = bin/t6-serial-square-avx-blocking bin/t7-omp-square-avx-blocking bin/t8-omp-rectangular-avx-blocking
+icc -g -O3 -xHost -fno-alias -std=c99 -qopenmp -lmkl_rt -I include -c src/3-avx/t9-omp-divisible-avx-blocking.c -o obj/3-avx/t9-omp-divisible-avx-blocking.o
+icc -g -O3 -xHost -fno-alias -std=c99 -qopenmp -lmkl_rt -I include -c src/3-avx/../timing.c -o obj/3-avx/../timing.o
+icc -g -O3 -xHost -fno-alias -std=c99 -qopenmp -lmkl_rt -I include -c src/3-avx/../utilities.c -o obj/3-avx/../utilities.o
+icc -g -O3 -xHost -fno-alias -std=c99 -qopenmp -lmkl_rt -I include -o bin/t9-omp-divisible-avx-blocking obj/3-avx/t9-omp-divisible-avx-blocking.o obj/3-avx/../timing.o obj/3-avx/../utilities.o
+rm obj/3-avx/../timing.o obj/3-avx/../utilities.o obj/3-avx/t9-omp-divisible-avx-blocking.o
+Running N=1200, P=1200, M=1200
+Matrix dimension P must be a multiple of 480
+real	0m0.020s
+user	0m0.000s
+sys	0m0.003s
+Matrix dimension P must be a multiple of 480
+real	0m0.005s
+user	0m0.000s
+sys	0m0.003s
+Matrix dimension P must be a multiple of 480
+real	0m0.005s
+user	0m0.001s
+sys	0m0.002s
+Running N=3600, P=3600, M=3600
+Matrix dimension P must be a multiple of 480
+real	0m0.005s
+user	0m0.001s
+sys	0m0.002s
+Matrix dimension P must be a multiple of 480
+real	0m0.006s
+user	0m0.001s
+sys	0m0.002s
+Matrix dimension P must be a multiple of 480
+real	0m0.005s
+user	0m0.001s
+sys	0m0.002s
+Running N=1440, P=1440, M=1440
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(1440, 1440, 1440)    0.0063  0.000000
+
+real	0m0.233s
+user	0m0.517s
+sys	0m0.066s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(1440, 1440, 1440)    0.0062  0.000000
+
+real	0m0.098s
+user	0m0.522s
+sys	0m0.053s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(1440, 1440, 1440)    0.0063  0.000000
+
+real	0m0.097s
+user	0m0.518s
+sys	0m0.049s
+Running N=4320, P=4320, M=4320
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(4320, 4320, 4320)    0.1549  0.000000
+
+real	0m0.789s
+user	0m7.565s
+sys	0m0.187s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(4320, 4320, 4320)    0.1557  0.000000
+
+real	0m0.789s
+user	0m7.535s
+sys	0m0.207s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(4320, 4320, 4320)    0.1559  0.000000
+
+real	0m0.816s
+user	0m7.847s
+sys	0m0.183s
+Running N=8400, P=8400, M=8400
+Matrix dimension P must be a multiple of 480
+real	0m0.021s
+user	0m0.001s
+sys	0m0.003s
+Matrix dimension P must be a multiple of 480
+real	0m0.020s
+user	0m0.000s
+sys	0m0.003s
+Matrix dimension P must be a multiple of 480
+real	0m0.020s
+user	0m0.000s
+sys	0m0.003s
+Running N=9600, P=9600, M=9600
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(9600, 9600, 9600)    1.6184  0.000000
+
+real	0m5.216s
+user	1m9.680s
+sys	0m0.715s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(9600, 9600, 9600)    1.6203  0.000000
+
+real	0m5.215s
+user	1m9.766s
+sys	0m0.700s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(9600, 9600, 9600)    1.6218  0.000000
+
+real	0m5.252s
+user	1m10.236s
+sys	0m0.755s

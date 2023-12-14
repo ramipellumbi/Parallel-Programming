@@ -11,21 +11,21 @@
 #include <timing.h>
 
 #define KC 240       // KC * COL_BLOCK doubles fit in L1, 32K
-#define MC 120       // KC * MC doubles fit in L2, 1024k
+#define MC 240       // KC * MC doubles fit in L2, 1024k
 #define ROW_BLOCK 6  // operate on 6 rows at a time
 #define COL_BLOCK 16 // operate on 16 columns at a time
-#define ALIGNMENT 64 // alignm memory addresses on ALIGNMENT boundary
+#define ALIGNMENT 64 // align memory addresses on ALIGNMENT boundary
 
 /**
  * Returns the wall clock time elapsed in the serial matrix multiplication between A and B
- * using blocking + AVX instructions 
- * 
+ * using blocking + AVX instructions
+ *
  * Inspired by
- * 
+ *
  * https://www.cs.utexas.edu/users/flame/pubs/GotoTOMS_final.pdf
- * 
+ *
  * and mainly
- * 
+ *
  * https://www.cs.utexas.edu/users/flame/pubs/blis3_ipdps14.pdf
  * https://cs.stanford.edu/people/shadjis/blas.html
  *
@@ -48,10 +48,10 @@ double matrix_multiply_blocking(double *A, double *B, double *C, size_t N, size_
     // jc = 0,...,M-1 in steps of NC
     for (size_t jc = 0; jc < M; jc += NC)
     {
-        // pc = 0,...,P-1 in steps of KC 
+        // pc = 0,...,P-1 in steps of KC
         for (size_t pc = 0; pc < P; pc += KC)
         {
-            // ic = 0,...,N-1 in steps of MC 
+            // ic = 0,...,N-1 in steps of MC
             for (size_t ic = 0; ic < N; ic += MC)
             {
                 // jr = 0,...,NC-1 in steps of COL_BLOCK
@@ -214,7 +214,7 @@ int main(int argc, char **argv)
 
     // Print a table row
     printf("\n(%d, %d, %d) %9.4f  %f\n", N, P, M, wctime, error);
-    write_data_to_file("out/results-avx.csv", "avx-serial-divisible", N, P, M, 6, 1, wctime, wctime_blas, error);
+    write_data_to_file_avx("out/results-avx.csv", "avx-serial-divisible", N, P, M, KC, MC, ROW_BLOCK, COL_BLOCK, 1, ALIGNMENT, wctime, wctime_blas, error);
 
     _mm_free(A);
     _mm_free(B);
