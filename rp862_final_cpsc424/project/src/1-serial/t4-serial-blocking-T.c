@@ -13,6 +13,9 @@
 /**
  * Returns the wall clock time elapsed in the matrix multiplication between A and B using tiled matrix multiplication
  *
+ * Inspired by
+ * https://www.youtube.com/watch?v=QGYvbsHDPxo&ab_channel=DepthBuffer
+ * 
  * @param A double[N*P] (row wise storage) -> first P entries are row 1
  * @param B double[P*M] (row wise storage) -> first M entries are row 1
  * @param C double[N*M] (row wise storage) -> first M entries are row 1
