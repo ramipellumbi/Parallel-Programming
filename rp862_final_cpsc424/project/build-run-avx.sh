@@ -5,7 +5,7 @@
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=1
 #SBATCH --mem-per-cpu=45G
-#SBATCH --job-name=rp862-final-all-serial-mm
+#SBATCH --job-name=rp862-final-all-avx-mm
 #SBATCH --output=out/3-avx/%x-%j.out
 #SBATCH --time=55:00
 
