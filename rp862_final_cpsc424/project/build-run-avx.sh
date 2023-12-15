@@ -33,8 +33,23 @@ do
     echo "Running N=$N, P=$P, M=$M"
     for k in {1..3}
     do
-        # time ./bin/t8-serial-divisible-avx-blocking $N $P $M
-        # time ./bin/t9-omp-divisible-avx-blocking $N $P $M
+        time ./bin/t9-omp-divisible-avx-blocking $N $P $M
         time ./bin/t10-omp-non-divisible-avx-blocking $N $P $M
     done
 done
+
+export OMP_NUM_THREADS=1
+for tuple in $sizes
+do 
+    IFS=',' read -ra ADDR <<< "$tuple"
+    N=${ADDR[0]}
+    P=${ADDR[1]}
+    M=${ADDR[2]}
+
+    echo "Running N=$N, P=$P, M=$M"
+    for k in {1..3}
+    do
+        time ./bin/t8-serial-divisible-avx-blocking $N $P $M
+    done
+done
+
