@@ -2,6 +2,7 @@
 #include <malloc.h>
 #include <math.h>
 #include <mkl.h>
+#include <omp.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdalign.h>

@@ -2,6 +2,7 @@
 #include <malloc.h>
 #include <math.h>
 #include <mkl.h>
+#include <omp.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdalign.h>
@@ -11,8 +12,8 @@
 #include <timing.h>
 
 #define KC 240       // KC * COL_BLOCK doubles fit in L1, 32K
-#define MC 480       // KC * MC doubles fit in L2, 1024k
-#define ROW_BLOCK 10 // operate on 6 rows at a time
+#define MC 240       // KC * MC doubles fit in L2, 1024k
+#define ROW_BLOCK 10 // operate on 10 rows at a time
 #define COL_BLOCK 16 // operate on 16 columns at a time
 #define ALIGNMENT 64 // align memory addresses on ALIGNMENT boundary
 
@@ -202,6 +203,9 @@ double matrix_multiply_blocking(const double *A, const double *B, double *C, siz
         }
     }
 
+    free(padded_A);
+    free(padded_B);
+
     for (size_t i = 0; i < N; i++)
     {
         for (size_t j = 0; j < M; j++)
@@ -209,6 +213,7 @@ double matrix_multiply_blocking(const double *A, const double *B, double *C, siz
             C[i * M + j] = padded_C[i * PADDED_M + j];
         }
     }
+    free(padded_C);
 
     timing(&wc_end, &cpu_end);
     double elapsed_time = wc_end - wc_start;

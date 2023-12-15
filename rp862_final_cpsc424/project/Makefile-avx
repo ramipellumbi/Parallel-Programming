@@ -11,7 +11,7 @@ TIMING 	  = $(OBJ_DIR)/../timing.o
 UTILITIES = $(OBJ_DIR)/../utilities.o
 MODULES   = $(TIMING) $(UTILITIES)
 
-EXECUTABLES = t6-serial-square-avx-blocking t7-omp-square-avx-blocking t8-omp-rectangular-avx-blocking
+EXECUTABLES = t8-serial-divisible-avx-blocking t9-omp-divisible-avx-blocking t10-omp-non-divisible-avx-blocking
 
 .SUFFIXES : .c .o
 
