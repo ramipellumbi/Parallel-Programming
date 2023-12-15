@@ -1,0 +1,1110 @@
+The following modules were not unloaded:
+  (Use "module --force purge" to unload all):
+
+  1) StdEnv
+
+Currently Loaded Modules:
+  1) StdEnv                              (S)
+  2) GCCcore/10.2.0
+  3) zlib/1.2.11-GCCcore-10.2.0
+  4) binutils/2.35-GCCcore-10.2.0
+  5) iccifort/2020.4.304
+  6) numactl/2.0.13-GCCcore-10.2.0
+  7) UCX/1.9.0-GCCcore-10.2.0
+  8) impi/2019.9.304-iccifort-2020.4.304
+  9) iimpi/2020b
+ 10) imkl/2020.4.304-iimpi-2020b
+ 11) intel/2020b
+
+  Where:
+   S:  Module is Sticky, requires --force to unload or purge
+
+ 
+
+/home/cpsc424_rp862/Desktop/cpsc-524-parallel-programming/rp862_final_cpsc424/project
+r918u05n02
+
+ALL = bin/t6-serial-square-avx-blocking bin/t7-omp-square-avx-blocking bin/t8-omp-rectangular-avx-blocking
+rm -rf obj/3-avx  bin/t8-serial-divisible-avx-blocking  bin/t10-omp-non-divisible-avx-blocking  bin/t9-omp-divisible-avx-blocking
+ALL = bin/t6-serial-square-avx-blocking bin/t7-omp-square-avx-blocking bin/t8-omp-rectangular-avx-blocking
+icc -g -O3 -xHost -fno-alias -std=c99 -qopenmp -lmkl_rt -I include -c src/3-avx/t8-serial-divisible-avx-blocking.c -o obj/3-avx/t8-serial-divisible-avx-blocking.o
+icc -g -O3 -xHost -fno-alias -std=c99 -qopenmp -lmkl_rt -I include -c src/3-avx/../timing.c -o obj/3-avx/../timing.o
+icc -g -O3 -xHost -fno-alias -std=c99 -qopenmp -lmkl_rt -I include -c src/3-avx/../utilities.c -o obj/3-avx/../utilities.o
+icc -g -O3 -xHost -fno-alias -std=c99 -qopenmp -lmkl_rt -I include -o bin/t8-serial-divisible-avx-blocking obj/3-avx/t8-serial-divisible-avx-blocking.o obj/3-avx/../timing.o obj/3-avx/../utilities.o
+icc -g -O3 -xHost -fno-alias -std=c99 -qopenmp -lmkl_rt -I include -c src/3-avx/t10-omp-non-divisible-avx-blocking.c -o obj/3-avx/t10-omp-non-divisible-avx-blocking.o
+icc -g -O3 -xHost -fno-alias -std=c99 -qopenmp -lmkl_rt -I include -o bin/t10-omp-non-divisible-avx-blocking obj/3-avx/t10-omp-non-divisible-avx-blocking.o obj/3-avx/../timing.o obj/3-avx/../utilities.o
+icc -g -O3 -xHost -fno-alias -std=c99 -qopenmp -lmkl_rt -I include -c src/3-avx/t9-omp-divisible-avx-blocking.c -o obj/3-avx/t9-omp-divisible-avx-blocking.o
+icc -g -O3 -xHost -fno-alias -std=c99 -qopenmp -lmkl_rt -I include -o bin/t9-omp-divisible-avx-blocking obj/3-avx/t9-omp-divisible-avx-blocking.o obj/3-avx/../timing.o obj/3-avx/../utilities.o
+rm obj/3-avx/../timing.o obj/3-avx/../utilities.o obj/3-avx/t8-serial-divisible-avx-blocking.o obj/3-avx/t9-omp-divisible-avx-blocking.o obj/3-avx/t10-omp-non-divisible-avx-blocking.o
+Running N=1200, P=1200, M=1200
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(1200, 1200, 1200)    0.0630  0.000000
+
+real	0m0.159s
+user	0m1.752s
+sys	0m0.087s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(1200, 1200, 1200)    0.0039  0.000000
+
+real	0m0.131s
+user	0m1.043s
+sys	0m0.065s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+Old: 1200 1200 1200
+New: 1440 1200 1200
+(1200, 1200, 1200)    0.0067  0.000000
+
+real	0m0.100s
+user	0m0.781s
+sys	0m0.056s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(1200, 1200, 1200)    0.0645  0.000000
+
+real	0m0.142s
+user	0m1.796s
+sys	0m0.100s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(1200, 1200, 1200)    0.0039  0.000000
+
+real	0m0.076s
+user	0m0.378s
+sys	0m0.049s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+Old: 1200 1200 1200
+New: 1440 1200 1200
+(1200, 1200, 1200)    0.0067  0.000000
+
+real	0m0.094s
+user	0m0.752s
+sys	0m0.074s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(1200, 1200, 1200)    0.0636  0.000000
+
+real	0m0.135s
+user	0m1.731s
+sys	0m0.115s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(1200, 1200, 1200)    0.0073  0.000000
+
+real	0m0.084s
+user	0m0.451s
+sys	0m0.124s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+Old: 1200 1200 1200
+New: 1440 1200 1200
+(1200, 1200, 1200)    0.0068  0.000000
+
+real	0m0.095s
+user	0m0.794s
+sys	0m0.069s
+Running N=3600, P=3600, M=3600
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(3600, 3600, 3600)    1.7717  0.000000
+
+real	0m2.206s
+user	0m7.729s
+sys	0m0.291s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(3600, 3600, 3600)    0.0895  0.000000
+
+real	0m0.536s
+user	0m4.483s
+sys	0m0.158s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+Old: 3600 3600 3600
+New: 3840 3600 3600
+(3600, 3600, 3600)    0.1289  0.000000
+
+real	0m0.691s
+user	0m8.293s
+sys	0m0.340s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(3600, 3600, 3600)    1.7704  0.000000
+
+real	0m2.250s
+user	0m8.017s
+sys	0m0.290s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(3600, 3600, 3600)    0.0891  0.000000
+
+real	0m0.538s
+user	0m4.483s
+sys	0m0.153s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+Old: 3600 3600 3600
+New: 3840 3600 3600
+(3600, 3600, 3600)    0.1289  0.000000
+
+real	0m0.689s
+user	0m8.230s
+sys	0m0.359s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(3600, 3600, 3600)    1.7713  0.000000
+
+real	0m2.247s
+user	0m7.947s
+sys	0m0.298s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(3600, 3600, 3600)    0.0893  0.000000
+
+real	0m0.590s
+user	0m5.319s
+sys	0m0.192s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+Old: 3600 3600 3600
+New: 3840 3600 3600
+(3600, 3600, 3600)    0.1287  0.000000
+
+real	0m0.690s
+user	0m8.243s
+sys	0m0.340s
+Running N=1440, P=1440, M=1440
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(1440, 1440, 1440)    0.1106  0.000000
+
+real	0m0.202s
+user	0m2.919s
+sys	0m0.142s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(1440, 1440, 1440)    0.0058  0.000000
+
+real	0m0.100s
+user	0m0.501s
+sys	0m0.055s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+Old: 1440 1440 1440
+New: 1440 1440 1440
+(1440, 1440, 1440)    0.0085  0.000000
+
+real	0m0.119s
+user	0m1.004s
+sys	0m0.089s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(1440, 1440, 1440)    0.1107  0.000000
+
+real	0m0.202s
+user	0m2.946s
+sys	0m0.143s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(1440, 1440, 1440)    0.0058  0.000000
+
+real	0m0.097s
+user	0m0.509s
+sys	0m0.060s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+Old: 1440 1440 1440
+New: 1440 1440 1440
+(1440, 1440, 1440)    0.0085  0.000000
+
+real	0m0.118s
+user	0m0.995s
+sys	0m0.081s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(1440, 1440, 1440)    0.1108  0.000000
+
+real	0m0.202s
+user	0m2.914s
+sys	0m0.160s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(1440, 1440, 1440)    0.0060  0.000000
+
+real	0m0.098s
+user	0m0.509s
+sys	0m0.060s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+Old: 1440 1440 1440
+New: 1440 1440 1440
+(1440, 1440, 1440)    0.0085  0.000000
+
+real	0m0.121s
+user	0m1.027s
+sys	0m0.054s
+Running N=4320, P=4320, M=4320
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(4320, 4320, 4320)    3.0710  0.000000
+
+real	0m3.704s
+user	0m10.123s
+sys	0m0.302s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(4320, 4320, 4320)    0.1533  0.000000
+
+real	0m0.797s
+user	0m7.357s
+sys	0m0.217s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+Old: 4320 4320 4320
+New: 4320 4320 4320
+(4320, 4320, 4320)    0.2009  0.000000
+
+real	0m1.003s
+user	0m12.457s
+sys	0m0.489s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(4320, 4320, 4320)    3.0776  0.000000
+
+real	0m3.724s
+user	0m10.111s
+sys	0m0.313s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(4320, 4320, 4320)    0.1539  0.000000
+
+real	0m0.795s
+user	0m7.391s
+sys	0m0.204s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+Old: 4320 4320 4320
+New: 4320 4320 4320
+(4320, 4320, 4320)    0.2010  0.000000
+
+real	0m1.005s
+user	0m12.488s
+sys	0m0.442s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(4320, 4320, 4320)    3.0704  0.000000
+
+real	0m3.713s
+user	0m10.106s
+sys	0m0.315s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(4320, 4320, 4320)    0.1547  0.000000
+
+real	0m0.798s
+user	0m7.390s
+sys	0m0.225s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+Old: 4320 4320 4320
+New: 4320 4320 4320
+(4320, 4320, 4320)    0.2006  0.000000
+
+real	0m0.999s
+user	0m12.458s
+sys	0m0.451s
+Running N=8400, P=8400, M=8400
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(8400, 8400, 8400)   22.4708  0.000000
+
+real	0m25.116s
+user	0m44.375s
+sys	0m0.603s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(8400, 8400, 8400)    1.0042  0.000000
+
+real	0m3.661s
+user	0m45.481s
+sys	0m0.598s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+Old: 8400 8400 8400
+New: 8640 8400 8400
+(8400, 8400, 8400)    1.3236  0.000000
+
+real	0m4.622s
+user	0m54.961s
+sys	0m1.082s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(8400, 8400, 8400)   22.4701  0.000000
+
+real	0m25.095s
+user	0m44.441s
+sys	0m0.625s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(8400, 8400, 8400)    0.9997  0.000000
+
+real	0m3.707s
+user	0m45.660s
+sys	0m0.578s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+Old: 8400 8400 8400
+New: 8640 8400 8400
+(8400, 8400, 8400)    1.3183  0.000000
+
+real	0m4.604s
+user	0m55.942s
+sys	0m1.150s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(8400, 8400, 8400)   22.4694  0.000000
+
+real	0m25.122s
+user	0m44.142s
+sys	0m0.600s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(8400, 8400, 8400)    1.0028  0.000000
+
+real	0m3.662s
+user	0m45.438s
+sys	0m0.612s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+Old: 8400 8400 8400
+New: 8640 8400 8400
+(8400, 8400, 8400)    1.3253  0.000000
+
+real	0m4.601s
+user	0m55.866s
+sys	0m1.125s
+Running N=9600, P=9600, M=9600
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(9600, 9600, 9600)   34.5209  0.000000
+
+real	0m38.101s
+user	1m5.415s
+sys	0m0.708s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(9600, 9600, 9600)    1.5255  0.000000
+
+real	0m5.104s
+user	1m7.053s
+sys	0m0.758s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+Old: 9600 9600 9600
+New: 9600 9600 9600
+(9600, 9600, 9600)    1.8607  0.000000
+
+real	0m6.255s
+user	1m16.006s
+sys	0m1.248s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(9600, 9600, 9600)   34.5142  0.000000
+
+real	0m38.096s
+user	1m5.343s
+sys	0m0.681s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(9600, 9600, 9600)    1.5270  0.000000
+
+real	0m5.139s
+user	1m7.366s
+sys	0m0.739s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+Old: 9600 9600 9600
+New: 9600 9600 9600
+(9600, 9600, 9600)    1.8592  0.000000
+
+real	0m6.255s
+user	1m16.857s
+sys	0m1.255s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(9600, 9600, 9600)   34.5057  0.000000
+
+real	0m38.135s
+user	1m5.322s
+sys	0m0.708s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(9600, 9600, 9600)    1.5248  0.000000
+
+real	0m5.155s
+user	1m7.324s
+sys	0m0.751s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+Old: 9600 9600 9600
+New: 9600 9600 9600
+(9600, 9600, 9600)    1.8615  0.000000
+
+real	0m6.246s
+user	1m16.348s
+sys	0m1.277s
+Running N=7633, P=850, M=1200
+Matrix dimension N must be a multiple of 6
+real	0m0.014s
+user	0m0.001s
+sys	0m0.003s
+Matrix dimension N must be a multiple of 10
+real	0m0.005s
+user	0m0.002s
+sys	0m0.001s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+Old: 7633 850 1200
+New: 7680 960 1200
+(7633, 850, 1200)    0.0360  0.000000
+
+real	0m0.266s
+user	0m2.817s
+sys	0m0.165s
+Matrix dimension N must be a multiple of 6
+real	0m0.006s
+user	0m0.001s
+sys	0m0.002s
+Matrix dimension N must be a multiple of 10
+real	0m0.005s
+user	0m0.000s
+sys	0m0.003s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+Old: 7633 850 1200
+New: 7680 960 1200
+(7633, 850, 1200)    0.0361  0.000000
+
+real	0m0.253s
+user	0m2.776s
+sys	0m0.173s
+Matrix dimension N must be a multiple of 6
+real	0m0.005s
+user	0m0.001s
+sys	0m0.003s
+Matrix dimension N must be a multiple of 10
+real	0m0.005s
+user	0m0.001s
+sys	0m0.002s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+Old: 7633 850 1200
+New: 7680 960 1200
+(7633, 850, 1200)    0.0362  0.000000
+
+real	0m0.255s
+user	0m2.819s
+sys	0m0.168s
+Running N=980, P=8030, M=9645
+Matrix dimension M must be a multiple of 16
+real	0m0.005s
+user	0m0.001s
+sys	0m0.002s
+Matrix dimension M must be a multiple of 16
+real	0m0.005s
+user	0m0.001s
+sys	0m0.002s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+Old: 980 8030 9645
+New: 1440 8160 9648
+(980, 8030, 9645)    0.2473  0.000000
+
+real	0m1.714s
+user	0m15.673s
+sys	0m0.879s
+Matrix dimension M must be a multiple of 16
+real	0m0.006s
+user	0m0.000s
+sys	0m0.003s
+Matrix dimension M must be a multiple of 16
+real	0m0.006s
+user	0m0.002s
+sys	0m0.002s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+Old: 980 8030 9645
+New: 1440 8160 9648
+(980, 8030, 9645)    0.2470  0.000000
+
+real	0m1.732s
+user	0m15.207s
+sys	0m0.840s
+Matrix dimension M must be a multiple of 16
+real	0m0.008s
+user	0m0.000s
+sys	0m0.003s
+Matrix dimension M must be a multiple of 16
+real	0m0.009s
+user	0m0.001s
+sys	0m0.002s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+Old: 980 8030 9645
+New: 1440 8160 9648
+(980, 8030, 9645)    0.2467  0.000000
+
+real	0m1.720s
+user	0m15.676s
+sys	0m0.888s
+Running N=1440, P=8160, M=9648
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(1440, 8160, 9648)    4.6032  0.000000
+
+real	0m5.862s
+user	0m13.212s
+sys	0m0.382s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(1440, 8160, 9648)    0.2098  0.000000
+
+real	0m1.484s
+user	0m10.947s
+sys	0m0.287s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+Old: 1440 8160 9648
+New: 1440 8160 9648
+(1440, 8160, 9648)    0.2552  0.000000
+
+real	0m1.837s
+user	0m16.159s
+sys	0m0.623s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(1440, 8160, 9648)    4.5963  0.000000
+
+real	0m5.855s
+user	0m13.213s
+sys	0m0.368s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(1440, 8160, 9648)    0.2096  0.000000
+
+real	0m1.492s
+user	0m10.984s
+sys	0m0.279s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+Old: 1440 8160 9648
+New: 1440 8160 9648
+(1440, 8160, 9648)    0.2539  0.000000
+
+real	0m1.825s
+user	0m15.979s
+sys	0m0.572s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(1440, 8160, 9648)    4.6262  0.000000
+
+real	0m5.932s
+user	0m12.807s
+sys	0m0.374s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(1440, 8160, 9648)    0.2091  0.000000
+
+real	0m1.490s
+user	0m10.932s
+sys	0m0.281s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+Old: 1440 8160 9648
+New: 1440 8160 9648
+(1440, 8160, 9648)    0.2539  0.000000
+
+real	0m1.825s
+user	0m16.536s
+sys	0m0.589s
+Running N=1000, P=1000, M=1000
+Matrix dimension M must be a multiple of 16
+real	0m0.006s
+user	0m0.002s
+sys	0m0.002s
+Matrix dimension M must be a multiple of 16
+real	0m0.005s
+user	0m0.001s
+sys	0m0.002s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+Old: 1000 1000 1000
+New: 1440 1200 1008
+(1000, 1000, 1000)    0.0052  0.000000
+
+real	0m0.081s
+user	0m0.653s
+sys	0m0.084s
+Matrix dimension M must be a multiple of 16
+real	0m0.005s
+user	0m0.001s
+sys	0m0.003s
+Matrix dimension M must be a multiple of 16
+real	0m0.005s
+user	0m0.002s
+sys	0m0.002s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+Old: 1000 1000 1000
+New: 1440 1200 1008
+(1000, 1000, 1000)    0.0052  0.000000
+
+real	0m0.080s
+user	0m0.682s
+sys	0m0.061s
+Matrix dimension M must be a multiple of 16
+real	0m0.005s
+user	0m0.001s
+sys	0m0.002s
+Matrix dimension M must be a multiple of 16
+real	0m0.005s
+user	0m0.000s
+sys	0m0.003s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+Old: 1000 1000 1000
+New: 1440 1200 1008
+(1000, 1000, 1000)    0.0051  0.000000
+
+real	0m0.080s
+user	0m0.683s
+sys	0m0.075s
+Running N=9600, P=9600, M=9600
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(9600, 9600, 9600)   34.5016  0.000000
+
+real	0m38.075s
+user	1m5.424s
+sys	0m0.703s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(9600, 9600, 9600)    1.5257  0.000000
+
+real	0m5.096s
+user	1m6.989s
+sys	0m0.759s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+Old: 9600 9600 9600
+New: 9600 9600 9600
+(9600, 9600, 9600)    1.8534  0.000000
+
+real	0m6.242s
+user	1m17.101s
+sys	0m1.303s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(9600, 9600, 9600)   34.4966  0.000000
+
+real	0m38.084s
+user	1m4.877s
+sys	0m0.681s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(9600, 9600, 9600)    1.5257  0.000000
+
+real	0m5.091s
+user	1m6.773s
+sys	0m0.693s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+Old: 9600 9600 9600
+New: 9600 9600 9600
+(9600, 9600, 9600)    1.8535  0.000000
+
+real	0m6.244s
+user	1m15.988s
+sys	0m1.190s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(9600, 9600, 9600)   34.5145  0.000000
+
+real	0m38.093s
+user	1m5.013s
+sys	0m0.655s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+(9600, 9600, 9600)    1.5223  0.000000
+
+real	0m5.122s
+user	1m7.287s
+sys	0m0.727s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+Old: 9600 9600 9600
+New: 9600 9600 9600
+(9600, 9600, 9600)    1.8602  0.000000
+
+real	0m6.253s
+user	1m15.971s
+sys	0m1.247s
+Running N=1024, P=1024, M=1024
+Matrix dimension N must be a multiple of 6
+real	0m0.005s
+user	0m0.001s
+sys	0m0.002s
+Matrix dimension N must be a multiple of 10
+real	0m0.006s
+user	0m0.001s
+sys	0m0.002s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+Old: 1024 1024 1024
+New: 1440 1200 1024
+(1024, 1024, 1024)    0.0136  0.000000
+
+real	0m0.107s
+user	0m0.983s
+sys	0m0.093s
+Matrix dimension N must be a multiple of 6
+real	0m0.006s
+user	0m0.001s
+sys	0m0.002s
+Matrix dimension N must be a multiple of 10
+real	0m0.005s
+user	0m0.001s
+sys	0m0.002s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+Old: 1024 1024 1024
+New: 1440 1200 1024
+(1024, 1024, 1024)    0.0126  0.000000
+
+real	0m0.089s
+user	0m0.854s
+sys	0m0.089s
+Matrix dimension N must be a multiple of 6
+real	0m0.005s
+user	0m0.001s
+sys	0m0.002s
+Matrix dimension N must be a multiple of 10
+real	0m0.005s
+user	0m0.001s
+sys	0m0.002s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+Old: 1024 1024 1024
+New: 1440 1200 1024
+(1024, 1024, 1024)    0.0166  0.000000
+
+real	0m0.094s
+user	0m0.969s
+sys	0m0.087s
+Running N=8192, P=8192, M=8192
+Matrix dimension N must be a multiple of 6
+real	0m0.005s
+user	0m0.001s
+sys	0m0.002s
+Matrix dimension N must be a multiple of 10
+real	0m0.005s
+user	0m0.001s
+sys	0m0.002s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+Old: 8192 8192 8192
+New: 8640 8400 8192
+(8192, 8192, 8192)    5.0164  0.000000
+
+real	0m8.192s
+user	2m21.176s
+sys	0m3.062s
+Matrix dimension N must be a multiple of 6
+real	0m0.022s
+user	0m0.000s
+sys	0m0.003s
+Matrix dimension N must be a multiple of 10
+real	0m0.005s
+user	0m0.002s
+sys	0m0.002s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+Old: 8192 8192 8192
+New: 8640 8400 8192
+(8192, 8192, 8192)    4.7311  0.000000
+
+real	0m7.927s
+user	2m14.768s
+sys	0m3.132s
+Matrix dimension N must be a multiple of 6
+real	0m0.034s
+user	0m0.000s
+sys	0m0.004s
+Matrix dimension N must be a multiple of 10
+real	0m0.005s
+user	0m0.001s
+sys	0m0.002s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+Old: 8192 8192 8192
+New: 8640 8400 8192
+(8192, 8192, 8192)    4.8285  0.000000
+
+real	0m8.006s
+user	2m17.378s
+sys	0m2.859s
+Running N=1024, P=1024, M=8192
+Matrix dimension N must be a multiple of 6
+real	0m0.022s
+user	0m0.001s
+sys	0m0.003s
+Matrix dimension N must be a multiple of 10
+real	0m0.005s
+user	0m0.001s
+sys	0m0.002s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+Old: 1024 1024 8192
+New: 1440 1200 8192
+(1024, 1024, 8192)    0.1392  0.000000
+
+real	0m0.413s
+user	0m5.677s
+sys	0m0.228s
+Matrix dimension N must be a multiple of 6
+real	0m0.006s
+user	0m0.000s
+sys	0m0.003s
+Matrix dimension N must be a multiple of 10
+real	0m0.005s
+user	0m0.000s
+sys	0m0.003s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+Old: 1024 1024 8192
+New: 1440 1200 8192
+(1024, 1024, 8192)    0.1400  0.000000
+
+real	0m0.396s
+user	0m5.726s
+sys	0m0.225s
+Matrix dimension N must be a multiple of 6
+real	0m0.005s
+user	0m0.000s
+sys	0m0.003s
+Matrix dimension N must be a multiple of 10
+real	0m0.006s
+user	0m0.001s
+sys	0m0.003s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+Old: 1024 1024 8192
+New: 1440 1200 8192
+(1024, 1024, 8192)    0.1364  0.000000
+
+real	0m0.392s
+user	0m5.611s
+sys	0m0.225s
+Running N=8192, P=8192, M=1024
+Matrix dimension N must be a multiple of 6
+real	0m0.006s
+user	0m0.000s
+sys	0m0.003s
+Matrix dimension N must be a multiple of 10
+real	0m0.005s
+user	0m0.000s
+sys	0m0.003s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+Old: 8192 8192 1024
+New: 8640 8400 1024
+(8192, 8192, 1024)    0.8383  0.000000
+
+real	0m2.134s
+user	0m28.671s
+sys	0m0.818s
+Matrix dimension N must be a multiple of 6
+real	0m0.006s
+user	0m0.001s
+sys	0m0.003s
+Matrix dimension N must be a multiple of 10
+real	0m0.007s
+user	0m0.000s
+sys	0m0.003s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+Old: 8192 8192 1024
+New: 8640 8400 1024
+(8192, 8192, 1024)    0.8418  0.000000
+
+real	0m2.135s
+user	0m28.307s
+sys	0m0.776s
+Matrix dimension N must be a multiple of 6
+real	0m0.007s
+user	0m0.001s
+sys	0m0.003s
+Matrix dimension N must be a multiple of 10
+real	0m0.005s
+user	0m0.001s
+sys	0m0.002s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+Old: 8192 8192 1024
+New: 8640 8400 1024
+(8192, 8192, 1024)    0.8491  0.000000
+
+real	0m2.151s
+user	0m28.852s
+sys	0m0.876s
+Running N=8192, P=1024, M=8192
+Matrix dimension N must be a multiple of 6
+real	0m0.006s
+user	0m0.001s
+sys	0m0.002s
+Matrix dimension N must be a multiple of 10
+real	0m0.005s
+user	0m0.001s
+sys	0m0.002s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+Old: 8192 1024 8192
+New: 8640 1200 8192
+(8192, 1024, 8192)    0.8048  0.000000
+
+real	0m1.704s
+user	0m28.073s
+sys	0m1.005s
+Matrix dimension N must be a multiple of 6
+real	0m0.006s
+user	0m0.000s
+sys	0m0.003s
+Matrix dimension N must be a multiple of 10
+real	0m0.005s
+user	0m0.001s
+sys	0m0.002s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+Old: 8192 1024 8192
+New: 8640 1200 8192
+(8192, 1024, 8192)    0.7821  0.000000
+
+real	0m1.677s
+user	0m26.831s
+sys	0m0.952s
+Matrix dimension N must be a multiple of 6
+real	0m0.006s
+user	0m0.001s
+sys	0m0.002s
+Matrix dimension N must be a multiple of 10
+real	0m0.006s
+user	0m0.001s
+sys	0m0.002s
+
+SLURM_NTASKS_PER_NODE not set
+SLURM_NTASKS_PER_SOCKET not set
+Old: 8192 1024 8192
+New: 8640 1200 8192
+(8192, 1024, 8192)    0.8004  0.000000
+
+real	0m1.717s
+user	0m27.908s
+sys	0m1.001s
