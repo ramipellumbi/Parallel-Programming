@@ -199,8 +199,8 @@ double matrix_multiply_blocking(const double *A, const double *B, double *C, siz
         }
     }
 
-    free(padded_A);
-    free(padded_B);
+    _mm_free(padded_A);
+    _mm_free(padded_B);
 
     for (size_t i = 0; i < N; i++)
     {
@@ -209,7 +209,7 @@ double matrix_multiply_blocking(const double *A, const double *B, double *C, siz
             C[i * M + j] = padded_C[i * PADDED_M + j];
         }
     }
-    free(padded_C);
+    _mm_free(padded_C);
 
     timing(&wc_end, &cpu_end);
     double elapsed_time = wc_end - wc_start;

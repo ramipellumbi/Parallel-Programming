@@ -13,7 +13,7 @@
 
 #define KC 240       // KC * COL_BLOCK doubles fit in L1, 32K
 #define MC 240       // KC * MC doubles fit in L2, 1024k
-#define ROW_BLOCK 6  // operate on 6 rows at a time
+#define ROW_BLOCK 10 // operate on 6 rows at a time
 #define COL_BLOCK 16 // operate on 16 columns at a time
 #define ALIGNMENT 64 // align memory addresses on ALIGNMENT boundary
 
@@ -71,6 +71,10 @@ double matrix_multiply_blocking(double *A, double *B, double *C, size_t N, size_
                         __m512d result3_0 = _mm512_set1_pd(0);
                         __m512d result4_0 = _mm512_set1_pd(0);
                         __m512d result5_0 = _mm512_set1_pd(0);
+                        __m512d result6_0 = _mm512_set1_pd(0);
+                        __m512d result7_0 = _mm512_set1_pd(0);
+                        __m512d result8_0 = _mm512_set1_pd(0);
+                        __m512d result9_0 = _mm512_set1_pd(0);
 
                         __m512d result0_1 = _mm512_set1_pd(0);
                         __m512d result1_1 = _mm512_set1_pd(0);
@@ -78,16 +82,20 @@ double matrix_multiply_blocking(double *A, double *B, double *C, size_t N, size_
                         __m512d result3_1 = _mm512_set1_pd(0);
                         __m512d result4_1 = _mm512_set1_pd(0);
                         __m512d result5_1 = _mm512_set1_pd(0);
+                        __m512d result6_1 = _mm512_set1_pd(0);
+                        __m512d result7_1 = _mm512_set1_pd(0);
+                        __m512d result8_1 = _mm512_set1_pd(0);
+                        __m512d result9_1 = _mm512_set1_pd(0);
 
                         for (size_t k = 0; k < KC; k++)
                         {
                             // load 16 consecutive doubles from k'th row of B (8 to mB0 and 8 to mB1)
-                            mB0 = _mm512_load_pd(&B[M * (k + pc) + jc + jr + 8 * 0]);
-                            mB1 = _mm512_load_pd(&B[M * (k + pc) + jc + jr + 8 * 1]);
+                            mB0 = _mm512_load_pd(&B[M * (k + pc) + jc + jr]);
+                            mB1 = _mm512_load_pd(&B[M * (k + pc) + jc + jr + 8]);
 
                             // Load a single value for the k'th col of A
                             // Note: the addresses below must be aligned on a 64-byte boundary
-                            mA0 = _mm512_set1_pd(A[k + pc + (ic + ir + 0) * P]);
+                            mA0 = _mm512_set1_pd(A[k + pc + (ic + ir) * P]);
                             mA1 = _mm512_set1_pd(A[k + pc + (ic + ir + 1) * P]);
 
                             result0_0 = _mm512_fmadd_pd(mB0, mA0, result0_0);
@@ -110,20 +118,44 @@ double matrix_multiply_blocking(double *A, double *B, double *C, size_t N, size_
                             result4_1 = _mm512_fmadd_pd(mB1, mA0, result4_1);
                             result5_0 = _mm512_fmadd_pd(mB0, mA1, result5_0);
                             result5_1 = _mm512_fmadd_pd(mB1, mA1, result5_1);
+
+                            mA0 = _mm512_set1_pd(A[k + pc + (ic + ir + 6) * P]);
+                            mA1 = _mm512_set1_pd(A[k + pc + (ic + ir + 7) * P]);
+
+                            result6_0 = _mm512_fmadd_pd(mB0, mA0, result6_0);
+                            result6_1 = _mm512_fmadd_pd(mB1, mA0, result6_1);
+                            result7_0 = _mm512_fmadd_pd(mB0, mA1, result7_0);
+                            result7_1 = _mm512_fmadd_pd(mB1, mA1, result7_1);
+
+                            mA0 = _mm512_set1_pd(A[k + pc + (ic + ir + 8) * P]);
+                            mA1 = _mm512_set1_pd(A[k + pc + (ic + ir + 9) * P]);
+
+                            result8_0 = _mm512_fmadd_pd(mB0, mA0, result8_0);
+                            result8_1 = _mm512_fmadd_pd(mB1, mA0, result8_1);
+                            result9_0 = _mm512_fmadd_pd(mB0, mA1, result9_0);
+                            result9_1 = _mm512_fmadd_pd(mB1, mA1, result9_1);
                         }
 
-                        *((__m512d *)(&C[(ic + ir + 0) * M + jc + jr + 0 * 8])) += result0_0;
-                        *((__m512d *)(&C[(ic + ir + 0) * M + jc + jr + 1 * 8])) += result0_1;
-                        *((__m512d *)(&C[(ic + ir + 1) * M + jc + jr + 0 * 8])) += result1_0;
-                        *((__m512d *)(&C[(ic + ir + 1) * M + jc + jr + 1 * 8])) += result1_1;
-                        *((__m512d *)(&C[(ic + ir + 2) * M + jc + jr + 0 * 8])) += result2_0;
-                        *((__m512d *)(&C[(ic + ir + 2) * M + jc + jr + 1 * 8])) += result2_1;
-                        *((__m512d *)(&C[(ic + ir + 3) * M + jc + jr + 0 * 8])) += result3_0;
-                        *((__m512d *)(&C[(ic + ir + 3) * M + jc + jr + 1 * 8])) += result3_1;
-                        *((__m512d *)(&C[(ic + ir + 4) * M + jc + jr + 0 * 8])) += result4_0;
-                        *((__m512d *)(&C[(ic + ir + 4) * M + jc + jr + 1 * 8])) += result4_1;
-                        *((__m512d *)(&C[(ic + ir + 5) * M + jc + jr + 0 * 8])) += result5_0;
-                        *((__m512d *)(&C[(ic + ir + 5) * M + jc + jr + 1 * 8])) += result5_1;
+                        *((__m512d *)(&C[(ic + ir + 0) * M + jc + jr])) += result0_0;
+                        *((__m512d *)(&C[(ic + ir + 0) * M + jc + jr + 8])) += result0_1;
+                        *((__m512d *)(&C[(ic + ir + 1) * M + jc + jr])) += result1_0;
+                        *((__m512d *)(&C[(ic + ir + 1) * M + jc + jr + 8])) += result1_1;
+                        *((__m512d *)(&C[(ic + ir + 2) * M + jc + jr])) += result2_0;
+                        *((__m512d *)(&C[(ic + ir + 2) * M + jc + jr + 8])) += result2_1;
+                        *((__m512d *)(&C[(ic + ir + 3) * M + jc + jr])) += result3_0;
+                        *((__m512d *)(&C[(ic + ir + 3) * M + jc + jr + 8])) += result3_1;
+                        *((__m512d *)(&C[(ic + ir + 4) * M + jc + jr])) += result4_0;
+                        *((__m512d *)(&C[(ic + ir + 4) * M + jc + jr + 8])) += result4_1;
+                        *((__m512d *)(&C[(ic + ir + 5) * M + jc + jr])) += result5_0;
+                        *((__m512d *)(&C[(ic + ir + 5) * M + jc + jr + 8])) += result5_1;
+                        *((__m512d *)(&C[(ic + ir + 6) * M + jc + jr])) += result6_0;
+                        *((__m512d *)(&C[(ic + ir + 6) * M + jc + jr + 8])) += result6_1;
+                        *((__m512d *)(&C[(ic + ir + 7) * M + jc + jr])) += result7_0;
+                        *((__m512d *)(&C[(ic + ir + 7) * M + jc + jr + 8])) += result7_1;
+                        *((__m512d *)(&C[(ic + ir + 8) * M + jc + jr])) += result8_0;
+                        *((__m512d *)(&C[(ic + ir + 8) * M + jc + jr + 8])) += result8_1;
+                        *((__m512d *)(&C[(ic + ir + 9) * M + jc + jr])) += result9_0;
+                        *((__m512d *)(&C[(ic + ir + 9) * M + jc + jr + 8])) += result9_1;
                     }
                 }
             }
