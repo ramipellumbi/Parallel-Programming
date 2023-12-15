@@ -1,0 +1,60 @@
+---
+title: "Data Exploration MPI"
+author: "Rami Pellumbi"
+date: "October 6, 2023"
+output:
+  pdf_document: default
+---
+
+```{r}
+library(tidyverse)
+library(kableExtra)
+
+serial <- read.csv("./project/out/results-serial.csv") %>%
+```
+
+```{r}
+exe_times <- serial %>%
+  group_by(program, N, P, M, block_size) %>%
+  summarise("Mean Time" = mean(exe_time), .groups = "drop")
+
+blas_exe_times <- serial %>%
+  group_by(program, N, P, M) %>%
+  summarise("Mean Blas Time" = mean(blas_exe_time), .groups = "drop")
+```
+
+```{r}
+# get the serial-ijk times and join with associated BLAS times
+ijk_times <- exe_times %>%
+  filter(program == "serial-ijk") %>%
+  select(N, P, M, block_size, "Mean Time") %>%
+  left_join(blas_exe_times, by = c("N", "P", "M")) %>%
+  filter(program == "serial-ijk") %>%
+  select(-block_size, -program)
+
+kable(ijk_times, format = "latex", booktabs = TRUE,
+      caption = "ijk Access Pattern Mean Performance (s)") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"),
+                full_width = FALSE,
+                font_size = 12,
+                position = "left")
+
+ijk_times %>%
+  mutate(speedup = `Mean Time` /  `Mean Blas Time`)
+```
+
+```{r}
+kij_times <- exe_times %>%
+  filter(program == "serial-kij") %>%
+  select(N, P, M, block_size, "Mean Time") %>%
+  left_join(blas_exe_times, by = c("N", "P", "M")) %>%
+  filter(program == "serial-kij") %>%
+  select(-block_size, -program)
+
+kable(kij_times, format = "latex", booktabs = TRUE,
+      caption = "kij Access Pattern Mean Performance (s)") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"),
+                full_width = FALSE,
+                font_size = 12,
+                position = "left")
+```
