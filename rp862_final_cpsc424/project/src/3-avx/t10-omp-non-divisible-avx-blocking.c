@@ -71,10 +71,6 @@ double matrix_multiply_blocking(const double *A, const double *B, double *C, siz
     size_t PADDED_P = get_padded_value(P, KC);
     size_t PADDED_N = get_padded_value(N, MC);
 
-    // expect NC to be a multiple of COL_BLOCK
-    printf("\nOld: %d %d %d", N, P, M);
-    printf("\nNew: %d %d %d", PADDED_N, PADDED_P, PADDED_M);
-
     double *padded_A = pad_matrix(A, N, P, PADDED_N, PADDED_P);
     double *padded_B = pad_matrix(B, P, M, PADDED_P, PADDED_M);
     double *padded_C = pad_matrix(C, N, M, PADDED_N, PADDED_M);
