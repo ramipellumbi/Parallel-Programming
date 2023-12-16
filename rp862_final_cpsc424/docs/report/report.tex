@@ -141,7 +141,7 @@ nuances of compute and memory access that escalate as matrix sizes scale.
 \subsection{Compute-Bound Nature of Matrix Multiplication}
 
 The essence of a compute-bound task lies in its primary limitation being the 
-processing power of the CPU rather than I/O or memory speeds. As illustrated in the Section \ref{SEC:CPU-SPECS}, the theoretical peak performance of the CPU is
+processing power of the CPU rather than memory speeds. As illustrated in the Section \ref{SEC:CPU-SPECS}, the theoretical peak performance of the CPU is
 2688 \texttt{GFLOPs}. However, the theoretical peak memory bandwidth is only 17.6 \texttt{GFlops/s};
 152x slower. Thus, any task that requires more than 152 CPU cycles per memory access (in a 24 core program) will be
 compute bound (and any task requiring less than 152 CPU cycles per memory access is memory bound).\footnote{
@@ -174,7 +174,7 @@ data from the slower main memory, introducing latency.
 
 \
 
-\noindent The non-contiguous memory access patterns in matrix multiplication exacerbate this issue. 
+\noindent The non-contiguous memory access patterns in the way we naturally think about matrix multiplication exacerbate this issue. 
 Accessing elements row-wise in one matrix and column-wise in another leads to strided accesses, 
 which are inefficient for cache utilization. In large matrices, these strided accesses mean that 
 the processor cannot effectively prefetch data, leading to increased cache misses and memory 
@@ -190,7 +190,7 @@ First, the naive algorithm was implemented. Then, the loops were reordered to im
 Finally, a blocking strategy was implemented to further improve cache performance. All 
 algorithms were written to compute $C = A \times B$, where $A$ is an $N \times P$ 
 matrix and $B$ is a $P \times M$ matrix. The resultant matrix $C$ is of course $N \times M$. 
-All matrix multiplies were compared against the BLAS implementation of matrix multiplication 
+All matrix multiplies were compared against the Intel MKL implementation of matrix multiplication using BLAS1
 (\texttt{dgemm}) for correctness. Unless otherwise stated, matrices are stored in row-major order.
 
 \subsection{The Naive Algorithm}
@@ -374,7 +374,7 @@ that we can think of our multiplication of $A$ and $B$ as the multiplication
         B_{1} & B_{2} \\ B_{3} & B_{4}
     \end{bmatrix},
 \end{align*}
-where $A_{1}$ and $B_{1}$ are multiples of $L$ and the remaining blocks are the residuals. 
+where $A_{1}$ and $B_{1}$ have dimensions that are multiples of $L$ and the remaining blocks are the residuals. 
 Thus, the above loop handles $A_1 B_1$ and we can handle the residual case by including cleanup loops
 to multiply the remaining blocks. The details are observable in the code in \texttt{t3-serial-blocking.c}. 
 The performance of this algorithm is shown in Table \ref{TAB:TILED-RESULTS}. The results are in seconds and
@@ -407,7 +407,7 @@ allowing the compiler to optimize the code better, e.g., via SIMD instructions.
 The results are shown in Table \ref{TAB:TILED-TRANSPOSED-RESULTS}. 
 \begin{table}[H]
     \centering
-    \caption{Blocked Access Pattern Mean Performance (s)}
+    \caption{Blocked Access Pattern Mean Performance - Transposed B (s)}
     \begin{tabular}[t]{rrrrrrr}
     \toprule
     N & P & M & Block Size & Mean blocked Time & Mean kij Time & Mean Blas Time\\
@@ -425,7 +425,9 @@ The results are shown in Table \ref{TAB:TILED-TRANSPOSED-RESULTS}.
     \end{tabular}
     \label{TAB:TILED-TRANSPOSED-RESULTS}
 \end{table}
-\noindent The block size for 16 is shown only as other block sizes performed significantly worse.
+\noindent The block size for 16 is shown only as other block sizes performed significantly worse. 
+We see that even though we wasted time transposing $B$, the performance is still better than the
+non-transposed case (by a noticeable margin). Thanks cache!
 
 \subsection{Blocking Cache Analysis}
 Each of $A$ and $B$ is partitioned into $L \times L$ chunks. 
@@ -456,7 +458,7 @@ to exhaust the videos suggestions, before we attempt to really understand the be
 
 \section{Approach 2: Leveraging Multithreading}
 
-To leverage multithreading, we utilize OpenMP: an industry standard API for 
+To leverage multithreading, we utilize OpenMP: an industry standard for 
 shared-memory parallelism. We distribute the matrix multiplication workload 
 across the cores of the CPU, significantly reducing the computation time. 
 It was discovered that Intel's MKL library only makes use of the number of 
@@ -759,7 +761,7 @@ is done in Figure \ref{FIG:AVX-SERIAL-GFLOPS}.
     \label{FIG:AVX-SERIAL-GFLOPS}
 \end{figure}
 \noindent There is likely some more clever utilization of the cache that can be done for a single core. 
-We now turn to the multithreaded case.
+Intel has won this battle. We now turn to the multithreaded case.
 
 \subsection{Multithreading}
 The serial code is now parallelized with OpenMP. Choosing which loop to parallelize requires careful consideration. 
@@ -838,11 +840,10 @@ The results, especially in the multithreaded context, highlight the potential of
 the full computational power the CPU.
 
 \paragraph*{Comparison with MKL's \texttt{dgemm}} While the MKL's \texttt{dgemm} implementation 
-remains a tough competitor, especially for larger matrices, 
+remains a tough competitor (read: won the fight), especially for larger matrices, 
 the gap in performance has been considerably narrowed. For smaller matrices, the performance 
 of the optimized algorithm is on par with \texttt{dgemm}, and even for larger matrices, 
-the algorithm shows competitive performance, especially considering the inherent challenges in achieving such optimization levels 
-without the backing of a billion dollar publicly traded company.
+the algorithm shows competitive performance, especially considering the inherent challenges in achieving such optimization levels.
 
 \section{Conclusion}
 This project embarked on a comprehensive exploration of optimizing matrix multiplication on CPUs, 
