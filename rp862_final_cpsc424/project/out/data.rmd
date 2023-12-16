@@ -6,33 +6,36 @@ output:
   pdf_document: default
 ---
 
+# Prepares data for report
+
 ```{r}
 library(tidyverse)
 library(kableExtra)
+library(pubtheme)
 
-serial <- read.csv("./project/out/results-serial.csv") %>%
+serial <- read.csv("./project/out/results-serial.csv")
 ```
 
 ```{r}
 exe_times <- serial %>%
   group_by(program, N, P, M, block_size) %>%
-  summarise("Mean Time" = mean(exe_time), .groups = "drop")
+  summarise("Mean Time" = mean(exe_time), .groups = "keep")
 
 blas_exe_times <- serial %>%
-  group_by(program, N, P, M) %>%
-  summarise("Mean Blas Time" = mean(blas_exe_time), .groups = "drop")
+  group_by(N, P, M) %>%
+  summarise("Mean Blas Time" = mean(blas_exe_time), .groups = "keep")
 ```
 
 ```{r}
 # get the serial-ijk times and join with associated BLAS times
 ijk_times <- exe_times %>%
-  filter(program == "serial-ijk") %>%
   select(N, P, M, block_size, "Mean Time") %>%
   left_join(blas_exe_times, by = c("N", "P", "M")) %>%
+  ungroup() %>%
   filter(program == "serial-ijk") %>%
   select(-block_size, -program)
 
-kable(ijk_times, format = "latex", booktabs = TRUE,
+kable(ijk_times, format = "latex", booktabs = TRUE, digits = 3,
       caption = "ijk Access Pattern Mean Performance (s)") %>%
   kable_styling(bootstrap_options = c("striped", "hover"),
                 full_width = FALSE,
@@ -48,13 +51,419 @@ kij_times <- exe_times %>%
   filter(program == "serial-kij") %>%
   select(N, P, M, block_size, "Mean Time") %>%
   left_join(blas_exe_times, by = c("N", "P", "M")) %>%
+  ungroup() %>%
   filter(program == "serial-kij") %>%
   select(-block_size, -program)
 
-kable(kij_times, format = "latex", booktabs = TRUE,
+kable(kij_times, format = "latex", booktabs = TRUE, digits = 3,
       caption = "kij Access Pattern Mean Performance (s)") %>%
   kable_styling(bootstrap_options = c("striped", "hover"),
                 full_width = FALSE,
                 font_size = 12,
                 position = "left")
+
+kij_times_long <- kij_times %>%
+  mutate(gflops = (2 * N * M * P) / (`Mean Time` * 10^9),
+         gflops_blas = (2 * N * M * P) / (`Mean Blas Time` * 10^9),
+         size = paste(N, M, P, sep = ",")) %>%
+  pivot_longer(cols = c(gflops, gflops_blas), names_to = "method", values_to = "gflops_value")
+
+# plot double bar plot with gflops of blas and kij
+g_kij <- ggplot(kij_times_long, aes(x = size, y = gflops_value, fill = method, group = interaction(size, method))) +
+  geom_col(position = position_dodge2(width = 0.8), alpha = 0.5) +
+  scale_fill_manual(values = c("gflops" = "red", "gflops_blas" = "blue")) +
+  labs(x = "Matrix Size (N, M, P)", y = "GFLOPS", title = "GFLOPS of kij and dgemm") +
+  theme_pub(type = "bar")
+
+ggsave("./project/out/kij-gflops.pdf", g_kij, width = 8, height = 4, units = "in")
+```
+
+```{r}
+blocked_times <- exe_times %>%
+  filter(program == "serial-blocking") %>%
+  select(N, P, M, block_size, "Mean Time") %>%
+  left_join(blas_exe_times, by = c("N", "P", "M")) %>%
+  ungroup() %>%
+  filter(program == "serial-blocking") %>%
+  rename(`Block Size` = block_size) %>%
+  left_join(kij_times, by = c("N", "P", "M")) %>%
+  rename(`Mean kij Time` = `Mean Time.y`) %>%
+  rename(`Mean Blas Time` = `Mean Blas Time.y`) %>%
+  rename(`Mean blocked Time` = `Mean Time.x`) %>%
+  select(-program, -`Mean Blas Time.x`)
+
+kable(blocked_times, format = "latex", booktabs = TRUE, digits = 3,
+      caption = "Blocked Access Pattern Mean Performance (s)") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"),
+                full_width = FALSE,
+                font_size = 12,
+                position = "left")
+
+blocked_times_long <- blocked_times %>%
+  mutate(gflop_kij = (2 * N * M * P) / (`Mean kij Time` * 10^9),
+         gflop_blas = (2 * N * M * P) / (`Mean kij Blas Time` * 10^9),
+         gflop_blocked = (2 * N * M * P) / (`Mean blocked Time` * 10^9),
+         size = paste(N, M, P, sep = ",")) %>%
+  pivot_longer(cols = c(gflop_kij, gflop_blas, gflop_blocked),
+               names_to = "method", values_to = "gflops_value")
+
+ggplot(blocked_times_long, aes(x = size, y = gflops_value, fill = method, group = interaction(size, method))) +
+  geom_col(position = position_dodge2(width = 0.8), alpha = 0.5) +
+  scale_fill_manual(values = c("gflop_kij" = "red", "gflop_blas" = "blue",
+                               "gflop_blocked" = "green")) +
+  labs(x = "Matrix Size (N, M, P)", y = "GFLOPS", title = "GFLOPS of blocked and dgemm") +
+  theme_pub(type = "bar")
+```
+
+```{r}
+blocked_times_T <- exe_times %>%
+  filter(program == "serial-blocking-transpose") %>%
+  select(N, P, M, block_size, "Mean Time") %>%
+  left_join(blas_exe_times, by = c("N", "P", "M")) %>%
+  ungroup() %>%
+  filter(program == "serial-blocking-transpose") %>%
+  rename(`Block Size` = block_size) %>%
+  left_join(kij_times, by = c("N", "P", "M")) %>%
+  rename(`Mean kij Time` = `Mean Time.y`) %>%
+  rename(`Mean Blas Time` = `Mean Blas Time.y`) %>%
+  rename(`Mean blocked Time` = `Mean Time.x`) %>%
+  select(-program, -`Mean Blas Time.x`)
+
+kable(blocked_times_T, format = "latex", booktabs = TRUE, digits = 3,
+      caption = "Blocked Access Pattern Mean Performance (s)") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"),
+                full_width = FALSE,
+                font_size = 12,
+                position = "left")
+
+blocked_times_T_long <- blocked_times_T %>%
+  mutate(gflop_blocked_t = (2 * N * M * P) / (`Mean blocked Time` * 10^9),
+         size = paste(N, M, P, sep = ",")) %>%
+  pivot_longer(cols = c(gflop_blocked_t),
+               names_to = "method", values_to = "gflops_value")
+
+combined <- bind_rows(blocked_times_long, blocked_times_T_long)
+
+ggplot(combined, aes(x = size, y = gflops_value, fill = method, group = interaction(size, method))) +
+  geom_col(position = position_dodge2(width = 0.8), alpha = 0.5) +
+  scale_fill_manual(values = c("gflop_kij" = "red", "gflop_blas" = "blue", "gflops_blocked" = "orange",
+                               "gflop_blocked_t" = "green")) +
+  labs(x = "Matrix Size (N, M, P)", y = "GFLOPS", title = "GFLOPS of blocked and dgemm") +
+  theme_pub(type = "bar")
+```
+
+```{r}
+omp <- read.csv("./project/out/results-omp.csv")
+
+omp_exe_times <- omp %>%
+  group_by(program, N, P, M, block_size, np) %>%
+  summarise("Mean Time" = mean(exe_time), .groups = "keep")
+
+omp_blas_exe_times <- omp %>%
+  group_by(N, P, M, np) %>%
+  summarise("Mean Blas Time" = mean(blas_exe_time), .groups = "keep")
+```
+
+```{r}
+omp <- omp_exe_times %>%
+  select(N, P, M, block_size, np, "Mean Time") %>%
+  left_join(omp_blas_exe_times, by = c("N", "P", "M", "np")) %>%
+  ungroup() %>%
+  filter(program == "omp", np == 24) %>%
+  rename(`Block Size` = block_size) %>%
+  select(-program, - np)
+omp
+
+kable(omp, format = "latex", booktabs = TRUE, digits = 3,
+      caption = "OMP Mean Performance (s)") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"),
+                full_width = FALSE,
+                font_size = 10,
+                position = "left")
+```
+
+```{r}
+omp_local <- omp_exe_times %>%
+  select(N, P, M, block_size, np, "Mean Time") %>%
+  left_join(omp_blas_exe_times, by = c("N", "P", "M", "np")) %>%
+  ungroup() %>%
+  filter(program == "omp-local", np == 24) %>%
+  rename(`Block Size` = block_size) %>%
+  select(-program, - np)
+omp_local
+
+kable(omp_local, format = "latex", booktabs = TRUE, digits = 3,
+      caption = "OMP Privatized Data Mean Performance - 24 cores (s)") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"),
+                full_width = FALSE,
+                font_size = 10,
+                position = "left")
+```
+
+```{r}
+omp_local_general <- omp_exe_times %>%
+  select(N, P, M, block_size, np, "Mean Time") %>%
+  left_join(omp_blas_exe_times, by = c("N", "P", "M", "np")) %>%
+  ungroup() %>%
+  filter(program == "omp-local-non-divisible", np == 24) %>%
+  rename(`Block Size` = block_size) %>%
+  select(-program, - np)
+omp_local_general
+
+kable(omp_local_general, format = "latex", booktabs = TRUE, digits = 3,
+      caption = "OMP Privatized Data Mean Performance - 24 cores (s)") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"),
+                full_width = FALSE,
+                font_size = 10,
+                position = "left")
+```
+
+```{r}
+
+bt <- omp_blas_exe_times %>%
+  mutate(program = "BLAS", block_size = 32) %>%
+  rename(`Mean Time` = `Mean Blas Time`)
+dp <- bind_rows(bt, omp_exe_times %>%
+  mutate(program = case_when(
+    program == "omp"                   ~ "OMP",
+    program == "omp-local"             ~ "OMP PRIVATIZED",
+    program == "omp-local-non-divisible" ~ "OMP PRIVATIZED GENERAL",
+    program == "BLAS"                 ~ "BLAS",
+    TRUE                              ~ program
+  )))
+
+library(tidytext)
+dg <- dp %>%
+  mutate(gflops = (2 * N * M * P) / (`Mean Time` * 10^9),
+         size = paste(N, M, P, sep = ",")) %>%
+  group_by(size) %>%
+  mutate(gflops_order = rank(gflops)) %>%
+  ungroup()
+
+g_omp <- dg %>%
+  ggplot(aes(x = size, y = gflops, fill = program)) +
+  geom_bar(aes(group = gflops_order), position = "dodge", stat = "identity") +
+  scale_x_reordered() +
+  labs(x = "Matrix Size (N, M, P)", 
+       y = "GFLOPS/s", title = "OMP Performance") +
+  # rotate labels 45 degrees
+  theme_pub(type = "bar") +
+  scale_fill_manual(values = c("OMP" = "red", 
+                               "OMP PRIVATIZED" = "blue", 
+                               "OMP PRIVATIZED GENERAL" = "green",
+                               "BLAS" = "purple"))
+
+ggsave("./project/out/omp-gflops.pdf", g_omp, width = 12, height = 6, units = "in")
+```
+
+```{r}
+# get a similar plot for serial where all serial programs and serial BLAS are plotted
+# on the same plot
+
+bts <- blas_exe_times %>%
+  mutate(program = "BLAS", block_size = 32) %>%
+  rename(`Mean Time` = `Mean Blas Time`)
+dps <- bind_rows(bts, exe_times %>%
+  mutate(program = case_when(
+    program == "serial-ijk"                   ~ "SERIAL IJK",
+    program == "serial-kij"                   ~ "SERIAL KIJ",
+    program == "serial-blocking"              ~ "SERIAL BLOCKED",
+    program == "serial-blocking-transpose"    ~ "SERIAL BLOCKED TRANSPOSE",
+    program == "BLAS"                         ~ "BLAS",
+    TRUE                                      ~ program
+  )))
+
+dgs <- dps %>%
+  mutate(gflops = (2 * N * M * P) / (`Mean Time` * 10^9),
+         size = paste(N, M, P, sep = ",")) %>%
+  group_by(size) %>%
+  mutate(gflops_order = rank(gflops)) %>%
+  ungroup()
+
+g_serial <- dgs %>%
+  ggplot(aes(x = size, y = gflops, fill = program)) +
+    geom_bar(aes(group = gflops_order), position = "dodge", stat = "identity") +
+    scale_x_reordered() +
+    labs(x = "Matrix Size (N, M, P)", 
+         y = "GFLOPS/s", title = "Serial Performance") +
+    theme_pub(type = "bar") +
+    scale_fill_manual(
+      values = c(
+        "SERIAL IJK" = "red",
+        "SERIAL KIJ" = "blue",
+        "SERIAL BLOCKED" = "green",
+        "SERIAL BLOCKED TRANSPOSE" = "orange",
+        "BLAS" = "purple"
+      )
+    )
+
+ggsave("./project/out/serial-gflops.pdf", g_serial, width = 10, height = 4, units = "in")
+```
+
+```{r}
+avx <- read.csv("./project/out/results-avx.csv")
+
+colnames(avx)
+unique(avx$program)
+
+avx_serial <- avx %>%
+  mutate(size = paste(N, M, P, sep = ",")) %>%
+  filter(program == "avx-serial-divisible", np == 1, ROW_BLOCK == 10, COL_BLOCK == 16) %>%
+  mutate(program = "AVX SERIAL") %>%
+  group_by(program, size, N, M, P, KC, MC, ALIGNMENT) %>%
+  summarise("Mean Time" = mean(exe_time), .groups = "keep") %>%
+  mutate(gflops = (2 * N * M * P) / (`Mean Time` * 10^9))
+
+avx_blas_serial <- avx %>%
+  mutate(size = paste(N, M, P, sep = ",")) %>%
+  filter(program == "avx-serial-divisible", np == 1) %>%
+  mutate(program = "BLAS") %>%
+  group_by(size, N, M, P, program) %>%
+  summarise("Mean Blas Time" = mean(blas_exe_time), .groups = "keep") %>%
+  mutate(gflops = (2 * N * M * P) / (`Mean Blas Time` * 10^9))
+
+# get kable for avx serial
+x <- avx_serial %>%
+  left_join(avx_blas_serial, by = c("size", "N", "M", "P")) %>%
+  ungroup() %>%
+  rename(program = program.x) %>%
+  select(N, P, M, `Mean Time`, `Mean Blas Time`)
+
+kable(x, format = "latex", booktabs = TRUE, digits = 3,
+      caption = "AVX Kernel Serial Performance (s)") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"),
+                full_width = FALSE,
+                font_size = 10,
+                position = "left")
+
+
+dtavx <- bind_rows(avx_serial, avx_blas_serial)
+
+dtavx %>%
+  ggplot(aes(x = size, y = gflops, fill = program)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(x = "Matrix Size (N, M, P)",
+       y = "GFLOPS/s", title = "AVX Serial Performance") +
+  theme_pub(type = "bar") + 
+  theme(axis.title.x = element_text(size = 22),
+        axis.title.y = element_text(size = 22),
+        axis.text.x = element_text(size = 22, angle = 90, vjust = 0.5),
+        axis.text.y = element_text(size = 22),
+        plot.title = element_text(size = 22),
+        legend.title = element_text(size = 22),
+        legend.text = element_text(size = 22)) + 
+  scale_fill_manual(
+      values = c(
+        "AVX SERIAL" = "green",
+        "BLAS" = "purple"
+      )
+    )
+
+ggsave("./project/out/avx-serial-gflops.pdf", width = 22, height = 8,  dpi = 400, units = "in")
+```
+
+```{r}
+avx_omp <- avx %>%
+  mutate(size = paste(N, M, P, sep = ",")) %>%
+  filter(program == "avx-omp-divisible", np == 24, ROW_BLOCK == 10, COL_BLOCK == 16) %>%
+  mutate(program = "AVX OMP") %>%
+  group_by(program, size, N, M, P, KC, MC, ALIGNMENT) %>%
+  summarise("Mean Time" = mean(exe_time), .groups = "keep") %>%
+  mutate(gflops = (2 * N * M * P) / (`Mean Time` * 10^9))
+avx_blas_omp <- avx %>%
+  mutate(size = paste(N, M, P, sep = ",")) %>%
+  filter(program == "avx-omp-divisible", np == 24) %>%
+  mutate(program = "BLAS") %>%
+  group_by(size, N, M, P, program) %>%
+  summarise("Mean Blas Time" = mean(blas_exe_time), .groups = "keep") %>%
+  mutate(gflops = (2 * N * M * P) / (`Mean Blas Time` * 10^9))
+dtavx_omp <- bind_rows(avx_omp, avx_blas_omp)
+
+xomp <- avx_omp %>%
+  filter(KC == 240, MC == 240) %>%
+  left_join(avx_blas_omp, by = c("size", "N", "M", "P")) %>%
+  ungroup() %>%
+  rename(program = program.x) %>%
+  select(N, P, M, `Mean Time`, `Mean Blas Time`)
+kable(xomp, format = "latex", booktabs = TRUE, digits = 3,
+      caption = "AVX Kernel Serial Performance (s)") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"),
+                full_width = FALSE,
+                font_size = 10,
+                position = "left")
+
+dtavx_omp %>%
+  ggplot(aes(x = size, y = gflops, fill = program)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(x = "Matrix Size (N, M, P)",
+       y = "GFLOPS/s", title = "AVX OMP Performance") +
+  theme_pub(type = "bar") + 
+    theme(axis.title.x = element_text(size = 22),
+        axis.title.y = element_text(size = 22),
+        axis.text.x = element_text(size = 22, angle = 90, vjust = 0.5),
+        axis.text.y = element_text(size = 22),
+        plot.title = element_text(size = 22),
+        legend.title = element_text(size = 22),
+        legend.text = element_text(size = 22)) + 
+        scale_fill_manual(
+      values = c(
+        "AVX OMP" = "green",
+        "BLAS" = "purple"
+      )
+    )
+
+ggsave("./project/out/avx-omp-gflops.pdf", width = 22, height = 8,  dpi = 400, units = "in")
+```
+
+```{r}
+avx_omp <- avx %>%
+  mutate(size = paste(N, M, P, sep = ",")) %>%
+  filter(program == "avx-omp-non-divisible", np == 24, ROW_BLOCK == 10, COL_BLOCK == 16) %>%
+  mutate(program = "AVX OMP GENERAL") %>%
+  group_by(program, size, N, M, P, KC, MC, ALIGNMENT) %>%
+  summarise("Mean Time" = mean(exe_time), .groups = "keep") %>%
+  mutate(gflops = (2 * N * M * P) / (`Mean Time` * 10^9))
+avx_blas_omp <- avx %>%
+  mutate(size = paste(N, M, P, sep = ",")) %>%
+  filter(program == "avx-omp-non-divisible", np == 24) %>%
+  mutate(program = "BLAS") %>%
+  group_by(size, N, M, P, program) %>%
+  summarise("Mean Blas Time" = mean(blas_exe_time), .groups = "keep") %>%
+  mutate(gflops = (2 * N * M * P) / (`Mean Blas Time` * 10^9))
+dtavx_omp <- bind_rows(avx_omp, avx_blas_omp)
+
+xomp <- avx_omp %>%
+  filter(KC == 240, MC == 240) %>%
+  left_join(avx_blas_omp, by = c("size", "N", "M", "P")) %>%
+  ungroup() %>%
+  rename(program = program.x) %>%
+  select(N, P, M, `Mean Time`, `Mean Blas Time`)
+kable(xomp, format = "latex", booktabs = TRUE, digits = 3,
+      caption = "AVX Kernel Serial Performance (s)") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"),
+                full_width = FALSE,
+                font_size = 10,
+                position = "left")
+
+dtavx_omp %>%
+  ggplot(aes(x = size, y = gflops, fill = program)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(x = "Matrix Size (N, M, P)",
+       y = "GFLOPS/s", title = "AVX OMP Performance") +
+  theme_pub(type = "bar") + 
+  theme(axis.title.x = element_text(size = 22),
+        axis.title.y = element_text(size = 22),
+        axis.text.x = element_text(size = 22, angle = 90, vjust = 0.5),
+        axis.text.y = element_text(size = 22),
+        plot.title = element_text(size = 22),
+        legend.title = element_text(size = 22),
+        legend.text = element_text(size = 22)) +
+        scale_fill_manual(
+      values = c(
+        "AVX OMP GENERAL" = "green",
+        "BLAS" = "purple"
+      )
+    )
+
+ggsave("./project/out/avx-omp-non-divisible-gflops.pdf", width = 22, height = 14, dpi = 400, units = "in")
 ```

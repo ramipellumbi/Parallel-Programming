@@ -48,6 +48,7 @@
 \begin{document}
 
 \maketitle
+\tableofcontents
 
 \newpage 
 
@@ -83,7 +84,7 @@ required computational resources. Second, memory access patterns play a critical
 size of the matrices increase, the total memory accesses increase quadratically.
 Efficient matrix multiplication algorithms must minimize cache misses and effectively utilize 
 the CPU cache hierarchy. This is challenging due to the non-contiguous memory access 
-patterns inherent in matrix multiplication. 
+patterns inherent in naive matrix multiplication. 
 
 \
 
@@ -95,7 +96,8 @@ leveraging techniques such as loop unrolling, blocking for cache, and efficient 
 These optimizations allow BLAS to achieve performance levels that are often an order 
 of magnitude faster than naive implementations. This project started as 
 `investigate this videos claims' and ended with the goal of matching the performance 
-of BLAS by implementing a highly optimized matrix multiplication algorithm on CPUs. 
+of Intel's Math Kernel Library (MKL) implementation of \texttt{dgemm}: a highly optimized 
+matrix multiplication routine for double precision matrices. 
 
 \section{CPU Specifications}\label{SEC:CPU-SPECS}
 The Intel Xeon(R) Platinum 8268 CPU in the Cascade Lake family is used for profiling. 
@@ -103,9 +105,13 @@ The processor has 24 cores, each with 2 threads, for a total of 48 threads and o
 at 3.5GHz. With 512-bit floating-point vector registers and two floating-point 
 functional units, each capable of Fused Multiply-Add (FMA), a Cascade Lake core can 
 deliver 32 double-precision floating-point operations per cycle.\footnote{\MYhref{https://www.nas.nasa.gov/hecc/support/kb/cascade-lake-processors_579.html}{https://www.nas.nasa.gov/hecc/support/kb/cascade-lake-processors\_579.html}}
-This brings the theoretical peak performance of the CPU (with no multithreading enabled) to 
+This brings the theoretical peak performance of the CPU (with no virtual threads enabled) to 
 \begin{align*}
     3.5\ \texttt{GHz} * 24\ \texttt{cores} * 32\ \frac{\texttt{FLOPs}}{\texttt{core}} = 2688\ \texttt{GFLOPs}.
+\end{align*}
+For a single core of the CPU, this is of course
+\begin{align*}
+    3.5\ \texttt{GHz} * 32\ \frac{\texttt{FLOPs}}{\texttt{core}} = 112 \ \texttt{GFLOPs}. 
 \end{align*}
 
 \subsubsection*{Cache Specifications}
@@ -123,8 +129,9 @@ There is a single 36608K \texttt{L3} cache shared across all cores. It is 11-way
 The processor has a maximum theoretical memory bandwidth of 131.13 \texttt{GiB/s}. 
 Each \texttt{double} takes up 8 bytes of memory. This means that the CPU memory bandwidth is 
 \begin{align*}
-    \texttt{140.8GB/s} \cdot \frac{\texttt{double}}{\texttt{8B}} = 17.6\ \texttt{GFlops/s}.
+    \texttt{140.8GB/s} \cdot \frac{\texttt{double}}{\texttt{8B}} = 17.6\ \texttt{GFlops/s}
 \end{align*}
+per socket. 
 
 \section{The Problem}
 
@@ -136,8 +143,10 @@ nuances of compute and memory access that escalate as matrix sizes scale.
 The essence of a compute-bound task lies in its primary limitation being the 
 processing power of the CPU rather than I/O or memory speeds. As illustrated in the Section \ref{SEC:CPU-SPECS}, the theoretical peak performance of the CPU is
 2688 \texttt{GFLOPs}. However, the theoretical peak memory bandwidth is only 17.6 \texttt{GFlops/s};
-152x slower. Thus, any task that requires more than 152 CPU cycles per memory access will be
-compute bound (and any task requiring less than 152 CPU cycles per memory access is memory bound).
+152x slower. Thus, any task that requires more than 152 CPU cycles per memory access (in a 24 core program) will be
+compute bound (and any task requiring less than 152 CPU cycles per memory access is memory bound).\footnote{
+    For the single core case, this reduces to about 6 CPU cycles per memory access.
+}
 
 \
 
@@ -176,7 +185,7 @@ latency.
 Optimizing matrix multiplication for larger matrices thus becomes a dual challenge: managing the cubic growth in computational requirements and minimizing memory latency due to inefficient access patterns. Effective optimization requires a nuanced understanding of both the computational architecture and the memory hierarchy of CPUs. Techniques like loop reordering, tiling, or blocking, which aim to maximize data locality and cache utilization, become critical. However, these techniques must be meticulously tailored to the specific architecture, as the optimal configuration can vary significantly based on factors like cache size, cache line size, and the number of cores.
 
 \section{Approach 1: Keep it Serial}
-The first batch of programs focused on optimizin a serial matrix multiplication algorithm.
+The first batch of programs focused on optimizing a serial matrix multiplication algorithm.
 First, the naive algorithm was implemented. Then, the loops were reordered to improve cache performance.
 Finally, a blocking strategy was implemented to further improve cache performance. All 
 algorithms were written to compute $C = A \times B$, where $A$ is an $N \times P$ 
@@ -220,18 +229,18 @@ are the average of 3 runs. The MKL libraries \texttt{dgemm} implementation is in
 \begin{table}[H]
     \centering
     \caption{ijk Access Pattern Mean Performance (s)}
-    \fontsize{12}{14}\selectfont
     \begin{tabular}[t]{rrrrr}
     \toprule
     N & P & M & Mean Time & Mean Blas Time\\
     \midrule
-    1024 & 1024 & 1024 & 1.691292 & 0.0607420\\
-    2048 & 2048 & 2048 & 16.156843 & 0.2742953\\
+    1024 & 1024 & 1024 & 1.691 & 0.053\\
+    \addlinespace
+    2048 & 2048 & 2048 & 16.157 & 0.274\\
     \bottomrule
     \end{tabular}
     \label{TAB:NAIVE-RESULTS}
 \end{table}
-\noindent The Intel MKL \texttt{dgemm} implementation is 28x faster than the naive implementation for $N = 1024$ and 59x faster for $N = 2048$. The naive implementation is clearly not scalable.
+\noindent The Intel MKL \texttt{dgemm} implementation is 32x faster than the naive implementation for $N = 1024$ and 59x faster for $N = 2048$. The naive implementation is clearly not scalable.
 
 \subsection{Loop Reordering}
 The next step was to attempt to remedy the access pattern inefficiencies by reordering the loops. The 
@@ -265,36 +274,618 @@ are the average of 3 runs. The MKL libraries \texttt{dgemm} implementation is in
 \begin{table}[H]
     \centering
     \caption{kij Access Pattern Mean Performance (s)}
-    \fontsize{12}{14}\selectfont
     \begin{tabular}[t]{rrrrr}
     \toprule
     N & P & M & Mean Time & Mean Blas Time\\
     \midrule
-    1024 & 1024 & 1024 & 0.3560277 & 0.0552923\\
-    1024 & 1024 & 8192 & 5.2299977 & 0.2942117\\
-    8192 & 1024 & 8192 & 46.0622990 & 2.0431417\\
-    8192 & 8192 & 1024 & 39.8449800 & 1.9560290\\
-    8192 & 8192 & 8192 & 370.1064950 & 15.4767510\\
+    1024 & 1024 & 1024 & 0.356 & 0.053\\
+    \addlinespace
+    1024 & 1024 & 8192 & 5.230 & 0.297\\
+    \addlinespace
+    8192 & 1024 & 8192 & 46.062 & 2.042\\
+    \addlinespace
+    8192 & 8192 & 1024 & 39.845 & 1.949\\
+    \addlinespace
+    8192 & 8192 & 8192 & 370.106 & 15.499\\
     \bottomrule
     \end{tabular}
     \label{TAB:REORDERED-RESULTS}
 \end{table}
+\noindent We see that for the one overlapping matrix size ($N = P = M = 1024$), the \texttt{kij} access pattern is $4.75\times$ faster than the \texttt{ijk} access pattern. 
+The Intel MKL \texttt{dgemm} implementation still far outperforms the \texttt{kij} access pattern, but the gap has narrowed significantly. 
+
+\ 
+
+\noindent It is time to take a step back and consider CPU utilization. Figure \ref{FIG:CPU-UTILIZATION} shows the performance 
+in terms of GFLOPs/s for the \texttt{kij} access pattern juxtaposed to the Intel MKL \texttt{dgemm} implementation. 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../../project/out/kij-gflops.pdf}
+    \caption{Performance of \texttt{kij} Access Pattern vs. Intel MKL \texttt{dgemm} Implementation in GFLOPs/s}
+    \label{FIG:CPU-UTILIZATION}
+\end{figure}
+\noindent It is immediately evident that the \texttt{kij} access pattern is not utilizing the CPU to its fullest. 
+Indeed, what should be a compute bound task is memory bound. We need to dig deeper.
 
 \subsection{Tiled Matrix Multiplication}
+This brings us to the video, which introduces tiling as a strategy to improve cache performance. 
+This technique involves subdividing the input matrices into smaller blocks or sub-matrices, 
+which are then processed individually. The key advantage of matrix tiling lies in its 
+ability to significantly reduce cache misses by ensuring that the working set of data — 
+the subset of the matrices actively being used in computations — fits into the faster, 
+but smaller, levels of the CPU cache. By processing these smaller blocks, 
+the algorithm can keep a block of each matrix in the cache for the duration of 
+the computation of a sub-matrix of the result, thereby minimizing the costly memory 
+accesses to the slower main memory. 
 
-\subsection{Results}
+\ 
+
+\noindent This is particularly effective for large matrices where the entire matrix 
+cannot be stored in the cache at once. Tiling optimizes the memory hierarchy usage, 
+making efficient use of the CPU's cache to speed up the computation, and is especially 
+crucial for larger matrices where the non-tiled approach leads to frequent cache evictions. 
+As such, tiling is a natural next step in our optimization journey, 
+aiming to bridge the gap between theoretical and practical performance on our CPU.
+
+\
+
+\noindent The blocking strategy takes our initial program and makes the realization that 
+\begin{align*}
+    C[i][j] = \sum_{k = 0}^P A[i][k] * B[k][j]
+\end{align*}
+is functionally equivalent to 
+\begin{align*}
+    C[i][j] = \sum_{b = 0}^L \sum_{k = 0}^{P / L} A[i]\bigg[\frac{bP}{L}\bigg] * B\bigg[\frac{bP}{L}\bigg][j] 
+\end{align*}
+Under the assumption that our matrix dimension $M, N, P$ are multiples of $L$, we can write 
+our program as 6 nested loops:
+\begin{lstlisting}
+for (int ii = 0; ii < N; ii += BLOCK_SIZE)
+{
+    for (int jj = 0; jj < M; jj += BLOCK_SIZE)
+    {
+        for (int kk = 0; kk < P; kk += BLOCK_SIZE)
+        {
+            for (int i = ii; i < ii + BLOCK_SIZE; i++)
+            {
+                iA = i * P;
+                for (int j = jj; j < jj + BLOCK_SIZE; j++)
+                {
+                    iC = i * M + j;
+                    for (int k = kk; k < kk + BLOCK_SIZE; k++)
+                    {
+                        jB = k * M + j;
+                        C[iC] -= A[iA + k] * B[jB];
+                    }
+                }
+            }
+        }
+    }
+}
+\end{lstlisting}
+This is an overly simplistic approach and up to now, we have not made any assumptions 
+on our matrix dimensions. In the spirit of keeping things general, we make the realization 
+that we can think of our multiplication of $A$ and $B$ as the multiplication 
+\begin{align*}
+    \begin{bmatrix}
+        A_{1} & A_{2} \\ A_{3} & A_{4}
+    \end{bmatrix}
+    \begin{bmatrix}
+        B_{1} & B_{2} \\ B_{3} & B_{4}
+    \end{bmatrix},
+\end{align*}
+where $A_{1}$ and $B_{1}$ are multiples of $L$ and the remaining blocks are the residuals. 
+Thus, the above loop handles $A_1 B_1$ and we can handle the residual case by including cleanup loops
+to multiply the remaining blocks. The details are observable in the code in \texttt{t3-serial-blocking.c}. 
+The performance of this algorithm is shown in Table \ref{TAB:TILED-RESULTS}. The results are in seconds and
+are the average of 3 runs. The MKL libraries \texttt{dgemm} implementation is included for comparison.
+\begin{table}[H]
+    \centering
+    \caption{Blocked Access Pattern Mean Performance (s)}
+    \begin{tabular}[t]{rrrrrrr}
+    \toprule
+    N & P & M & Block Size & Mean blocked Time & Mean kij Time & Mean Blas Time\\
+    \midrule
+    1024 & 1024 & 1024 & 16 & 0.305 & 0.356 & 0.053\\
+    \addlinespace
+    1024 & 1024 & 8192 & 16 & 3.244 & 5.230 & 0.297\\
+    \addlinespace
+    8192 & 1024 & 8192 & 16 & 25.632 & 46.062 & 2.042\\
+    \addlinespace
+    8192 & 8192 & 1024 & 16 & 27.166 & 39.845 & 1.949\\
+    \addlinespace
+    8192 & 8192 & 8192 & 16 & 215.646 & 370.106 & 15.499\\
+    \bottomrule
+    \end{tabular}
+    \label{TAB:TILED-RESULTS}
+\end{table}
+\noindent We observe the blocking strategy is significantly faster than the naive and reordering strategies.
+Still, the MKL libraries \texttt{dgemm} implementation is much faster than our implementation on a single thread. 
+We are still underutilizing the cache. To remedy this, we consider transposing the matrix $B$ 
+before the multiply. This allows for more efficient loading of $A$ and $B$ in the inner loops 
+allowing the compiler to optimize the code better, e.g., via SIMD instructions. 
+The results are shown in Table \ref{TAB:TILED-TRANSPOSED-RESULTS}. 
+\begin{table}[H]
+    \centering
+    \caption{Blocked Access Pattern Mean Performance (s)}
+    \begin{tabular}[t]{rrrrrrr}
+    \toprule
+    N & P & M & Block Size & Mean blocked Time & Mean kij Time & Mean Blas Time\\
+    \midrule
+    1024 & 1024 & 1024 & 16 & 0.205 & 0.356 & 0.053\\
+    \addlinespace
+    1024 & 1024 & 8192 & 16 & 1.817 & 5.230 & 0.297\\
+    \addlinespace
+    8192 & 1024 & 8192 & 16 & 13.966 & 46.062 & 2.042\\
+    \addlinespace
+    8192 & 8192 & 1024 & 16 & 21.377 & 39.845 & 1.949\\
+    \addlinespace
+    8192 & 8192 & 8192 & 16 & 149.600 & 370.106 & 15.499\\
+    \bottomrule
+    \end{tabular}
+    \label{TAB:TILED-TRANSPOSED-RESULTS}
+\end{table}
+\noindent The block size for 16 is shown only as other block sizes performed significantly worse.
+
+\subsection{Blocking Cache Analysis}
+Each of $A$ and $B$ is partitioned into $L \times L$ chunks. 
+The innermost $(i,j,k)$ loops multiply a $L \times L$ chunk of $A$ with a
+$L \times L$ chunk of $B$ and accumulates the 
+result in a $L \times L$ chunk of $C$.
+
+\
+
+\noindent Assuming the dimensions are a multiple of block size $L$, with a block size of $L = 16$, we have 
+\begin{align*}
+    16 * 16 * 8 * 3 \ \texttt{bytes} = 6144\ \texttt{bytes},
+\end{align*}
+and so all of our matrix chunks can reside in the \texttt{L1} cache. We anticipate 
+$L^2 / 8 = 32$ misses per chunk and thus $32 * 3 = 96$ misses per chunk iteration. 
+Thus, the blocking strategy has a total of 
+\begin{align*}
+    \frac{M}{L} \cdot \frac{N}{L} \cdot \frac{P}{L} \cdot \frac{3 L^2}{8} = \frac{3 \cdot M \cdot N \cdot P}{8 * L} = \frac{3M\cdot N \cdot P}{128}\ \texttt{misses}.
+\end{align*}
+Compared to the \texttt{kij} algorithm, which had $0.25$ misses per iteration for a total miss count of $M\cdot N \cdot P / 4$, it 
+is evident we are making significant progress in cache utilization.
+
+\
+
+\noindent We are still nowhere near the theoretical peak performance of the CPU for a single thread and we are 
+out of ideas from the video when it comes to serial code. We move on to multithreading 
+to exhaust the videos suggestions, before we attempt to really understand the beast that is \texttt{dgemm}.
 
 \section{Approach 2: Leveraging Multithreading}
 
+To leverage multithreading, we utilize OpenMP: an industry standard API for 
+shared-memory parallelism. We distribute the matrix multiplication workload 
+across the cores of the CPU, significantly reducing the computation time. 
+It was discovered that Intel's MKL library only makes use of the number of 
+threads allotted to the program. Thus, as the \texttt{OMP\_NUM\_THREADS} environment variable is varied, 
+the performance of the MKL libraries \texttt{dgemm} implementation varies accordingly 
+- something that was not expected and made \texttt{dgemm} feel even more out of reach.
+
 \subsection{OpenMP}
+The first thing to do is just parallelize where we left off in the serial code. This is 
+done simply with the \texttt{\#pragma omp parallel for} directive on the outermost loop 
+of the multiply. The results are shown in Table \ref{TAB:OMP-RESULTS}.
+\begin{table}[H]
+    \centering
+    \caption{OMP Mean Performance - 24 cores (s)}
+    \begin{tabular}[t]{rrrrrr}
+    \toprule
+    N & P & M & Block Size & Mean Time & Mean Blas Time\\
+    \midrule
+    1000 & 1000 & 1000 & 16 & 0.013 & 0.024\\
+    \addlinespace
+    1024 & 1024 & 1024 & 16 & 0.020 & 0.024\\
+    \addlinespace
+    1024 & 1024 & 8192 & 16 & 0.208 & 0.037\\
+    \addlinespace
+    8192 & 1024 & 8192 & 16 & 0.999 & 0.128\\
+    \addlinespace
+    8192 & 8192 & 1024 & 16 & 1.096 & 0.130\\
+    \addlinespace
+    8192 & 8192 & 8192 & 16 & 10.227 & 0.756\\
+    \addlinespace
+    9600 & 9600 & 9600 & 16 & 8.930 & 1.072\\
+    \bottomrule
+    \end{tabular}
+    \label{TAB:OMP-RESULTS}
+\end{table}
+\noindent For small matrices, MKL's \texttt{dgemm} does not benefit much from multithreading.
+However, for larger matrices, the performance of the MKL implementation improves significantly
+more than our implementation, e.g., for $M = N = P = 8192$, the MKL implementation is 20x faster than 
+its serial counterpart whereas our blocked implementation is only 15x faster. 
 
 \subsection{Fixing False Sharing}
+One problem our blocked implementation suffers from in the multithreading case is false sharing. In a shared memory 
+program, cache coherence protocols guarantee the consistency between data residing in the various levels of 
+cache and main memory. In certain programs, cache coherence protocols can lead to a significant performance
+degredation. Specifically, if the same cache line is continuously accessed or modified by different threads, forcing the cache 
+coherence protocol to evict and reload it in rapid successions, we say that the threads are experiencing false sharing.\footnote{I 
+was unsure how to cite this, but this reasoning is from Hager's 2nd edition of `Introduction to High Performance Computing for Scientists and Engineers'.}
 
-\section{Approach 3: AVX Instructions}
+\
+
+\noindent There are a few different ways to fix false sharing, the most simple of which is to privatize the data 
+each thread is accessing. At the entry point of the parallel region, we make local $L \times L$ copies 
+of the blocks of $A$, $B$, and $C$ that each thread will be accessing. This gives each thread 
+access to the appropriate matrix block on its own stack space, eliminating the interference from cache coherence.
+
+\
+
+\noindent Along with this, we also utilize the more efficient \texttt{kij} access pattern and get rid of transposing the 
+matrix $B$. To implement, we first declare the private blocks of $A$, $B$, and $C$ with the \texttt{threadprivate} directive:
+\begin{lstlisting}
+#define BLOCK_SIZE 32
+alignas(64) static double blockA[BLOCK_SIZE][BLOCK_SIZE];
+alignas(64) static double blockB[BLOCK_SIZE][BLOCK_SIZE];
+alignas(64) static double blockC[BLOCK_SIZE][BLOCK_SIZE]; 
+#pragma omp threadprivate(blockA, blockB, blockC)
+\end{lstlisting}
+The local blocks are aligned on 64-byte boundaries so that a cache line will have exactly 8 doubles in it (maximizing cache utilization).
+Now that each thread has its own local copies of the blocks, we can simply copy the blocks into the local
+copies at the beginning of the parallel region and copy them back into the global $C$ at the end of the parallel region:
+\newpage
+\begin{lstlisting}
+#pragma omp parallel default(none) shared(N, P, M, A, B, C) private(iA, jB, iC)
+{
+    #pragma omp for schedule(runtime)
+    for (size_t ii = 0; ii < N; ii += BLOCK_SIZE)
+    {
+        for (size_t jj = 0; jj < M; jj += BLOCK_SIZE)
+        {
+            // clear blockC as infrequently as needed
+            for (size_t i = 0; i < BLOCK_SIZE; i++)
+                for (size_t j = 0; j < BLOCK_SIZE; j++) blockC[i][j] = 0.;
+
+            for (size_t kk = 0; kk < P; kk += BLOCK_SIZE)
+            {
+                // Copy blocks of A and B into blockA and blockB
+                for (size_t i = 0; i < BLOCK_SIZE; i++)
+                {
+                    iA = (ii + i) * P + kk;
+                    jB = (kk + i) * M + jj;
+                    for (size_t j = 0; j < BLOCK_SIZE; j++)
+                    {
+                        blockA[i][j] = A[iA + j];
+                        blockB[i][j] = B[jB + j];
+                    }
+                }
+
+                // Perform block multiplication on private blocks
+                for (size_t k = 0; k < BLOCK_SIZE; k++)
+                {
+                    for (size_t i = 0; i < BLOCK_SIZE; i++)
+                    {
+                        double r = blockA[i][k];
+                        for (size_t j = 0; j < BLOCK_SIZE; j++)
+                        {
+                            blockC[i][j] += r * blockB[k][j];
+                        }
+                    }
+                }
+            }
+
+            // copy blockC back into C
+            for (size_t i = 0; i < BLOCK_SIZE; i++)
+            {
+                iC = (ii + i) * M + jj;
+                for (size_t j = 0; j < BLOCK_SIZE; j++)
+                {
+                    C[iC + j] -= blockC[i][j];
+                }
+            }
+        }
+    }
+}
+\end{lstlisting}
+The results of this approach are in the below Table \ref{TAB:OMP-RESULTS-PRIVATIZED}.
+\begin{table}[H]
+    \centering
+    \caption{OMP Privatized Data Mean Performance - 24 cores (s)}
+    \begin{tabular}[t]{rrrrrr}
+    \toprule
+    N & P & M & Block Size & Mean Time & Mean Blas Time\\
+    \midrule
+    1024 & 1024 & 1024 & 32 & 0.008 & 0.024\\
+    \addlinespace
+    1024 & 1024 & 8192 & 32 & 0.082 & 0.037\\
+    \addlinespace
+    8192 & 1024 & 8192 & 32 & 0.455 & 0.128\\
+    \addlinespace
+    8192 & 8192 & 1024 & 32 & 0.512 & 0.130\\
+    \addlinespace
+    8192 & 8192 & 8192 & 32 & 3.889 & 0.756\\
+    \addlinespace
+    9600 & 9600 & 9600 & 32 & 6.822 & 1.072\\
+    \bottomrule
+    \end{tabular}
+    \label{TAB:OMP-RESULTS-PRIVATIZED}
+\end{table}
+\noindent This was a significant improvement. For $M = N = P = 8192$, the performance of our implementation
+improved $2.6\times$ over the non-privatized data approach, and all across the board we see greater than $2\times$ improvement. 
+
+\
+
+\noindent It must be noted that this approach assumed that the matrix dimensions were multiples of the block size. The general 
+solution was also implemented, but the performance took a small hit since at the beginning of each multiply the matrices must 
+be padded to be multiples of the block size. The results are shown in Table \ref{TAB:OMP-RESULTS-PRIVATIZED-GENERAL} and we 
+note the still much improved performance over the non privatized case.
+\begin{table}[H]
+    \centering
+    \caption{OMP Privatized Data Mean Performance (General) - 24 cores (s)}
+    \begin{tabular}[t]{rrrrrr}
+    \toprule
+    N & P & M & Block Size & Mean Time & Mean Blas Time\\
+    \midrule
+    1000 & 1000 & 1000 & 32 & 0.013 & 0.024\\
+    \addlinespace
+    1024 & 1024 & 1024 & 32 & 0.013 & 0.024\\
+    \addlinespace
+    1024 & 1024 & 8192 & 32 & 0.104 & 0.037\\
+    \addlinespace
+    8192 & 1024 & 8192 & 32 & 0.496 & 0.128\\
+    \addlinespace
+    8192 & 8192 & 1024 & 32 & 0.674 & 0.130\\
+    \addlinespace
+    8192 & 8192 & 8192 & 32 & 4.177 & 0.756\\
+    \addlinespace
+    9600 & 9600 & 9600 & 32 & 7.225 & 1.072\\
+    \bottomrule
+    \end{tabular}
+    \label{TAB:OMP-RESULTS-PRIVATIZED-GENERAL}
+\end{table}
+\noindent A more clever solution would only make copies of the blocks that are not multiples of the block size, but this was not implemented.
+
+\subsection{Recapping Progress}
+Up to now, we have observed how tiling, multithreading, privatizing data to threads, and efficient access patterns 
+can significantly improve the performance of matrix multiplication. For the serial case, we 
+did not get anywhere near the theoretical peak performance of the CPU. For the multithreaded case,
+we match the performance of Intel's MKL library for small matrices, and are still left in the dust 
+for larger matrices. Figures \ref{FIG:SERIAL-GFLOPS} and \ref{FIG:OMP-GFLOPS} show the performace of the serial and multithreaded implementations
+against \texttt{dgemm} in \texttt{GFLOPs/s}, respectively.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../../project/out/serial-gflops.pdf}
+    \caption{Performance of Serial Code vs. Intel MKL \texttt{dgemm} in GFLOPs/s}
+    \label{FIG:SERIAL-GFLOPS} 
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../../project/out/omp-gflops.pdf}
+    \caption{Performance of Multithreaded Code vs. Intel MKL \texttt{dgemm} in GFLOPs/s}
+    \label{FIG:OMP-GFLOPS}
+\end{figure}
+\noindent There is still a lot of room for improvement in both cases. At this point, we have exhausted the suggestions from the video and
+must turn to the literature to understand how to improve our code further.
+
+\section{Approach 3: Better Blocking and AVX Instructions}
+The papers `Anatomy of High-Performance Matrix Multiplication' \cite{ANATOMY} and 
+`The Anatomy of High-Performance Many Threaded Matrix Multiplication' \cite{6877334}
+were used as references for further improvement. The main idea is to utilize more efficient 
+blocking so that the matrix multiplication streams data from memory to the CPU registers
+more efficiently, from which we use AVX-512 instructions to perform the multiply. Since 
+we have three layers of cache, we perform hierarchical blocking, i.e., 
+we partition matrices into blocks that can reside in \texttt{L3}, from which we 
+partition into blocks that can reside in \texttt{L2}, from which we 
+partition into blocks that can fit in \texttt{L1}, from which we load effectively into the registers. This optimization 
+is highly dependent on the CPU architecture, and so we hard code the optimal block sizes
+for our CPU. To handle general matrix dimensions, we pad the matrices to be multiples of the
+optimal block size. We continue with the general matrix multiplication between 
+$A$ and $B$, where $A$ is $N \times P$ and $B$ is $P \times M$.
+\newpage
+\subsection{A new Way of Blocking}
+\noindent The main idea from the papers is to block as follows:
+\begin{lstlisting}
+    for (size_t jc = 0; jc < M; jc += NC)
+        for (size_t pc = 0; pc < P; pc += KC)
+            for (size_t ic = 0; ic < N; ic += MC)
+                for (size_t jr = 0; jr < NC; jr += COL_BLOCK)
+                    for(size_t ir = 0; ir < MC; ir += ROW_BLOCK)
+                        // matrix multiplication kernel to compute C[i][j]
+                        // where i and j range from
+                        // i -> ir: ir + ROW_BLOCK - 1
+                        // j -> jr: jr + COL_BLOCK - 1
+\end{lstlisting}
+Parroting \cite{6877334}:
+\begin{enumerate}
+    \item The \texttt{jc} loop partitions $C$ and $B$ into wide column panels.
+    \item $A$ and the current column panel of $B$ are partitioned into column panels and row panels, respectively.
+    The current width \texttt{NC} column panel of $C$ is updated as a sequence of rank-\texttt{KC} updates, indexed by \texttt{pc}.
+    \item The current row panel of $B$ is packed into a contiguous buffer, $\widetilde{B}$, that is kept in \texttt{L3} cache ($\texttt{KC} \times \texttt{NC}$ fits in \texttt{L3}).
+    \item The current panel of $A$ is partitioned into blocks indexed by \texttt{ic}. The blocks are packed into another contiguous buffer, $\widetilde{A}$, that is kept in \texttt{L2} cache ($\texttt{MC} \times \texttt{KC}$ fits in \texttt{L2}).
+    \item Next, $\widetilde{B}$ is partitioned into column slivers (indexed by \texttt{jr}) of width \texttt{COL\_BLOCK}. At a typical point in the multiply, this sliver resides in the \texttt{L1} cache and multiplies $\widetilde{A}$ (\texttt{KC} * \texttt{COL\_BLOCK} fits in \texttt{L1}). The panel 
+    $\widetilde{B}$ was packed so that the sliver in \texttt{L1} cache is contiguous in memory, one row of width \texttt{COL\_BLOCK} at a time. Denote this individual sliver of width \texttt{COL\_BLOCK} by $\widetilde{B}_{jr}$.
+    \item Lastly, $\widetilde{A}$ is partitioned into row slivers (indexed by \texttt{ir}) of height \texttt{ROW\_BLOCK}. The block $\widetilde{A}$ was packed so that this sliver is stored contiguously, one column of height \texttt{ROW\_BLOCK} at a time. 
+    Denote this individual sliver of height \texttt{ROW\_BLOCK} by $\widetilde{A}_{ir}$.
+    \item The multiplication kernel multiplies $\widetilde{A}_{ir}$ and $\widetilde{B}_{jr}$ and updates the current \texttt{ROW\_BLOCK} $\times$ \texttt{COL\_BLOCK} column panel of $C$. The kernel is implemented to perform updates with 
+    columns from $\widetilde{A}_{ir}$ and rows from $\widetilde{B}_{jr}$.
+\end{enumerate}
+This sets up efficient cache utilization. At any point in the computation:
+\begin{itemize}
+    \item a \texttt{ROW\_BLOCK} $\times$ \texttt{COL\_BLOCK} block of $C$ resides in registers.
+    \item the $\texttt{KC} \times \texttt{COL\_BLOCK}$ sliver of $\widetilde{B}$ is in the \texttt{L1} cache.
+    \item the $\texttt{ROW\_BLOCK} \times \texttt{KC}$ sliver of $\widetilde{A}$ is in the \texttt{L2} cache and is streamed efficiently during the computation.
+\end{itemize}
+A very helpful visualization of this process can be seen in the right-most 
+animation of \MYhref{https://jukkasuomela.fi/cache-blocking-demo/}{this animated HTML page}.
+
+\subsection{Back to Serial}
+Given this new mechanism for blocking, we implement a serial kernel to perform each \texttt{ROW\_BLOCK} $\times$ \texttt{COL\_BLOCK} block of $C$. 
+Since we are doing double precision matrix multiplication, we found the best performance when:
+\begin{lstlisting}
+size_t NC = M           // set to number of columns of B - KC * NC fits in L3
+#define KC 240          // KC * COL_BLOCK doubles fit in L1, 32K
+#define MC 240          // KC * MC doubles fit in L2, 1024k
+#define ROW_BLOCK 10    // operate on 10 rows at a time
+#define COL_BLOCK 16    // operate on 16 columns at a time
+\end{lstlisting}
+For the serial kernel, we assumed $M$ was divisible by 16, $N$ by 240, and $P$ by 240. The kernel and AVX instructions are detailed in Appendix A3.
+The performance is observable in Table \ref{TAB:AVX-RESULTS-SERIAL}.
+\begin{table}[H]
+    \centering
+    \caption{AVX Kernel Serial Performance (s)}
+    \begin{tabular}[t]{rrrrr}
+    \toprule
+    N & P & M & Mean Time & Mean Blas Time\\
+    \midrule
+    1200 & 1200 & 1200 & 0.060 & 0.059\\
+    \addlinespace
+    1440 & 1440 & 1440 & 0.104 & 0.059\\
+    \addlinespace
+    1440 & 8160 & 9648 & 4.321 & 1.206\\
+    \addlinespace
+    3600 & 3600 & 3600 & 1.591 & 0.678\\
+    \addlinespace
+    4320 & 4320 & 4320 & 2.809 & 1.038\\
+    \addlinespace
+    8400 & 8400 & 8400 & 20.384 & 4.941\\
+    \addlinespace
+    9600 & 9600 & 9600 & 31.710 & 12.313\\
+    \bottomrule
+    \end{tabular}
+    \label{TAB:AVX-RESULTS-SERIAL}
+\end{table}
+\noindent We observe similar performance for small sized matrices and note the performance of MKL's \texttt{dgemm} 
+still outperforms the serial implementation by a significant margin. Assessing the performance in GFLOPS/s 
+is done in Figure \ref{FIG:AVX-SERIAL-GFLOPS}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../../project/out/avx-serial-gflops.pdf}
+    \caption{Performance of AVX Serial Code vs. Intel MKL \texttt{dgemm} in GFLOPs/s}
+    \label{FIG:AVX-SERIAL-GFLOPS}
+\end{figure}
+\noindent There is likely some more clever utilization of the cache that can be done for a single core. 
+We now turn to the multithreaded case.
+
+\subsection{Multithreading}
+The serial code is now parallelized with OpenMP. Choosing which loop to parallelize requires careful consideration. 
+As structured, the \texttt{jc} loop is only 1 iteration, while the \texttt{pc} and \texttt{ic} loops have 
+a negligible amount of iterations compared to the \texttt{ir} and \texttt{jr} loops. It 
+was found that parallelizing the \texttt{jr} loop yielded the highest performance and thus only the \texttt{jr} loop is parallelized.\footnote{Some non recorded experiments were done to collapse the 5 loops, but this did not improve performance.}
+
+\
+
+\noindent The results are shown in Table \ref{TAB:AVX-RESULTS-OMP} and Figure \ref{FIG:AVX-OMP-GFLOPS}.
+\begin{table}[H]
+    \centering
+    \caption{AVX Kernel Serial Performance (s)}
+    \begin{tabular}[t]{rrrrr}
+    \toprule
+    N & P & M & Mean Time & Mean Blas Time\\
+    \midrule
+    1200 & 1200 & 1200 & 0.006 & 0.052\\
+    \addlinespace
+    1440 & 1440 & 1440 & 0.010 & 0.031\\
+    \addlinespace
+    1440 & 8160 & 9648 & 0.219 & 0.437\\
+    \addlinespace
+    3600 & 3600 & 3600 & 0.115 & 0.100\\
+    \addlinespace
+    4320 & 4320 & 4320 & 0.193 & 0.148\\
+    \addlinespace
+    8400 & 8400 & 8400 & 1.051 & 0.776\\
+    \addlinespace
+    9600 & 9600 & 9600 & 1.605 & 1.165\\
+    \bottomrule
+    \end{tabular}
+    \label{TAB:AVX-RESULTS-OMP}
+\end{table} 
+\noindent We observe a significant improvement over the serial case. For $M = N = P = 9600$, the performance
+improves by a factor of 19.8 as opposed to the 10.5 times improvement of BLAS. 
+The performance in GFLOPS/s is shown in Figure \ref{FIG:AVX-OMP-GFLOPS}.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{../../project/out/avx-omp-gflops.pdf}
+    \caption{Performance of AVX Multithreaded Code vs. Intel MKL \texttt{dgemm} in GFLOPs/s}
+    \label{FIG:AVX-OMP-GFLOPS} 
+\end{figure}
+
+\
+
+\noindent It should be noted that this performance is a bit misleading as a direct comparitor to \texttt{dgemm} 
+since it does not handle all matrix sizes. The general implementation was also implemented and the results are 
+shown in figure \ref{FIG:AVX-OMP-GENERAL-GFLOPS}. The performance is slightly worse than 
+the non general implementation, but still significantly better than the serial case. The tradeoff of 
+having to pad the matrices is worth it for the generalizability of the code.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../../project/out/avx-omp-non-divisible-gflops.pdf}
+    \caption{Performance of AVX Multithreaded Code vs. Intel MKL \texttt{dgemm} in GFLOPs/s}
+    \label{FIG:AVX-OMP-GENERAL-GFLOPS}
+\end{figure}
+
+\subsection{Assessment}
+The adoption of hierarchical blocking in conjunction with AVX instructions has 
+led to significant performance gains in matrix multiplication, particularly when utilizing the capabilities 
+of multiple cores. The results obtained from both the serial and multithreaded implementations demonstrate 
+substantial improvements over the initial approaches, underscoring the power of proper cache utilization.
+
+\paragraph*{Hierarchical Blocking Efficiency} The hierarchical blocking approach, 
+aligning with the L1, L2, and L3 cache sizes, has shown to be highly effective. 
+By partitioning matrices into blocks that fit well within the cache hierarchy, 
+the algorithm has minimized cache misses and maximized cache utilization. 
+This optimization is particularly evident in large matrix sizes, where managing the cache behavior is crucial for performance.
+
+\paragraph*{Impact of AVX Instructions} The use of AVX-512 instructions was pivotal 
+in enhancing computational efficiency. By enabling simultaneous operations on multiple data points, 
+these instructions have drastically increased the throughput of the matrix multiplication operation. 
+The results, especially in the multithreaded context, highlight the potential of AVX instructions in harnessing 
+the full computational power the CPU.
+
+\paragraph*{Comparison with MKL's \texttt{dgemm}} While the MKL's \texttt{dgemm} implementation 
+remains a tough competitor, especially for larger matrices, 
+the gap in performance has been considerably narrowed. For smaller matrices, the performance 
+of the optimized algorithm is on par with \texttt{dgemm}, and even for larger matrices, 
+the algorithm shows competitive performance, especially considering the inherent challenges in achieving such optimization levels 
+without the backing of a billion dollar publicly traded company.
 
 \section{Conclusion}
+This project embarked on a comprehensive exploration of optimizing matrix multiplication on CPUs, 
+motivated by a quest to match the performance of BLAS, particularly Intel's Math Kernel Library (MKL) 
+implementation of \texttt{dgemm}. The journey traversed through various stages of optimization, 
+each progressively edging closer to the goal of achieving high performance on CPU architectures.
 
-\section*{Appendix A1: Project Organization}
+\
+
+\noindent Initially, the project delved into the nuances of matrix multiplication as a compute-bound task, 
+highlighting the impact of memory access patterns and computational intensity. The exploration began 
+with serial implementations, starting from a naive \texttt{ijk} algorithm, progressing to 
+loop reordering for better cache efficiency, and eventually adopting a blocking strategy. 
+Each step yielded valuable insights into how memory access and data locality profoundly influence performance.
+
+\
+
+\noindent The project then ventured into the realm of parallel computing with OpenMP, 
+leveraging the power of multi-core processors. This phase demonstrated the scalability of matrix multiplication 
+algorithms and the effectiveness of multithreading in reducing computation time. However, it also revealed the intricacies 
+of parallel programming, such as addressing false sharing, and the need for carefully considering data privatization to 
+avoid performance degradation.
+
+\
+
+\noindent Further advancements were made by incorporating AVX instructions, aligning with the processors capabilities to 
+execute multiple floating-point operations simultaneously. This approach required a deeper understanding of CPU architecture, 
+leading to the implementation of hierarchical blocking that aligns with the cache hierarchy of the CPU. The results from 
+this stage brought us significantly closer to the performance of MKL's \texttt{dgemm}, especially in the multithreaded context.
+
+\
+
+\noindent In conclusion, this project has demonstrated that, while challenging, it is possible to significantly optimize 
+matrix multiplication on CPUs. The key lessons learned revolve around the 
+importance of understanding the underlying hardware, the role of memory access patterns, 
+and the effective use of parallel computing techniques. While the performance of MKL's \texttt{dgemm} remains a 
+high (very proprietary) bar, the progress made in this report showcases the potential 
+and feasibility of optimizing matrix multiplication on CPUs to a level that rivals highly specialized libraries. 
+As CPU architectures continue to evolve, so too will the strategies and techniques for optimizing matrix multiplication, 
+an operation fundamental to many fields in computational science.
+
+\newpage
+\section{Appendix A1: Project Organization}
 The project is laid out as follows:
 \begin{multicols}{2}
     \begin{forest}
@@ -325,7 +916,6 @@ The project is laid out as follows:
         [1-serial/]
         [2-omp/]
         [3-avx/]
-        [4-mpi/]
         ]
         [Makefile-serial]
         [Makefile-omp]
@@ -344,8 +934,8 @@ The project is laid out as follows:
         of the appropriate Makefile.
     \end{itemize}
 \end{multicols}
-
-\section*{Appendix A2: Code Explanation, Compilation, and Execution}
+\newpage
+\section{Appendix A2: Code Explanation, Compilation, and Execution}
 
 The provided Bash scripts automate the entire process, 
 making it straightforward to compile and run the code. All the below steps assume 
@@ -393,7 +983,48 @@ situated in the \texttt{bin/} subdirectory.
 \subsection{Output Files From \texttt{sbatch}}
 The output files generated from running the code by submitting the relevant Bash script via \texttt{sbatch} will be 
 stored in the \texttt{out} directory. 
+\newpage
+\section{Appendix A3: AVX Kernel}
+This is a simplified version of the AVX kernel with \texttt{ROW\_BLOCK} set to 2 for demonstration purposes. 
+The \texttt{COL\_BLOCK} is set to 16 so each update of $C$ is 2 rows $\times$ 16 columns at a time. 
+\begin{lstlisting}
+    // 512 bit wide registers (operate on 8 doubles at once)
+    __m512d mB0, mB1, mA0, mA1;
+    
+    // 2 x 16 block of C in registers
+    __m512d result0_0 = _mm512_set1_pd(0); // 1 x 8 (first 8 doubles of row 0)
+    __m512d result1_0 = _mm512_set1_pd(0); // 1 x 8 (first 8 doubles of row 1)
 
+    __m512d result0_1 = _mm512_set1_pd(0); // 1 x 8 (second 8 doubles of row 0)
+    __m512d result1_1 = _mm512_set1_pd(0); // 1 x 8 (second 8 doubles of row 1)
+
+    for (size_t k = 0; k < KC; k++)
+    {
+        // load 16 consecutive doubles from k'th row of B (8 to mB0 and 8 to mB1)
+        mB0 = _mm512_load_pd(&B[M * (k + pc) + jc + jr]);
+        mB1 = _mm512_load_pd(&B[M * (k + pc) + jc + jr + 8]);
+    
+        // Load a single value for the k'th col of A
+        mA0 = _mm512_set1_pd(A[k + pc + (ic + ir) * P]);
+        mA1 = _mm512_set1_pd(A[k + pc + (ic + ir + 1) * P]);
+    
+        // compute 2 x 16 block of C with fmadd instructions
+        result0_0 = _mm512_fmadd_pd(mB0, mA0, result0_0);
+        result0_1 = _mm512_fmadd_pd(mB1, mA0, result0_1);
+        result1_0 = _mm512_fmadd_pd(mB0, mA1, result1_0);
+        result1_1 = _mm512_fmadd_pd(mB1, mA1, result1_1);
+    }
+    
+    // store results back in C
+    *((__m512d *)(&C[(ic + ir + 0) * M + jc + jr]))             += result0_0;
+    *((__m512d *)(&C[(ic + ir + 0) * M + jc + jr + 8]))         += result0_1;
+    *((__m512d *)(&C[(ic + ir + 1) * M + jc + jr]))             += result1_0;
+    *((__m512d *)(&C[(ic + ir + 1) * M + jc + jr + 8]))         += result1_1;
+\end{lstlisting}
+The performance of this kernel was maximized for a \texttt{ROW\_BLOCK} of 10 and a \texttt{COL\_BLOCK} of 16 with 
+the aforementioned \texttt{KC}, \texttt{MC}, and \texttt{NC} values. 
+
+\newpage
 \bibliographystyle{unsrt}
 \bibliography{References.bib}
 
