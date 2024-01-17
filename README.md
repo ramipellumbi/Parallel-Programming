@@ -61,7 +61,7 @@ management, foundational elements in leveraging GPU architecture for computation
 The report addresses more advanced techniques, such as the utilization of shared memory and the strategic
 optimization of thread computations, essential for enhancing the computational performance.
 
-### Final Project: [Compute Bound CPU Matrix Multiplication](5-Compute-Bound-Matrix-Multiply)
+### Final Project: [Compute Bound CPU Matrix Multiplication](5-Compute-Bound-Matrix-Multiply/docs//report/report.pdf)
 
 #### Abstract
 
